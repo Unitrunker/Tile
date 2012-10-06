@@ -1,0 +1,120 @@
+"Flow" : {"type" : "Flow", "orient" : "down", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 0, "max" : 4096, "weight" : 1}, "Items" : [
+{"type" : "Flow", "orient" : "down", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 0}, "Vert" : {"min" : 0, "max" : 4096, "weight" : 0}, "Items" : [
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Check", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Display", "align" : "left"}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Font", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Button", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "", "Font" : {"face" : "Arial Unicode MS", "height" : 18}}]
+}]
+}]
+}, 
+{"type" : "Flow", "orient" : "down", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 0}, "Vert" : {"min" : 0, "max" : 4096, "weight" : 0}, "Items" : [
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Check", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Caption", "align" : "left"}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Fore", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Back", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}]
+}, 
+{"type" : "Flow", "orient" : "down", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 0}, "Vert" : {"min" : 0, "max" : 4096, "weight" : 0}, "Items" : [
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Check", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Data", "align" : "left"}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Fore", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Back", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}]
+}, 
+{"type" : "Flow", "orient" : "down", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 0}, "Vert" : {"min" : 0, "max" : 4096, "weight" : 0}, "Items" : [
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Check", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Cell", "align" : "left"}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Fore", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Back", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}]
+}, 
+{"type" : "Flow", "orient" : "down", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 0}, "Vert" : {"min" : 0, "max" : 4096, "weight" : 0}, "Items" : [
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Check", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Tool", "align" : "left"}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Fore", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Back", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Over", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}]
+}, 
+{"type" : "Flow", "orient" : "down", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 0}, "Vert" : {"min" : 0, "max" : 4096, "weight" : 0}, "Items" : [
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Check", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Grid", "align" : "left"}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Color", "align" : "right"}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}, 
+{"type" : "Arrow", "id" : 0, "Horz" : {"min" : 1, "max" : 1, "weight" : 0}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "orient" : "Down"}]
+}]
+}, 
+{"type" : "Flow", "orient" : "right", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "Items" : [
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 1}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}, "text" : "Thick", "align" : "right"}, 
+{"type" : "Edit", "id" : 0, "Horz" : {"min" : 0, "max" : 4096, "weight" : 9}, "Vert" : {"min" : 1, "max" : 1, "weight" : 0}}]
+}]
+}, 
+{"type" : "Text", "id" : 0, "Horz" : {"min" : 0, "max" : 0, "weight" : 1}, "Vert" : {"min" : 0, "max" : 4096, "weight" : 1}, "text" : "Data foreground color", "align" : "up|left"}]
+}
