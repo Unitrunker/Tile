@@ -24,7 +24,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		return 0;
 	}
 
-
 	wndMain.CenterWindow();
 	wndMain.ShowWindow(nCmdShow);
 
