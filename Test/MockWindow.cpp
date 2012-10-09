@@ -27,6 +27,10 @@ void MockWindow::setHover(IControl *pHover)
 // popup window
 IWindow* MockWindow::popup(const rect_t &rect, Flow *pContent, IControl *pOwner)
 {
+	rect;		// ignored.
+	pContent;	// ignored.
+	pOwner;		// ignored.
+
 	printf("%ld called %s\n", pOwner->identity(), __FUNCTION__);
 	return NULL;
 }

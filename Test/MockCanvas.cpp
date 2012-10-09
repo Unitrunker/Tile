@@ -27,12 +27,13 @@ bool MockCanvas::getPlace(rect_t &) const
 void MockCanvas::DrawString(const rect_t &rect, const rect_t &box, color_t fore, color_t back, const Font& font, align_t align, const string_t &text)
 {
 	printf("%s\n", __FUNCTION__);
-	rect;
-	fore;
-	back;
-	font;
-	align;
-	text;
+	box;	// ignored;
+	rect;	// ignored.
+	fore;	// ignored.
+	back;	// ignored.
+	font;	// ignored.
+	align;	// ignored.
+	text;	// ignored.
 }
 /// <param name="rect">bounding rectangle</param>
 /// <param name="fore">foreground text color</param>
@@ -43,13 +44,14 @@ void MockCanvas::DrawString(const rect_t &rect, const rect_t &box, color_t fore,
 void MockCanvas::DrawEditString(const rect_t &rect, const rect_t &box, color_t fore, color_t back, const Font& font, align_t align, const string_t &text, size_t cursor)
 {
 	printf("%s\n", __FUNCTION__);
-	rect;
-	fore;
-	back;
-	font;
-	align;
-	text;
-	cursor;
+	box;	// ignored;
+	rect;	// ignored.
+	fore;	// ignored.
+	back;	// ignored.
+	font;	// ignored.
+	align;	// ignored.
+	text;	// ignored.
+	cursor;	// ignored.
 }
 /// <param name="rect">bounding rectangle</param>
 /// <param name="fill">polygon fill color</param>
