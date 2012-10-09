@@ -40,7 +40,7 @@ Text::Text(identity_t id, Theme &theme, Theme::Font& font, align_t align, const 
 	_text(text)
 {
 	// default to one line.
-	meter_t height = _theme.Text._height;
+	//meter_t height = _theme.Text._height;
 	FlowDesc desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
 	_fore.index = Theme::eCaptionFore;
@@ -75,6 +75,7 @@ const char* Text::type()
 /// <param name="canvas">Canvas where text will appear.</param>
 bool Text::Draw(ICanvas *canvas, bool bFocus)
 {
+	bFocus; // ignored.
 	const Font &font = _theme.getFont(_font);
 	canvas->DrawString(_rect, _scrollBox, 
 		_theme.getColor(_fore), _theme.getColor(_back), 

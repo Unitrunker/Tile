@@ -41,7 +41,6 @@ PickColor::PickColor(identity_t id, Theme &theme, IAccessor<color_t> &access) :
 	_local(*this)
 {
 	Theme::Font textFont = {Theme::eText, theme.Text};
-	Theme::Font arrowFont = {Theme::eArrow, theme.Arrow};
 
 	color_t color = _access.getValue();
 	color_t black = 0;

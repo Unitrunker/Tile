@@ -296,6 +296,7 @@ bool Scroll::dispatch(MouseEvent &action)
 
 void Scroll::setHover(bool hover)
 {
+	hover; // ignored.
 	// do nothing
 	_drag = false;
 }

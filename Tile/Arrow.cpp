@@ -63,6 +63,7 @@ bool Arrow::Draw(ICanvas *canvas, bool bFocus)
 {
 	align_t align = eLeft|eRight|eUp|eDown;
 
+	bFocus; // ignored.
 	_text = glyph(_theme, _flow);
 	color_t fore = _theme.getColor(_fore);
 	color_t back = _theme.getColor(_back);

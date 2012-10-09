@@ -51,7 +51,6 @@ bool Font::load(JSON::Reader &json, Font &desc)
 	bool bOK = false;
 	if ( json.beginNamedObject("Font") )
 	{
-		meter_t height = 0;
 		std::string face;
 		bOK = json.namedValue("face", face) &&
 			json.comma() &&

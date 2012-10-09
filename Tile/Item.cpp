@@ -23,6 +23,7 @@ _Item::~_Item()
 /// <param name="canvas">canvas where this object will be drawn</param>
 bool _Item::Draw(ICanvas *canvas, bool bFocus)
 {
+	bFocus; // ignored.
 	return Edit::Draw(canvas, _focus);
 }
 

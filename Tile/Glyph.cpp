@@ -33,6 +33,7 @@ const char* Glyph::type()
 /// <param name="canvas">Canvas where text will appear.</param>
 bool Glyph::Draw(ICanvas *canvas, bool bFocus)
 {
+	bFocus; // ignored.
 	align_t align = eLeft|eRight|eUp|eDown;
 	const Font& font = getFont(_font);
 	canvas->DrawString(_rect, _scrollBox, _theme.CaptionFore, _theme.CaptionBack, font, align, _text);

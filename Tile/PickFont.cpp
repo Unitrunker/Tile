@@ -71,7 +71,6 @@ void PickFont::click(Button*, bool down)
 
 const string_t &PickFont::getValue() const
 {
-	int size = 0;
 	TCHAR work[16] = {0};
 	const Font &font = _access->getValue();
 	_text = font._face;
@@ -82,6 +81,8 @@ const string_t &PickFont::getValue() const
 
 bool PickFont::setValue(const string_t &value)
 {
+	value;
+	// TODO!
 	return false;
 }
 

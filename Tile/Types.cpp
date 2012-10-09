@@ -152,10 +152,9 @@ bool Rectangle::polyline(std::vector<point_t> &list, bool inside)
 static void clipLeft(meter_t left, const std::vector<point_t> &list, std::vector< std::vector<point_t> > &lines)
 {
 	size_t i = 0;
-	bool inside = false;
 	std::vector<point_t> line;
 
-	point_t last;
+	point_t last = {0};
 	bool was = false;
 	while (i < list.size() )
 	{
@@ -191,10 +190,9 @@ static void clipLeft(meter_t left, const std::vector<point_t> &list, std::vector
 static void clipRight(meter_t right, const std::vector<point_t> &list, std::vector< std::vector<point_t> > &lines)
 {
 	size_t i = 0;
-	bool inside = false;
 	std::vector<point_t> line;
 
-	point_t last;
+	point_t last = {0};
 	bool was = false;
 	while (i < list.size() )
 	{
@@ -230,10 +228,9 @@ static void clipRight(meter_t right, const std::vector<point_t> &list, std::vect
 static void clipTop(meter_t top, const std::vector<point_t> &list, std::vector< std::vector<point_t> > &lines)
 {
 	size_t i = 0;
-	bool inside = false;
 	std::vector<point_t> line;
 
-	point_t last;
+	point_t last = {0};
 	bool was = false;
 	while (i < list.size() )
 	{
@@ -269,10 +266,9 @@ static void clipTop(meter_t top, const std::vector<point_t> &list, std::vector< 
 static void clipBottom(meter_t bottom, const std::vector<point_t> &list, std::vector< std::vector<point_t> > &lines)
 {
 	size_t i = 0;
-	bool inside = false;
 	std::vector<point_t> line;
 
-	point_t last;
+	point_t last = {0};
 	bool was = false;
 	while (i < list.size() )
 	{
@@ -419,7 +415,7 @@ static void flag(std::string &text, unsigned char &work, orient_t flow, const ch
 
 bool orient(std::string &text, orient_t flow)
 {
-	unsigned char work = flow;
+	unsigned char work = static_cast<unsigned char>(flow);
 	flag(text, work, eUp, "up");
 	flag(text, work, eDown, "down");
 	flag(text, work, eLeft, "left");

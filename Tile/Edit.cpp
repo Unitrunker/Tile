@@ -198,7 +198,7 @@ bool Edit::dispatch(KeyEvent &action)
 				if ( (action._mask & (KeyEvent::CONTROL|KeyEvent::ALT)) == 0 )
 				{
 					// upper/lower case?
-					TCHAR ch = action._code;
+					TCHAR ch = static_cast<TCHAR>(action._code);
 					// ASCII
 					if (ch >= 32 && ch <= 127)
 					{

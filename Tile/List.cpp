@@ -51,7 +51,6 @@ void _Section::setItems(Section *section)
 	FlowDesc line = {1, 1, 0, true};
 	FlowDesc coil = {0, 4096, 0, false};
 	Theme::Font textFont = {Theme::eText, theme.Text};
-	Theme::Font arrowFont = {Theme::eArrow, theme.Arrow};
 
 	setFlow(eDown, coil);
 	setFlow(eRight, coil);
@@ -171,8 +170,6 @@ void List::setItems(struct Set *set)
 		Theme& theme = _tile.getTheme();
 		Theme::Font textFont = {Theme::eText, theme.Text};
 		FlowDesc text = {0, 4096, 1, false};
-		FlowDesc edit = {0, 4096, 9, false};
-		FlowDesc line = {1, 1, 0, true};
 		for (size_t i = 0; i < _set->Sections.size(); i++)
 		{
 			_Section *pSection = new _Section(0, theme);

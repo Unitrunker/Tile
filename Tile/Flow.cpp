@@ -1034,6 +1034,7 @@ bool Flow::hasControls() const
 
 bool Flow::find(identity_t id, const char *type, IControl *&pControl)
 {
+	type; // ignored.
 	std::map<identity_t, IControl*>::iterator it = _map.find(id);
 	if (it != _map.end())
 	{
@@ -1452,7 +1453,6 @@ void Flow::layout(rect_t rect, rect_t box)
 		meter_t slack = rect.high - min;
 		if (slack < 0) slack = 0;
 		meter_t step = 0;
-		meter_t real = box.y;
 		for (size_t i = 0; i < size; i++)
 		{
 			ITile* pTile = _listTiles[i];

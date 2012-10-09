@@ -185,6 +185,7 @@ void Combo::setFocus(bool focus)
 // hover
 void Combo::setHover(bool hover)
 {
+	hover; // ignored.
 }
 
 // navigation
@@ -274,6 +275,7 @@ void Combo::setIndex(size_t index)
 // serialize
 bool Combo::save(JSON::Writer &writer)
 {
+	// TODO!
 	return false;
 }
 
