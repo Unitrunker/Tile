@@ -40,6 +40,9 @@ Window::Window(Window *pParent, const rect_t &rect, Flow *pContent, IControl *pO
 	pContent->setDesktop(this);
 	_theme.Change -= _themeChange;
 	_theme.Change += _themeChange;
+	// TODO: need these?
+	rect; // ??
+	pOwner; // ??
 }
 
 Window::~Window()
@@ -120,7 +123,7 @@ LRESULT Window::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 }
 
 // native char event triggers framework keypress.
-LRESULT Window::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT Window::OnChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = true;
 	return 0;
@@ -261,7 +264,7 @@ LRESULT Window::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& 
 	return 0;
 }
 
-LRESULT Window::OnEraseBkgnd(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT Window::OnEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// no flicker here.
 	return 1;
@@ -402,13 +405,13 @@ void Window::close()
 }
 
 // native mouse button event triggers framework event.
-LRESULT Window::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+LRESULT Window::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	return 1;
 }
 
 // native mouse button event triggers framework event.
-LRESULT Window::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+LRESULT Window::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	setHover(NULL);
 	return 0;

@@ -41,7 +41,6 @@ void Snapshot::privateDrawString(const rect_t &rect, const rect_t &box, color_t 
 	UINT ta = 0;
 	point_t pt = {0};
 	RECT rc = {0};
-	SIZE size = {0};
 
 	HFONT hFont = makeFont(font);
 	SelectFont(hFont);

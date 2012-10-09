@@ -30,6 +30,9 @@ Popup::Popup(Theme &theme, const rect_t &rect, Flow *pContent, IControl *pOwner)
 	_bInternal(false)
 {
 	setFlow(pContent);
+	// TODO
+	rect;	// needed?
+	pOwner; // needed?
 }
 
 Popup::~Popup()
@@ -106,7 +109,7 @@ LRESULT Popup::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 }
 
 // native char event triggers framework keypress.
-LRESULT Popup::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT Popup::OnChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = true;
 	return 0;
@@ -248,7 +251,7 @@ LRESULT Popup::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /
 	return 0;
 }
 
-LRESULT Popup::OnEraseBkgnd(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT Popup::OnEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// no flicker here.
 	return 1;
@@ -287,7 +290,7 @@ void Popup::Redraw(ITile *pDraw)
 // IWindow
 void Popup::setCapture(IControl *p)
 {
-	// ignore - don't allow popups to mouse capture.
+	p; // ignore - don't allow popups to mouse capture.
 }
 
 // focus
@@ -352,6 +355,9 @@ void Popup::setFlow(Flow *pFlow)
 // popup window
 IWindow* Popup::popup(const rect_t &rect, Flow *pContent, IControl *pOwner)
 {
+	rect;		// ignore
+	pContent;	// ignore
+	pOwner;		// ignore
 	return NULL;
 }
 
@@ -363,20 +369,20 @@ void Popup::close()
 }
 
 // native mouse button event triggers framework event.
-LRESULT Popup::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+LRESULT Popup::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	return 1;
 }
 
 // native mouse button event triggers framework event.
-LRESULT Popup::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+LRESULT Popup::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	setHover(NULL);
 	return 0;
 }
 
 // 
-LRESULT Popup::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT Popup::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	HWND other = reinterpret_cast<HWND>(lParam);
 	if (wParam == WA_ACTIVE && other != NULL)
@@ -387,7 +393,7 @@ LRESULT Popup::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHa
 }
 
 // 
-LRESULT Popup::OnMouseActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT Popup::OnMouseActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	return MA_NOACTIVATE;
 }
