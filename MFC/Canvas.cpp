@@ -180,6 +180,11 @@ void Canvas::DrawPolygon(const rect_t &rect, const rect_t &box, point_t list[], 
 	std::vector<POINT> pts;
 	POINT pt = {0};
 
+	rect; // ignored.
+	flow; // ignored.
+	box;  // ignored.
+	area; // ignored.
+
 	for (size_t i = 0; i < count; i++)
 	{
 		pt.x = list[i].x;
