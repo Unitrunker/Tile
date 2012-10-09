@@ -64,7 +64,7 @@ PersonSet::PersonSet(Theme &theme) :
 	section->Items.push_back(prop);
 	prop = new Property(_T("State"), _T("State or province"), new Edit(0, theme, textFont, &State) );
 	section->Items.push_back(prop);
-	prop = new Property(_T("City"), _T("Postal or Zip code"), new Edit(0, theme, textFont, &Postal) );
+	prop = new Property(_T("Postal"), _T("Postal or Zip code"), new Edit(0, theme, textFont, &Postal) );
 	section->Items.push_back(prop);
 	Sections.push_back(section);
 	
