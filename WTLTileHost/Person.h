@@ -17,6 +17,7 @@ struct Person
 	bool _toggle;
 	long _rotor;
 	long _value;
+	long _iIPv4;
 
 	Person();
 	Person(const Person &);
@@ -38,7 +39,10 @@ private:
 	Reflect<Person, long> Rotor;
 	Reflect<Person, long> _value;
 	Reflect<Person, time_t> _date;
+	Reflect<Person, long> _ipv4;
 	Time Date;
+	Time Time;
 	Integer Value;
+	IPv4 IPv4;
 };
 

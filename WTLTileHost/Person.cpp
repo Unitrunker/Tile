@@ -7,7 +7,7 @@
 
 using namespace Tiles;
 
-Person::Person() : _date(0), _toggle(false), _rotor(100), _value(0)
+Person::Person() : _date(0), _toggle(false), _rotor(100), _value(0), _iIPv4(0x100007f)
 {
 }
 
@@ -43,12 +43,14 @@ PersonSet::PersonSet(Theme &theme) :
 	_value(*this, &Person::_value),
 	Value(_value),
 	_date(*this, &Person::_date),
-	Date(_date)
+	Date(_date, Time::eDate),
+	Time(_date, Time::eTime),
+	_ipv4(*this, &Person::_iIPv4),
+	IPv4(_ipv4)
 {
 	Section *section = NULL;
 	Property *prop = NULL;
 	Theme::Font textFont = {Theme::eText, theme.Text};
-	Theme::Font arrowFont = {Theme::eArrow, theme.Arrow};
 
 	section = new Section(_T("Person"), _T("Person to be named"));
 	prop = new Property(_T("First"), _T("First Name"), new Edit(0, theme, textFont, &First) );
@@ -68,8 +70,10 @@ PersonSet::PersonSet(Theme &theme) :
 	section->Items.push_back(prop);
 	Sections.push_back(section);
 	
-	section = new Section(_T("Other"), _T("Other information") );
+	section = new Section(_T("Appointment"), _T("Appointment schedule") );
 	prop = new Property( _T("Date"), _T("Appointment"), new Edit(0, theme, textFont, &Date) );
+	section->Items.push_back(prop);
+	prop = new Property( _T("Time"), _T("Appointment"), new Edit(0, theme, textFont, &Time) );
 	section->Items.push_back(prop);
 	prop = new Property( _T("Toggle"), _T("Selected for interview"), new Check(0, theme, &Toggle) );
 	section->Items.push_back(prop);
@@ -81,6 +85,8 @@ PersonSet::PersonSet(Theme &theme) :
 	prop = new Property( _T("Rotor"), _T("Thing 1, thing 2"), new Combo(0, theme, textFont, items, &Rotor) );
 	section->Items.push_back(prop);
 	prop = new Property( _T("Value"), _T("A numeric value"), new Edit(0, theme, textFont, &Value) );
+	section->Items.push_back(prop);
+	prop = new Property( _T("IP"), _T("Dotted IP Address"), new Edit(0, theme, textFont, &IPv4) );
 	section->Items.push_back(prop);
 	Sections.push_back(section);
 }
