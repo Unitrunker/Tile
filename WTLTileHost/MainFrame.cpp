@@ -3,11 +3,14 @@
 #include "../Tile/List.h"
 #include "../Tile/Fill.h"
 #include "../Tile/Text.h"
+#include "../Tile/Gauge.h"
 #include "../WTL/Snapshot.h"
+#include <time.h>
 
 MainFrame::MainFrame(Theme &theme) : 
 	Frame(theme), m_editor(theme), m_set(theme), m_about(theme), m_adapter(theme)
 {
+	srand( clock() );
 	// create a form with a toolbar and a list control.
 	Flow *pFlow = new Flow(0, theme, eDown);
 	Flow *pTools = new Flow(0, theme, eRight);
@@ -54,10 +57,16 @@ MainFrame::MainFrame(Theme &theme) :
 	pButton = new Button(0, theme, font, six);
 	pTools->Add(pButton, 1, 1, 0, true);
 	pButton = new Button(0, theme, font, seven);
+	pButton->Click.bind(this, &MainFrame::clickTick);
 	pTools->Add(pButton, 1, 1, 0, true);
 	pButton = new Button(0, theme, font, eight);
 	pButton->Click.bind(this, &MainFrame::clickTheme);
 	pTools->Add(pButton, 1, 1, 0, true );
+
+	m_gauge = new Gauge(123, theme, Tiles::eRight);
+	pTools->Add(m_gauge, 1, 1, 0, true);
+	m_gauge->setValue(12);
+
 	fill = new Fill(0, theme);
 	fill->setFlow(eDown, tool);
 	pTools->Add(fill, 0, 4096, 1);
@@ -155,4 +164,15 @@ void MainFrame::clickSnapshot(Button *, bool)
 	Snapshot camera(m_hWnd);
 	getFlow()->Draw(&camera, true);
 	camera.Save(_T(".\\Picture.bmp"));
+}
+
+// user clicked check
+void MainFrame::clickTick(Button *, bool bDown)
+{
+	if (bDown)
+	{
+		rect_t rect;
+		m_gauge->getRect(rect);
+		m_gauge->setValue( (rand() * rect.wide) / 32768 );
+	}
 }
