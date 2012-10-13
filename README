@@ -7,19 +7,36 @@ Unit tested controls
 Weighted allocation of pixel space 
 - gracefully fill the screen or contract to minimal space.
 User editable theme
-- Font
-- Color
-- Spacing
+- Caption colors
+- Data colors
+- Grid cell colors
+- Grid row colors
+- Grid cell / row spacing
+- Toolbar colors
+- Fonts (text, arrow, stock)
 Flicker free display
 - high update rates possible
+Tiles
+- Arrow
+- Fill
+- Glyph
+- Text
 Controls
 - Button
 - Check
-- Edit
 - Combo
-- Tree
+- Edit
+- Toggle
 Generic Container
 - Flow
+- Scroll (scrollable flow)
+- Tree (collapsible flow)
 Type-Aware Container
 - List
 - Grid
+Graphics
+- Font
+- Text
+- Rectangles
+- Polygons
+- Polylines
