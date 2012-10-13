@@ -49,6 +49,8 @@ void Canvas::DrawString(const rect_t &rect, const rect_t &box, color_t fore, col
 	rc.top = rect.y;
 	rc.bottom = rect.y + rect.high;
 
+	box; // TODO
+
 	HGDIOBJ hFont = static_cast<HGDIOBJ>( makeFont(font) );
 	hFont = SelectObject(hFont);
 	SetTextColor(fore);
@@ -91,6 +93,8 @@ void Canvas::DrawEditString(const rect_t &rect, const rect_t &box, color_t fore,
 	rc.right = rect.x + rect.wide;
 	rc.top = rect.y;
 	rc.bottom = rect.y + rect.high;
+
+	box; // TODO
 
 	HGDIOBJ hFont = static_cast<HGDIOBJ>( makeFont(font) );
 	hFont = SelectObject(hFont);
@@ -156,6 +160,9 @@ void Canvas::DrawPolyline(const rect_t &rect, const rect_t &box, point_t list[],
 	std::vector<POINT> pts;
 	POINT pt = {0};
 
+	rect; // TODO
+	box; // TODO
+
 	for (size_t i = 0; i < count; i++)
 	{
 		pt.x = list[i].x;
@@ -181,9 +188,7 @@ void Canvas::DrawPolygon(const rect_t &rect, const rect_t &box, point_t list[], 
 	POINT pt = {0};
 
 	rect; // ignored.
-	flow; // ignored.
 	box;  // ignored.
-	area; // ignored.
 
 	for (size_t i = 0; i < count; i++)
 	{
