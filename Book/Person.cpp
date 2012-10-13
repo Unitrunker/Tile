@@ -30,6 +30,7 @@ void Person::broadcast(const char *)
 	// tell the world!
 }
 
+// theme
 PersonSet::PersonSet(Theme &theme) : 
 	SetT<Person>(NULL),
 	First(*this, &Person::_first),
@@ -45,19 +46,20 @@ PersonSet::PersonSet(Theme &theme) :
 	_date(*this, &Person::_date),
 	Date(_date)
 {
+	// create a property list with properties grouped under one of three sections.
 	Section *section = NULL;
 	Property *prop = NULL;
 	Theme::Font textFont = {Theme::eText, theme.Text};
-	Theme::Font arrowFont = {Theme::eArrow, theme.Arrow};
 
+	// First and last names (maybe add middle name some day).
 	section = new Section(_T("Person"), _T("Person to be named"));
 	prop = new Property(_T("First"), _T("First Name"), new Edit(0, theme, textFont, &First) );
 	section->Items.push_back(prop);
 	prop = new Property(_T("Last"), _T("Last Name"), new Edit(0, theme, textFont, &Last) );
 	section->Items.push_back(prop);
-	//Sections.push_back(section);
 	Add(section);
 
+	// Postal mailing address.
 	section = new Section(_T("Address"), _T("Mailing address"));
 	prop = new Property(_T("Street"), _T("Street number and name"), new Edit(0, theme, textFont, &Address) );
 	section->Items.push_back(prop);
@@ -67,15 +69,16 @@ PersonSet::PersonSet(Theme &theme) :
 	section->Items.push_back(prop);
 	prop = new Property(_T("City"), _T("Postal or Zip code"), new Edit(0, theme, textFont, &Postal) );
 	section->Items.push_back(prop);
-	//Sections.push_back(section);
 	Add(section);
-	
+
+	// Other hypothetical data.
 	section = new Section(_T("Other"), _T("Other information") );
 	prop = new Property( _T("Date"), _T("Appointment"), new Edit(0, theme, textFont, &Date) );
 	section->Items.push_back(prop);
 	prop = new Property( _T("Toggle"), _T("Selected for interview"), new Check(0, theme, &Toggle) );
 	section->Items.push_back(prop);
 
+	// combo box list items.
 	static const Combo::Item list[] = { {_T("100"), 100}, {_T("200"), 200}, {_T("300"), 300} };
 	std::vector<Combo::Item> items;
 	for (size_t i = 0; i < _countof(list); i++)
@@ -85,5 +88,4 @@ PersonSet::PersonSet(Theme &theme) :
 	prop = new Property( _T("Value"), _T("A numeric value"), new Edit(0, theme, textFont, &Value) );
 	section->Items.push_back(prop);
 	Add(section);
-	//Sections.push_back(section);
 }
