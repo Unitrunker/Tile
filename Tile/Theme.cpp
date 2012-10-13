@@ -348,7 +348,13 @@ void Theme::broadcast(const char *log) const
 // retrieve glyph
 const string_t& Theme::getGlyph(const Glyph &glyph) const
 {
-	switch (glyph.index)
+	return getGlyph(glyph.index, glyph.glyph);
+}
+
+// retrieve glyph
+const string_t& Theme::getGlyph(unsigned char iGlyph, const string_t &other) const
+{
+	switch (iGlyph)
 	{
 		case eUp:
 			return ArrowUp;
@@ -378,5 +384,5 @@ const string_t& Theme::getGlyph(const Glyph &glyph) const
 		default:
 			break;
 	}
-	return glyph.glyph;
+	return other;
 }

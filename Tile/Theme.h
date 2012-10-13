@@ -144,6 +144,8 @@ struct Theme
 	void setHeight(meter_t height);
 	// retrieve glyph
 	const string_t& getGlyph(const Glyph &glyph) const;
+	// retrieve glyph
+	const string_t& Theme::getGlyph(unsigned char iGlyph, const string_t &other) const;
 	// get name of the theme color index.
 	static const TCHAR *getName(char index);
 };
