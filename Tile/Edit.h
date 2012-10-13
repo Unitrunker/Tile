@@ -82,14 +82,15 @@ struct Edit : public Control
 	void setAccessor(IAccessor<string_t> *pAccess);
 	void setLocal(bool);
 
+	void setIndex(size_t);
+	size_t getIndex() const;
+
 protected:
 	bool onBackspace();
 	bool onDelete();
 	bool onChar(TCHAR ch);
 	bool onCursorLeft();
 	bool onCursorRight();
-	void setIndex(size_t);
-	size_t getIndex() const;
 
 	// working copy of text
 	string_t _text;

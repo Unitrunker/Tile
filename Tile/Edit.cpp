@@ -6,7 +6,7 @@
 #include "../JSON/Writer.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -137,6 +137,7 @@ bool Edit::onDelete()
 }
 
 // key event sink
+// TODO: assumes US keyboard mappings for VK_OEM_1 through VK_OEM_7.
 bool Edit::dispatch(KeyEvent &action)
 {
 	// key down
@@ -193,6 +194,112 @@ bool Edit::dispatch(KeyEvent &action)
 			case VK_TAB:
 				return false;
 
+			case VK_NUMPAD0:
+			case VK_NUMPAD1:
+			case VK_NUMPAD2:
+			case VK_NUMPAD3:
+			case VK_NUMPAD4:
+			case VK_NUMPAD5:
+			case VK_NUMPAD6:
+			case VK_NUMPAD7:
+			case VK_NUMPAD8:
+			case VK_NUMPAD9:
+			{
+				TCHAR ch = static_cast<TCHAR>(action._code) - VK_NUMPAD0 + '0';
+				return onChar(ch);
+			}
+
+			case VK_OEM_PLUS:
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('+') : onChar('=');
+
+			case VK_ADD:
+				return onChar('+');
+
+			case VK_OEM_MINUS:
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('_') : onChar('-');
+
+			case VK_SUBTRACT:
+				return onChar('-');
+
+			case VK_OEM_PERIOD:
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('>') : onChar('.');
+
+			case VK_DECIMAL:
+				return onChar('.');
+
+			case VK_DIVIDE:
+				return onChar('/');
+
+			case VK_MULTIPLY:
+				return onChar('*');
+
+			case VK_OEM_COMMA:
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('<') : onChar(',');
+
+			case VK_OEM_1: // US keyboards.
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar(':') : onChar(';');
+
+			case VK_OEM_2: // US keyboards.
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('?') : onChar('/');
+
+			case VK_OEM_3: // US keyboards.
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('~') : onChar('`');
+
+			case VK_OEM_4: // US keyboards.
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('{') : onChar('[');
+
+			case VK_OEM_5: // US keyboards.
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('|') : onChar('\\');
+
+			case VK_OEM_6: // US keyboards.
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('}') : onChar(']');
+
+			case VK_OEM_7: // US keyboards.
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('"') : onChar('\'');
+
+			case '0':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar(')') : onChar('0');
+			case '1':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('!') : onChar('1');
+			case '2':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('@') : onChar('2');
+			case '3':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('#') : onChar('3');
+			case '4':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('$') : onChar('4');
+			case '5':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('%') : onChar('5');
+			case '6':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('^') : onChar('6');
+			case '7':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('&') : onChar('7');
+			case '8':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('*') : onChar('8');
+			case '9':
+				return action._mask & KeyEvent::SHIFT ? 
+					onChar('(') : onChar('9');
+
+				// direct ASCII mapped key codes.
 			default:
 				// no control or ALT modifier?
 				if ( (action._mask & (KeyEvent::CONTROL|KeyEvent::ALT)) == 0 )
