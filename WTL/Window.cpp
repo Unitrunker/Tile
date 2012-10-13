@@ -431,3 +431,13 @@ Tiles::handle_t Window::getHandle()
 {
 	return m_hWnd;
 }
+
+LRESULT Window::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	// Important: need to revoke the focus'd control. Otherwise, when the window is shown again,
+	// the control will be stuck in false focused state and tab navigation will skip over it.
+	IControl *pNull = NULL;
+	_pFlow->setFocus(pNull);
+	bHandled = false;
+	return 0;
+}
