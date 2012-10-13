@@ -72,6 +72,8 @@ void MockCanvas::DrawPolyline(const rect_t &rect, const rect_t &box, point_t lis
 	count;
 	width;
 	color;
+	rect;
+	box;
 }
 /// <param name="list">list of points</param>
 /// <param name="count">number of points</param>
@@ -86,6 +88,8 @@ void MockCanvas::DrawPolygon(const rect_t &rect, const rect_t &box, point_t list
 	width;
 	color;
 	fill;
+	rect;
+	box;
 }
 // true if overlaps update region.
 bool MockCanvas::overlaps(rect_t&)

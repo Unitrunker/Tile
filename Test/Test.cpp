@@ -143,7 +143,33 @@ static void testEdit()
 	Flow flow(0, theme);
 	flow.Add(&edit);
 	printf("%s\n", __FUNCTION__);
+
+	Tiles::KeyEvent action;
+	action._mask = 0;
+	action._what = KeyEvent::DOWN;
+	action._code = VK_RIGHT;
+
+	_tprintf(_T("Edit text [%s]\n"), string.c_str());
+
+	//edit.setLocal(false);
+	edit.setFocus(true);
+	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	edit.dispatch(action);
+	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	edit.dispatch(action);
+	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	edit.dispatch(action);
+	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	edit.dispatch(action);
+	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	action._code = VK_BACK;
+	edit.dispatch(action);
+	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	edit.setFocus(false);
+	_tprintf(_T("Edit text [%s]\n"), string.c_str());
+
 	testIControl(&edit, watch);
+
 	flow.clear();
 }
 
@@ -321,6 +347,9 @@ a. create layout, change font size, render image & validate.
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	argc;
+	argv;
+
 	testRectangle();
 	testArrow();
 	testFill();
