@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Person.h"
 #include "../Tile/Edit.h"
 #include "../Tile/Combo.h"

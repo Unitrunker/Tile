@@ -2,7 +2,7 @@
 #include "../Tile/Theme.h"
 #include "../Tile/Accessor.h"
 #include "../Tile/Grid.h"
-#include "Person.h"
+#include "../Model/Person.h"
 
 #pragma once
 

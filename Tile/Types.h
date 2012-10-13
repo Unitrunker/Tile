@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-
+#include <tchar.h>
 /*
 Copyright © 2011 Rick Parrish
 */

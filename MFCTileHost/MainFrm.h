@@ -5,7 +5,7 @@
 #pragma once
 #include "ChildView.h"
 #include "../MFC/Window.h"
-#include "Person.h"
+#include "../Model/Person.h"
 #include "../Tile/ThemeSet.h"
 
 class CMainFrame : public CFrameWndEx

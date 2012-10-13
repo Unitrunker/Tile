@@ -198,10 +198,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Person.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -237,10 +233,6 @@
 			</File>
 			<File
 				RelativePath=".\MFCTileHost.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Person.h"
 				>
 			</File>
 			<File
