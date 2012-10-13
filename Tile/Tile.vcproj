@@ -209,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Gauge.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Glyph.cpp"
 				>
 			</File>
@@ -368,6 +372,10 @@
 			</File>
 			<File
 				RelativePath=".\Font.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Gauge.h"
 				>
 			</File>
 			<File
