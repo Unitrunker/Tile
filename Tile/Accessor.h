@@ -167,6 +167,7 @@ struct ColorReference : public IAccessor<string_t>
 private:
 	IAccessor<color_t>& _access;
 	mutable string_t _text;
+	ColorReference & operator = (const ColorReference &never);
 };
 
 // accessor adapter for string to long.
@@ -180,18 +181,40 @@ private:
 	IAccessor<long>& _wrap;
 	mutable string_t _text;
 	int _base;
+	Integer & operator = (const Integer &never);
 };
 
-// Display date/time in compact format. Display only.
+// Display date/time in compact format. Short format is display only.
 struct Time : public IAccessor<string_t>
 {
-	Time(IAccessor<time_t>& wrap);
+	Time(IAccessor<time_t>& wrap, char iFormat = eShort);
 	virtual const string_t &getValue() const;
 	virtual bool setValue(const string_t &value);
+
+	// If you want to edit BOTH date and time, create two separate 
+	// accessors - one for the date part and another for the time part.
+
+	enum {eShort, eDate, eTime};
+	void setFormat(char iFormat);
 
 private:
 	IAccessor<time_t>& _wrap;
 	mutable string_t _text;
+	char _iFormat;
+	Time & operator = (const Time &never);
+};
+
+// Display IPv4 dotted address.
+// Address is presumed to be in network byte order.
+struct IPv4 : public IAccessor<string_t>
+{
+	IPv4(IAccessor<long>& wrap);
+	virtual const string_t &getValue() const;
+	virtual bool setValue(const string_t &value);
+private:
+	IAccessor<long>& _wrap;
+	mutable string_t _text;
+	IPv4 & operator = (const IPv4 &never);
 };
 
 // This template modifies MemberAccessPtr behavior by 
