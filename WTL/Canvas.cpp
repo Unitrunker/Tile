@@ -202,6 +202,8 @@ bool Canvas::overlaps(rect_t &control)
 
 void Canvas::GradientFill(const rect_t &area, const rect_t &box, char flow, color_t nr, color_t fr)
 {
+	flow; // ignored.
+	area; // ignored.
 	TRIVERTEX list[4] = {0};
 	GRADIENT_RECT span = {0};
 	list[0].x = 0;
