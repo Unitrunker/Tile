@@ -2,6 +2,8 @@ Tile is a layout manager for creating user interfaces in 32/64 bit Windows.
 
 Features:
 
+Unit tested controls
+- seriously, how many UI frameworks are actually unit tested?
 Weighted allocation of pixel space 
 - gracefully fill the screen or contract to minimal space.
 User editable theme
@@ -9,4 +11,14 @@ User editable theme
 - Color
 - Spacing
 Flicker free display
-Unit tested controls
+- high update rates possible
+Controls
+- Button
+- Edit
+- Combo
+- Tree
+Generic Container
+- Flow
+Type-Aware Container
+- List
+- Grid
