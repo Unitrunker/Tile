@@ -20,7 +20,8 @@ PickFont::PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<F
 	FlowDesc desc = {1, 1, 0, true};
 
 	_edit = new Edit(0, theme, textFont, this);
-	_button = new Button(0, theme, arrowFont, theme.ArrowDn.c_str(), theme.ArrowDn.c_str(), theme.ArrowDn.c_str());
+
+	_button = new Button(0, theme, arrowFont, Theme::eDn, Theme::eDn, Theme::eDn);
 
 	_button->Click.bind(this, &PickFont::click);
 	//pButton->setReadOnly(true);
