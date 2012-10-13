@@ -21,8 +21,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	if(dlgMain.Create(NULL, rect, _T("Calculator"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW) == NULL)
 	{
+		TCHAR log[64] = {0};
 		DWORD last = GetLastError();
-		ATLTRACE(_T("Main dialog creation failed!\n"));
+		wsprintf(log, _T("Main dialog creation failed, error %d!\n"), last);
+		ATLTRACE(log);
 		return 0;
 	}
 	dlgMain.CenterWindow();
