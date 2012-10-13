@@ -17,6 +17,7 @@ struct Button : public Control
 
 	Button(identity_t id, Theme& theme, Theme::Font &desc, const TCHAR *text);
 	Button(identity_t id, Theme& theme, Theme::Font &desc, const TCHAR *textUp, const TCHAR *textDown, const TCHAR *textOver);
+	Button(identity_t id, Theme& theme, Theme::Font &desc, unsigned char iUp, unsigned char iDn, unsigned char iOver);
 
 	// ITile implementation
 	// instance type
@@ -82,6 +83,8 @@ struct Button : public Control
 	static const char* type();
 
 private:
+	const string_t & text(bool focus);
+
 	bool _down;
 	Theme::Color _colorUp[2];
 	Theme::Color _colorOver[2];
@@ -89,6 +92,9 @@ private:
 	Theme::Color _colorFocus[2];
 	// glyphs for up, down, and hover
 	string_t _textUp, _textOver, _textDown;
+	unsigned char _iGlyphOver;
+	unsigned char _iGlyphDn;
+	unsigned char _iGlyphUp;
 };
 
 };

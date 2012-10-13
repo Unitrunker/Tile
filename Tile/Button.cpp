@@ -15,7 +15,10 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, const TCHAR *text
 	_down(false),
 	_textUp(text),
 	_textDown(text),
-	_textOver(text)
+	_textOver(text),
+	_iGlyphUp(0), // unused.
+	_iGlyphDn(0), // unused.
+	_iGlyphOver(0) // unused.
 {
 	_colorUp[0].index = Theme::eToolFore;
 	_colorUp[0].color = RGB(0, 0, 0);
@@ -43,7 +46,41 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, const TCHAR *text
 	_down(false),
 	_textUp(textUp),
 	_textDown(textDown),
-	_textOver(textOver)
+	_textOver(textOver),
+	_iGlyphUp(0), // unused.
+	_iGlyphDn(0), // unused.
+	_iGlyphOver(0) // unused.
+{
+	_colorUp[0].index = Theme::eToolFore;
+	_colorUp[0].color = RGB(0, 0, 0);
+	_colorUp[1].index = Theme::eToolBack;
+	_colorUp[1].color = RGB(192, 192, 192);
+
+	_colorDn[0].index = Theme::eToolFore;
+	_colorDn[0].color = RGB(128, 128, 128);
+	_colorDn[1].index = Theme::eToolBack;
+	_colorDn[1].color = RGB(255, 255, 255);
+
+	_colorOver[0].index = Theme::eToolFore;
+	_colorOver[0].color = RGB(0, 0, 0);
+	_colorOver[1].index = Theme::eToolOver;
+	_colorOver[1].color = RGB(255, 255, 255);
+
+	_colorFocus[0].index = Theme::eToolFore;
+	_colorFocus[0].color = RGB(0, 0, 0);
+	_colorFocus[1].index = Theme::eToolOver;
+	_colorFocus[1].color = RGB(255, 255, 255);
+}
+
+Button::Button(identity_t id, Theme& theme, Theme::Font &font, unsigned char iUp, unsigned char iDn, unsigned char iOver) :
+	Control(id, theme, font),
+	_down(false),
+	_textUp(_T("?")),
+	_textDown(_T("?")),
+	_textOver(_T("?")),
+	_iGlyphUp(iUp),
+	_iGlyphDn(iDn),
+	_iGlyphOver(iOver)
 {
 	_colorUp[0].index = Theme::eToolFore;
 	_colorUp[0].color = RGB(0, 0, 0);
@@ -76,9 +113,6 @@ bool Button::Draw(ICanvas *canvas, bool bFocus)
 
 	bool focus = bFocus && _focus;
 
-	string_t &text = _down ? _textDown : 
-		(focus ? _textOver : _textUp);
-
 	color_t fore = 0;
 	color_t back = 0;
 
@@ -102,10 +136,10 @@ bool Button::Draw(ICanvas *canvas, bool bFocus)
 		fore = _tile.getColor(_colorUp[0]);
 		back = _tile.getColor(_colorUp[1]);
 	}
-
 	const Font& font = _tile.getFont(_tile.getFont());
-	canvas->DrawString(rect, box, fore, back, font, align, text);
-
+	// get glyph text and draw it.
+	const string_t &glyph = text(focus);
+	canvas->DrawString(rect, box, fore, back, font, align, glyph);
 	_tile.setChanged(false);
 	return true;
 }
@@ -211,4 +245,15 @@ void Button::setFocus(bool focus)
 {
 	Control::setFocus(focus);
 	if (!focus) _down = false;
+}
+
+const string_t &Button::text(bool focus)
+{
+	// select text.
+	if (_down)
+		return _tile.getTheme().getGlyph(_iGlyphDn, _textDown);
+
+	return focus ? 
+		_tile.getTheme().getGlyph(_iGlyphOver, _textOver) :
+		_tile.getTheme().getGlyph(_iGlyphUp, _textUp);
 }
