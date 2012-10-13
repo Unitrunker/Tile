@@ -66,6 +66,7 @@ public:
 	// Generated message map functions
 protected:
 	afx_msg void OnPaint();
+	afx_msg void OnClose();
 	afx_msg void OnSize(UINT, int cx, int cy);
 	afx_msg void OnMouseMove(UINT, CPoint);
 	afx_msg BOOL OnEraseBkgnd(CDC*);

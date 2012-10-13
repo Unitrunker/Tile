@@ -35,6 +35,8 @@ Window::Window(Window *pParent, const rect_t &rect, Flow *pContent, IControl *pO
 	_bInternal(false),
 	_pParent(pParent)
 {
+	rect; // TODO
+	pOwner; // TODO
 	pContent->watch(this);
 	pContent->setDesktop(this);
 }
@@ -56,6 +58,7 @@ BEGIN_MESSAGE_MAP(Window, CWnd)
 	ON_WM_MBUTTONDOWN()
 	ON_WM_MBUTTONUP()
 	ON_WM_SIZE()
+	ON_WM_CLOSE()
 	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
@@ -121,6 +124,8 @@ static int getKeyMask()
 // native keydown event triggers framework keypress.
 void Window::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	nFlags; // ignored
+	nRepCnt; // ignored
 	KeyEvent press = {0};
 	press._what = KeyEvent::DOWN;
 	press._mask = getKeyMask();
@@ -132,11 +137,17 @@ void Window::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 // native char event triggers framework keypress.
 void Window::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	nChar; // ignored
+	nFlags; // ignored
+	nRepCnt; // ignored
 }
 
 // native keyup event triggers framework keypress.
 void Window::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	nFlags; // ignored
+	nRepCnt; // ignored
+
 	KeyEvent press = {0};
 	press._what = KeyEvent::UP;
 	press._mask = getKeyMask();
@@ -394,4 +405,12 @@ void Window::close()
 Tiles::handle_t Window::getHandle()
 {
 	return m_hWnd;
+}
+
+void Window::OnClose()
+{
+	// Important: need to revoke the focus'd control. Otherwise, when the window is shown again,
+	// the control will be stuck in false focused state and tab navigation will skip over it.
+	IControl *pNull = NULL;
+	_pFlow->setFocus(pNull);
 }
