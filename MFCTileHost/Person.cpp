@@ -48,7 +48,6 @@ PersonSet::PersonSet(Theme &theme) :
 	Section *section = NULL;
 	Property *prop = NULL;
 	Theme::Font textFont = {Theme::eText, theme.Text};
-	Theme::Font arrowFont = {Theme::eArrow, theme.Arrow};
 
 	section = new Section(_T("Person"), _T("Person to be named"));
 	prop = new Property(_T("First"), _T("First Name"), new Edit(0, theme, textFont, &First) );
