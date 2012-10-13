@@ -91,6 +91,8 @@ protected:
 	IRedraw* _pNotify;
 	bool _bChanged;
 	Flow *_pFlow;
+private:
+	Tile & operator = (const Tile &never);
 };
 
 };
