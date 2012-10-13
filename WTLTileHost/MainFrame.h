@@ -2,7 +2,7 @@
 #include "../Tile/ThemeSet.h"
 #include "../Tile/Button.h"
 #include "../WTL/Frame.h"
-#include "Person.h"
+#include "../Model/Person.h"
 
 struct MainFrame : public Frame
 {

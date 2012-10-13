@@ -1,9 +1,6 @@
-// CanvasHost.cpp : main source file for CanvasHost.exe
-//
-
 #include "stdafx.h"
 #include "MainFrame.h"
-#include "Person.h"
+#include "../Model/Person.h"
 #include "../Tile/List.h"
 #include "../Tile/Fill.h"
 

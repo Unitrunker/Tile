@@ -195,10 +195,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Person.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -229,10 +225,6 @@
 			>
 			<File
 				RelativePath=".\MainFrame.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Person.h"
 				>
 			</File>
 			<File
