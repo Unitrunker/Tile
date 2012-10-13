@@ -1,0 +1,12 @@
+Tile is a layout manager for creating user interfaces in 32/64 bit Windows.
+
+Features:
+
+Weighted allocation of pixel space 
+- gracefully fill the screen or contract to minimal space.
+User editable theme
+- Font
+- Color
+- Spacing
+Flicker free display
+Unit tested controls
