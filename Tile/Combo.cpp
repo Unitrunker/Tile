@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "Combo.h"
 #include "Item.h"
+#include "../JSON/Writer.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -275,8 +276,11 @@ void Combo::setIndex(size_t index)
 // serialize
 bool Combo::save(JSON::Writer &writer)
 {
-	// TODO!
-	return false;
+	writer.writeStartObject();
+	writer.writeNamedValue("type", "Combo");
+	_tile.save(writer);
+	writer.writeEndObject(true);
+	return true;
 }
 
 bool Combo::Draw(ICanvas *canvas, bool bFocus)
