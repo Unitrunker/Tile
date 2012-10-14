@@ -92,10 +92,11 @@ bool PickColor::dispatch(MouseEvent &action)
 				// it can pick up the new color value.
 				if (_edit->getFocus())
 				{
-					IControl* null = NULL;
-					getContainer()->setFocus(null);
+					_edit->setFocus(false);
+					_edit->setFocus(true);
 				}
-				getContainer()->setFocus(_edit);
+				_edit->setChanged(true);
+				//getContainer()->setFocus(_edit);
 			}
 			return true;
 		}
