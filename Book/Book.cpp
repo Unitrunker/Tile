@@ -11,10 +11,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	Theme theme;
 	CMainFrame wndMain(theme);
-	wndMain.m_max.cx = 512;
-	wndMain.m_max.cy = 512;
-	wndMain.m_min.cx = 128;
-	wndMain.m_min.cy = 128;
+	wndMain.m_max.cx = 800;
+	wndMain.m_max.cy = 600;
+	wndMain.m_min.cx = 320;
+	wndMain.m_min.cy = 240;
 
 	RECT rc = {0};
 	rc.right = wndMain.m_max.cx;
