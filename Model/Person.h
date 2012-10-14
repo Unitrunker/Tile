@@ -14,7 +14,7 @@ struct Person
 	string_t _state;
 	string_t _postal;
 	time_t _date;
-	bool _toggle;
+	bool _check;
 	long _rotor;
 	long _value;
 	long _iIPv4;
@@ -35,7 +35,7 @@ private:
 	Reflect<Person, string_t> City;
 	Reflect<Person, string_t> State;
 	Reflect<Person, string_t> Postal;
-	Reflect<Person, bool> Toggle;
+	Reflect<Person, bool> Check;
 	Reflect<Person, long> Rotor;
 	Reflect<Person, long> _value;
 	Reflect<Person, time_t> _date;

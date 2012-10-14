@@ -6,7 +6,7 @@
 
 using namespace Tiles;
 
-Person::Person() : _date(0), _toggle(false), _rotor(100), _value(0), _iIPv4(0x100007f)
+Person::Person() : _date(0), _check(false), _rotor(100), _value(0), _iIPv4(0x100007f)
 {
 }
 
@@ -18,9 +18,10 @@ Person::Person(const Person &copy) :
 	_state(copy._state), 
 	_postal(copy._postal), 
 	_date(copy._date),
-	_toggle(copy._toggle),
+	_check(copy._check),
 	_rotor(copy._rotor),
-	_value(copy._value)
+	_value(copy._value),
+	_iIPv4(copy._iIPv4)
 {
 }
 
@@ -37,7 +38,7 @@ PersonSet::PersonSet(Theme &theme) :
 	City(*this, &Person::_city),
 	State(*this, &Person::_state),
 	Postal(*this, &Person::_postal),
-	Toggle(*this, &Person::_toggle),
+	Check(*this, &Person::_check),
 	Rotor(*this, &Person::_rotor),
 	_value(*this, &Person::_value),
 	Value(_value),
@@ -74,7 +75,7 @@ PersonSet::PersonSet(Theme &theme) :
 	section->Items.push_back(prop);
 	prop = new Property( _T("Time"), _T("Appointment"), new Edit(0, theme, textFont, &Time) );
 	section->Items.push_back(prop);
-	prop = new Property( _T("Toggle"), _T("Selected for interview"), new Check(0, theme, &Toggle) );
+	prop = new Property( _T("Check"), _T("Selected for interview"), new Tiles::Check(0, theme, &Check) );
 	section->Items.push_back(prop);
 
 	static const Combo::Item list[] = { {_T("100"), 100}, {_T("200"), 200}, {_T("300"), 300} };
