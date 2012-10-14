@@ -441,3 +441,17 @@ LRESULT Window::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 	bHandled = false;
 	return 0;
 }
+
+LRESULT Window::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+	// WTL hack:
+	// CWindowImpl<T> complains Window object destroyed before HWND.
+	// We've received the WM_DESTROY message so clearly it was. CWindowImpl<T> clears 
+	// m_hWnd on WM_NCDESTROY. Works great for frame windows. This window won't get 
+	// a WM_NCDESTORY if it's a child window.
+	// Fix: clear the m_hWnd here IF it is a child window.
+	if (GetStyle() & WS_CHILD)
+		m_hWnd = NULL;
+	return 0;
+}
