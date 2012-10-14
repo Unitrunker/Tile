@@ -19,7 +19,8 @@ Flow::Flow(identity_t id, Theme &theme, orient_t flow) :
 	_shared(0),
 	_readonly(false),
 	_local(true),
-	_scroll(false)
+	_scroll(false),
+	_hover(0)
 {
 	_space.local = false;
 	_space.thick = theme.GridThick;
@@ -45,7 +46,8 @@ Flow::Flow(identity_t id, Theme &theme, Theme::Font& desc, orient_t flow) :
 	_shared(0),
 	_readonly(false),
 	_local(true),
-	_scroll(false)
+	_scroll(false),
+	_hover(0)
 {
 	_space.local = false;
 	_space.thick = theme.GridThick;
