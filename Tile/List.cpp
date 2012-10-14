@@ -101,7 +101,7 @@ void _Section::setFocus(IControl *pControl)
 		List *list = static_cast<List*>(flow);
 		list->select(_section);
 	}
-	else
+	else if (pControl != NULL)
 	{
 		size_t size = _section->Items.size();
 		size_t i = 0;
