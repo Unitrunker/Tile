@@ -102,7 +102,7 @@ protected:
 	/// <param name="orient">orientation</param>
 	align_t _align;
 	/// border width
-	meter_t _border;
+	//meter_t _border;
 	// color selections
 	Theme::Color _fore[2], _back[2];
 };
