@@ -57,7 +57,7 @@ PersonSet::PersonSet(Theme &theme) :
 	section->Items.push_back(prop);
 	prop = new Property(_T("Last"), _T("Last Name"), new Edit(0, theme, textFont, &Last) );
 	section->Items.push_back(prop);
-	Sections.push_back(section);
+	Add(section);
 
 	section = new Section(_T("Address"), _T("Mailing address"));
 	prop = new Property(_T("Street"), _T("Street number and name"), new Edit(0, theme, textFont, &Address) );
@@ -68,7 +68,7 @@ PersonSet::PersonSet(Theme &theme) :
 	section->Items.push_back(prop);
 	prop = new Property(_T("Postal"), _T("Postal or Zip code"), new Edit(0, theme, textFont, &Postal) );
 	section->Items.push_back(prop);
-	Sections.push_back(section);
+	Add(section);
 	
 	section = new Section(_T("Appointment"), _T("Appointment schedule") );
 	prop = new Property( _T("Date"), _T("Appointment"), new Edit(0, theme, textFont, &Date) );
@@ -88,5 +88,6 @@ PersonSet::PersonSet(Theme &theme) :
 	section->Items.push_back(prop);
 	prop = new Property( _T("IP"), _T("Dotted IP Address"), new Edit(0, theme, textFont, &IPv4) );
 	section->Items.push_back(prop);
-	Sections.push_back(section);
+	Add(section);
+
 }
