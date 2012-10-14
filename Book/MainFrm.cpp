@@ -76,6 +76,12 @@ LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	return 1;
 }
 
+LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	DestroyWindow();
+	return 0;
+}
+
 LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	PostMessage(WM_CLOSE);
@@ -144,7 +150,7 @@ void CMainFrame::createForm()
 	pBox->setSpace(0);
 
 	Grid *pGrid = new Grid(0, theme);
-	//pGrid->setTable(&_table);
+	pGrid->setTable(&_table);
 	pBox->Add(pGrid, 0, 4096, 1);
 
 	m_view.setFlow(pBox);
