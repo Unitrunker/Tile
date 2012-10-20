@@ -1,11 +1,12 @@
 #include "../Tile/Types.h"
 #include "../Tile/Property.h"
+#include "../Tile/Follow.h"
 
 using namespace Tiles;
 
 #pragma once
 
-struct Person
+struct Person : public Follow<Person*>
 {
 	string_t _first;
 	string_t _last;
@@ -22,6 +23,9 @@ struct Person
 	Person();
 	Person(const Person &);
 	void broadcast(const char *);
+
+	static bool less(const string_t &left, const string_t &right) { return left.compare(right) < 0; }
+	static string_t extract(Person * const p) { return p->_last; }
 };
 
 struct PersonSet : public SetT<Person>
