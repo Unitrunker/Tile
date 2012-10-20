@@ -299,6 +299,10 @@ bool Edit::dispatch(KeyEvent &action)
 				return action._mask & KeyEvent::SHIFT ? 
 					onChar('(') : onChar('9');
 
+			case VK_NEXT:
+			case VK_PRIOR:
+				return false;
+
 				// direct ASCII mapped key codes.
 			default:
 				// no control or ALT modifier?
@@ -307,7 +311,7 @@ bool Edit::dispatch(KeyEvent &action)
 					// upper/lower case?
 					TCHAR ch = static_cast<TCHAR>(action._code);
 					// ASCII
-					if (ch >= 32 && ch <= 127)
+					if (ch >= 0x30 && ch <= 127)
 					{
 						bool bShift = (action._mask & KeyEvent::SHIFT) != 0;
 						bool bCaps = (action._mask & KeyEvent::CAPS) != 0;
