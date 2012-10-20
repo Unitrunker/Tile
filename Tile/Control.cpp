@@ -3,7 +3,7 @@
 #include "Flow.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -34,8 +34,14 @@ Control::Control(identity_t id, Theme &theme) :
 
 Control::~Control()
 {
-	if (_focus && _pDesktop)
-		_pDesktop->setFocus(NULL);
+	watch(NULL);
+	if (_pDesktop)
+	{
+		if (_focus)
+			_pDesktop->setFocus(NULL);
+		if (_hover)
+			_pDesktop->setHover(NULL);
+	}
 }
 
 bool Control::getChanged() const
