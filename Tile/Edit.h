@@ -4,7 +4,7 @@
 #include "Delegate.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 namespace Tiles
