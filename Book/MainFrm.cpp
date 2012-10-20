@@ -126,7 +126,12 @@ void CMainFrame::createForm()
 	Theme &theme = m_view.getTheme();
 	theme.setHeight(14);
 
-	_table.setContent(&_tree);
+	size_t columns = _table.getHeader()->Columns.size();
+
+	for (size_t i = 0; i < columns; i++)
+	{
+		_table.setContent(i, &_tree);
+	}
 
 	for (size_t i = 0; i < 10000; i++)
 	{
@@ -143,6 +148,9 @@ void CMainFrame::createForm()
 		ch = (code % 26) + 'A';
 		code /= 26;
 		person->_last.insert(0, 1, ch);
+		person->_city = _T("Austin");
+		person->_state = _T("Texas");
+		person->_postal = _T("78704");
 		_tree.insert(person);
 	}
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Grid.h"
 #include "Text.h"
+#include "Button.h"
 #include "Fill.h"
 #include "IWindow.h"
 
@@ -23,57 +24,6 @@ Row::Row(identity_t id, Theme &theme) : Flow(id, theme, eRight)
 
 Row::Row(identity_t id, Theme &theme, Theme::Font& desc) : Flow(id, theme, desc, eRight)
 {
-}
-
-struct TopRow : public Row
-{
-	TopRow(identity_t id, Theme &theme);
-	TopRow(identity_t id, Theme &theme, Theme::Font& desc);
-	virtual ~TopRow() { };
-
-	// IControl
-	// key event sink
-	virtual bool dispatch(KeyEvent &action);
-	// mouse event sink
-	virtual bool dispatch(MouseEvent &action);
-};
-
-// IControl
-// key event sink
-bool TopRow::dispatch(KeyEvent &action)
-{
-	return Row::dispatch(action);
-}
-
-// mouse event sink
-bool TopRow::dispatch(MouseEvent &action)
-{
-	return Row::dispatch(action);
-}
-
-struct BottomRow : public Row
-{
-	BottomRow(identity_t id, Theme &theme);
-	BottomRow(identity_t id, Theme &theme, Theme::Font& desc);
-	virtual ~BottomRow() { };
-	// IControl
-	// key event sink
-	virtual bool dispatch(KeyEvent &action);
-	// mouse event sink
-	virtual bool dispatch(MouseEvent &action);
-};
-
-// IControl
-// key event sink
-bool BottomRow::dispatch(KeyEvent &action)
-{
-	return Row::dispatch(action);
-}
-
-// mouse event sink
-bool BottomRow::dispatch(MouseEvent &action)
-{
-	return Row::dispatch(action);
 }
 
 struct Header : public Flow
@@ -151,16 +101,17 @@ void Grid::reflow()
 			// TODO: include a "splitter" control with each Text 
 			// tile to allow users to adjust column widths.
 			FlowDesc desc = {0};
-			// Text will be our column heading.
-			// TODO: replace Text with text Button. Button click for column sorting.
-			Text *text = new Text(0, theme, textFont, eLeft, set->Columns[col]->Name);
+			// Button is our column heading.
+			Button *button = new Button(col, theme, textFont, set->Columns[col]->Name);
 			// Cloning the controls flowdesc causes the header tiles 
 			// to align proportionately with the data cells.
 			IControl *pControl = set->Columns[col]->Control;
 			pControl->getFlow(eRight, desc);
-			text->setFlow(eRight, desc);
+			button->setFlow(eRight, desc);
 			// add column heading to header row.
-			row->Add(text);
+			row->Add(button);
+			// column heading click will allow choice of pre-defined sort selection.
+			button->Click.bind(this, &Grid::clickHeader);
 		}
 		// add the header row.
 		Add(row);
@@ -223,13 +174,23 @@ size_t Grid::getVisibleRowCount()
 // row "i" added.
 void Grid::onAdded(size_t i)
 {
-	i;
+	size_t offset = _table->getOffset();
+	size_t tail = offset + getVisibleRowCount();
+	if (i >= offset && i < tail)
+	{
+	}
 }
 
 // row "i" changed.
 void Grid::onChange(size_t i)
 {
-	i;
+	size_t offset = _table->getOffset();
+	size_t tail = offset + getVisibleRowCount();
+	if (i >= offset && i < tail)
+	{
+		// refresh row
+		_listControls[i - offset + 1]->setChanged(true);
+	}
 }
 
 // row "i" removed.
@@ -263,7 +224,7 @@ bool Grid::dispatch(KeyEvent &action)
 			action._code == VK_DOWN)
 		{
 			// yes: scroll down one row.
-			if (offset + rows < _table->getCount())
+			if (offset + rows < _table->size())
 			{
 				_pDesktop->setFocus(false);
 				_table->setVisible(offset + 1, rows);
@@ -291,7 +252,7 @@ bool Grid::dispatch(KeyEvent &action)
 		if (action._code == VK_NEXT)
 		{
 			// yes: scroll down one page.
-			if (offset + rows < _table->getCount())
+			if (offset + rows < _table->size())
 			{
 				_pDesktop->setFocus(false);
 				_table->setVisible(offset + rows, rows);
@@ -325,4 +286,14 @@ bool Grid::dispatch(KeyEvent &action)
 bool Grid::dispatch(MouseEvent &action)
 {
 	return Flow::dispatch(action);
+}
+
+void Grid::clickHeader(Button *control, bool value)
+{
+	if (value)
+	{
+		size_t iColumn = control->identity();
+		_table->setColumn(iColumn);
+		setChanged(true);
+	}
 }

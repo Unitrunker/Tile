@@ -89,5 +89,4 @@ PersonSet::PersonSet(Theme &theme) :
 	prop = new Property( _T("IP"), _T("Dotted IP Address"), new Edit(0, theme, textFont, &IPv4) );
 	section->Items.push_back(prop);
 	Add(section);
-
 }

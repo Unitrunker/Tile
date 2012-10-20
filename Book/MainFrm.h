@@ -7,7 +7,7 @@
 #pragma once
 
 typedef AVL<string_t, Person *, Person *, Person::less, Person::extract> Tree;
-typedef Table< PersonSet, Person, Tree > Persons;
+typedef Table<PersonSet, Person> Persons;
 
 class CMainFrame : public CFrameWindowImpl<CMainFrame>, public CUpdateUI<CMainFrame>,
 		public CMessageFilter, public CIdleHandler

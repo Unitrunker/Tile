@@ -226,6 +226,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Image.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Item.cpp"
 				>
 			</File>
@@ -405,6 +409,10 @@
 			</File>
 			<File
 				RelativePath=".\Identity.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Image.h"
 				>
 			</File>
 			<File

@@ -5,21 +5,37 @@
 #include "Follow.h"
 
 // Notification interface.
-// Containers can report when elements are added, changed, removed, or moved.
-// The latter is very useful for sorted grid UI.
-template <typename T>
+// No type-awareness needed.
 struct INotify
 {
-   // Node "t" at index "i" added.
-   virtual void onAdded(size_t i, T t) = 0;
-   // Node "t" at index "i" changed.
-   virtual void onChange(size_t i, T t) = 0;
-   // Node "t" at index "i" removed.
-   virtual void onRemove(size_t i, T t) = 0;
-   // Node "t" at index "i" moved to index "j".
-   virtual void onMoved(size_t i, size_t j, T t) = 0;
+   // row "i" added.
+   virtual void onAdded(size_t i) = 0;
+   // row "i" changed.
+   virtual void onChange(size_t i) = 0;
+   // row "i" removed.
+   virtual void onRemove(size_t i) = 0;
+   // row "i" moved to row "j".
+   virtual void onMoved(size_t i, size_t j) = 0;
 };
 
+// This one introduces a small amount of type-awareness.
+template
+<
+	typename T
+>
+struct IRowSet
+{
+	virtual void follow(INotify *) = 0;
+	virtual bool ignore(INotify *) = 0;
+	virtual T operator [](size_t index) = 0;
+	virtual size_t size() const = 0;
+};
+
+// Base class for tree.
+// This expresses the limited amount of knowledge 
+// a node must have about it's tree.
+// The tree translates the node generated callbacks 
+// below to INotify row events.
 template
 <
    // tree node
@@ -32,6 +48,7 @@ struct _Base
 
 	_Base() : _root(NULL) { };
 
+	// node issued notifications.
 	virtual void onChange(node_t *) = 0;
 	virtual void onRemove(node_t *) = 0;
 	virtual void onMove(node_t *) = 0;
@@ -726,7 +743,7 @@ template
    // tree node
    typename node_t = node<K, V, Vref, less, extract>
 >
-struct AVL : public _Base<node_t>
+struct AVL : public _Base<node_t>, public IRowSet<Vref>
 {
    typedef AVL<K, V, Vref, less, extract, node_t> tree_t;
    typedef iteratorT<K, V, Vref, node_t, AVL> iterator;
@@ -920,8 +937,9 @@ struct AVL : public _Base<node_t>
       _root = NULL;
    }
 
+   // IRowSet
    // How many items in this tree?
-   size_t size() const
+   virtual size_t size() const
    {
       return _root ? _root->_count : 0;
    }
@@ -999,29 +1017,8 @@ struct AVL : public _Base<node_t>
       return const_iterator(cursor, bForward);
    }
 
-   // callback cluster for adds/removals/updates of items.
-   // By design, only one watcher is supported.
-   void follow(INotify<V> *tell)
-   {
-      _watch.push_back(tell);
-   }
-   // callback cluster for adds/removals/updates of items.
-   // By design, only one watcher is supported.
-   bool ignore(INotify<V> *tell)
-   {
-      std::list<INotify<V> *>::iterator it = _watch.begin();
-      while (it != _watch.end())
-      {
-         if ( (*it) == tell )
-         {
-            _watch.erase(it);
-            return true;
-         }
-      }
-      return false;
-   }
-
-   Vref operator [](size_t i)
+   // IRowSet
+   virtual Vref operator [](size_t i)
    {
       node_t *p = index(i, true);
       if (p != NULL)
@@ -1039,6 +1036,27 @@ struct AVL : public _Base<node_t>
          return p->_value;
       }
       throw std::out_of_range("index too large or negative");
+   }
+   // callback cluster for adds/removals/updates of items.
+   // By design, only one watcher is supported.
+   virtual void follow(INotify *tell)
+   {
+      _watch.push_back(tell);
+   }
+   // callback cluster for adds/removals/updates of items.
+   // By design, only one watcher is supported.
+   virtual bool ignore(INotify *tell)
+   {
+      std::list<INotify *>::iterator it = _watch.begin();
+      while (it != _watch.end())
+      {
+         if ( (*it) == tell )
+         {
+            _watch.erase(it);
+            return true;
+         }
+      }
+      return false;
    }
 
 protected:
@@ -1083,57 +1101,58 @@ protected:
    }
 
 private:
+
 	void onAdded(node_t *child)
 	{
-	  size_t iIndex = child->index(true);
-	  std::list<INotify<V> *> snap(_watch);
-	  std::list<INotify<V> *>::iterator it = snap.begin();
-	  while (it != snap.end())
-	  {
-		  (*it++)->onAdded(iIndex, child->_value);
-	  }
+		size_t iIndex = child->index(true);
+		std::list<INotify *> snap(_watch);
+		std::list<INotify *>::iterator it = snap.begin();
+		while (it != snap.end())
+		{
+			(*it++)->onAdded(iIndex);
+		}
 	}
 
 	virtual void onChange(node_t *node)
 	{
-		std::list<INotify<V> *> snap(_watch);
 		size_t iIndex = node->index(true);
-		std::list<INotify<V> *>::iterator it = snap.begin();
+	    std::list<INotify *> snap(_watch);
+	    std::list<INotify *>::iterator it = snap.begin();
 		while (it != snap.end())
 		{
-			(*it++)->onChange(iIndex, node->_value);
+			(*it++)->onChange(iIndex);
 		}
 	}
 
 	virtual void onRemove(node_t *node)
 	{
-		std::list<INotify<V> *> snap(_watch);
+		std::list<INotify *> snap(_watch);
 		size_t iIndex = node->index(true);
-		std::list<INotify<V> *>::iterator it = snap.begin();
+		std::list<INotify*>::iterator it = snap.begin();
 		while (it != snap.end())
 		{
-			(*it++)->onRemove(iIndex, node->_value);
+			(*it++)->onRemove(iIndex);
 		}
 	}
 
 	virtual void onMove(node_t *node)
 	{
-		std::list<INotify<V> *> snap(_watch);
+		std::list<INotify *> snap(_watch);
 
 		size_t iFrom = node->index(true);
 		node_t::removeInner(_root, node);
 		node_t::insert(_root, node);
 		size_t iTo = node->index(true);
 
-		std::list<INotify<V> *>::iterator it = snap.begin();
+		std::list<INotify *>::iterator it = snap.begin();
 		while (it != snap.end())
 		{
-			(*it++)->onMoved(iFrom, iTo, node->_value);
+			(*it++)->onMoved(iFrom, iTo);
 		}
 	}
 
 	// the tree's watchers.
-	std::list<INotify<Vref> *> _watch;
+	std::list<INotify*> _watch;
 };
 
 #endif
