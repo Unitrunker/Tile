@@ -126,25 +126,23 @@ void CMainFrame::createForm()
 	Theme &theme = m_view.getTheme();
 	theme.setHeight(14);
 
-	std::vector<unsigned char> key;
-	Person *person = NULL;
+	_table.setContent(&_tree);
 
-	key.push_back('?');
+	for (size_t i = 0; i < 10000; i++)
+	{
+		Person *person = NULL;
 
-	key[0] = 'A';
-	person = new Person();
-	person->_last = _T("A");
-	_table.add(key, person);
-
-	key[0] = 'B';
-	person = new Person();
-	person->_last = _T("B");
-	_table.add(key, person);
-
-	key[0] = 'C';
-	person = new Person();
-	person->_last = _T("C");
-	_table.add(key, person);
+		person = new Person();
+		size_t code = i;
+		do
+		{
+			char ch = (code % 26) + 'A';
+			code /= 26;
+			person->_last.push_back(ch);
+		}
+		while (code);
+		_tree.insert(person);
+	}
 
 	Flow *pBox = new Flow(0, theme, eDown);
 	pBox->setSpace(0);
