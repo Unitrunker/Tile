@@ -320,6 +320,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\AVL.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Button.h"
 				>
 			</File>
@@ -369,6 +373,10 @@
 			</File>
 			<File
 				RelativePath=".\Flow.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Follow.h"
 				>
 			</File>
 			<File
@@ -449,6 +457,10 @@
 			</File>
 			<File
 				RelativePath=".\Stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Table.h"
 				>
 			</File>
 			<File
