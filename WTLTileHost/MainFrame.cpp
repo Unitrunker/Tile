@@ -11,6 +11,7 @@ MainFrame::MainFrame(Theme &theme) :
 	Frame(theme), m_editor(theme), m_set(theme), m_about(theme), m_adapter(theme)
 {
 	srand( clock() );
+	time(&m_person._date);
 	// create a form with a toolbar and a list control.
 	Flow *pFlow = new Flow(0, theme, eDown);
 	Flow *pTools = new Flow(0, theme, eRight);

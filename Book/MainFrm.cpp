@@ -134,13 +134,15 @@ void CMainFrame::createForm()
 
 		person = new Person();
 		size_t code = i;
-		do
-		{
-			char ch = (code % 26) + 'A';
-			code /= 26;
-			person->_last.push_back(ch);
-		}
-		while (code);
+		char ch = (code % 26) + 'A';
+		code /= 26;
+		person->_last.insert(0, 1, ch);
+		ch = (code % 26) + 'A';
+		code /= 26;
+		person->_last.insert(0, 1, ch);
+		ch = (code % 26) + 'A';
+		code /= 26;
+		person->_last.insert(0, 1, ch);
 		_tree.insert(person);
 	}
 

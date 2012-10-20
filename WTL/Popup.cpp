@@ -293,6 +293,13 @@ void Popup::setCapture(IControl *p)
 	p; // ignore - don't allow popups to mouse capture.
 }
 
+// alter focus.
+void Popup::setFocus(bool bFocus)
+{
+	if (_pFocus)
+		_pFocus->setFocus(bFocus);
+}
+
 // focus
 void Popup::setFocus(IControl *pFocus)
 {

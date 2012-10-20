@@ -37,10 +37,11 @@ Control::~Control()
 	watch(NULL);
 	if (_pDesktop)
 	{
+		IControl *null = NULL;
 		if (_focus)
-			_pDesktop->setFocus(NULL);
+			_pDesktop->setFocus(null);
 		if (_hover)
-			_pDesktop->setHover(NULL);
+			_pDesktop->setHover(null);
 	}
 }
 

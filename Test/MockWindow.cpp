@@ -3,13 +3,19 @@
 #include "../Tile/IControl.h"
 
 /*
-Copyright 2011 Rick Parrish
+Copyright 2011, 2012 Rick Parrish
 */
 
 // mouse capture
 void MockWindow::setCapture(IControl *pCapture)
 {
 	printf("%ld called %s\n", pCapture->identity(), __FUNCTION__);
+}
+
+// alter focus.
+void MockWindow::setFocus(bool bFocus)
+{
+	printf("called %s\n", __FUNCTION__);
 }
 
 // focus

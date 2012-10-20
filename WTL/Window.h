@@ -32,7 +32,9 @@ class Window : public CWindowImpl<Window>,
 	// IWindow
 	// capture
 	virtual void setCapture(IControl *);
-	// focus
+	// alter focus.
+	virtual void setFocus(bool bFocus);
+	// set focus to control.
 	virtual void setFocus(IControl *pFocus);
 	// hover
 	virtual void setHover(IControl *pHover);

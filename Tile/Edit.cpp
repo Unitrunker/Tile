@@ -16,7 +16,8 @@ Edit::Edit(identity_t id, Theme &theme, const Theme::Font &font, IAccessor<strin
 	_cursor(0), 
 	_access(pAccess),
 	_align(eLeft),
-	_local(true)
+	_local(true),
+	_edit(false)
 {
 	FlowDesc desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
@@ -107,6 +108,7 @@ bool Edit::onChar(TCHAR ch)
 	size_t cursor = getIndex();
 	if (cursor > _text.size())
 		cursor = _text.size();
+	_edit = true;
 	_text.insert(cursor, 1, ch);
 	cursor++;
 	setIndex(cursor);
@@ -120,6 +122,7 @@ bool Edit::onBackspace()
 	{
 		cursor--;
 		_text.erase(cursor, 1);
+		_edit = true;
 		setIndex(cursor);
 	}
 	return true;
@@ -131,6 +134,7 @@ bool Edit::onDelete()
 	if (cursor < _text.size() )
 	{
 		_text.erase(cursor, 1);
+		_edit = true;
 		setChanged(true);
 	}
 	return true;
@@ -170,7 +174,10 @@ bool Edit::dispatch(KeyEvent &action)
 
 			case VK_ESCAPE:
 				if (_access != NULL)
+				{
 					_text = _access->getValue();
+					_edit = false;
+				}
 				if (getIndex() > _text.size())
 					setIndex(_text.size());
 				return true;
@@ -187,6 +194,7 @@ bool Edit::dispatch(KeyEvent &action)
 					if (!Select.empty())
 						Select(this, _text);
 				}
+				_edit = false;
 				return false;
 
 			case VK_DOWN:
@@ -349,11 +357,14 @@ void Edit::setFocus(bool focus)
 		{
 			getContainer()->Shown(this);
 			if (_access != NULL)
+			{
 				_text = _access->getValue();
+				_edit = false;
+			}
 		}
 		else
 		{
-			if (_access != NULL)
+			if (_access != NULL && _edit)
 				_access->setValue(_text);
 			if (!Select.empty())
 				Select(this, _text);
@@ -387,7 +398,6 @@ void Edit::setAccessor(IAccessor<string_t> *pAccess)
 {
 	_access = pAccess;
 }
-
 
 void Edit::setLocal(bool local)
 {

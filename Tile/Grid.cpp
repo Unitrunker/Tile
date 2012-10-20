@@ -265,8 +265,9 @@ bool Grid::dispatch(KeyEvent &action)
 			// yes: scroll down one row.
 			if (offset + rows < _table->getCount())
 			{
-				_pDesktop->setFocus(NULL);
+				_pDesktop->setFocus(false);
 				_table->setVisible(offset + 1, rows);
+				_pDesktop->setFocus(true);
 				setChanged(true);
 			}
 			return true;
@@ -279,8 +280,9 @@ bool Grid::dispatch(KeyEvent &action)
 			// yes: scroll up one row.
 			if (offset > 0)
 			{
-				_pDesktop->setFocus(NULL);
+				_pDesktop->setFocus(false);
 				_table->setVisible(offset - 1, rows);
+				_pDesktop->setFocus(true);
 				setChanged(true);
 			}
 			return true;
@@ -291,9 +293,10 @@ bool Grid::dispatch(KeyEvent &action)
 			// yes: scroll down one page.
 			if (offset + rows < _table->getCount())
 			{
-				_pDesktop->setFocus(NULL);
+				_pDesktop->setFocus(false);
 				_table->setVisible(offset + rows, rows);
 				setChanged(true);
+				_pDesktop->setFocus(true);
 			}
 			return true;
 		}
@@ -307,9 +310,10 @@ bool Grid::dispatch(KeyEvent &action)
 					offset -= rows;
 				else
 					offset = 0;
-				_pDesktop->setFocus(NULL);
+				_pDesktop->setFocus(false);
 				_table->setVisible(offset, rows);
 				setChanged(true);
+				_pDesktop->setFocus(true);
 			}
 			return true;
 		}

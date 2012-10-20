@@ -12,6 +12,8 @@ struct MockWindow : public IWindow
 {
 	// mouse capture
 	virtual void setCapture(IControl *pControl);
+	// alter focus.
+	virtual void setFocus(bool bFocus);
 	// focus
 	virtual void setFocus(IControl *pFocus);
 	// hover

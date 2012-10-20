@@ -51,8 +51,9 @@ bool Tree::setValue(const bool &value)
 	while ( climb->getContainer() != NULL )
 		climb = climb->getContainer();
 	climb->reflow();
+	IControl *null = NULL;
 	// toggle focus to force ourselves into view.
-	_pDesktop->setFocus(NULL);
+	_pDesktop->setFocus(null);
 	//_pDesktop->setFocus(this);
 	_pDesktop->setFocus(_control);
 	return true;

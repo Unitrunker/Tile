@@ -99,6 +99,7 @@ protected:
 	// cursor column position
 	size_t _cursor;
 	bool _local; 
+	bool _edit;
 	/// <param name="orient">orientation</param>
 	align_t _align;
 	/// border width

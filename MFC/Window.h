@@ -40,6 +40,8 @@ public:
 	// IWindow
 	// capture
 	virtual void setCapture(IControl *);
+	// alter focus.
+	void setFocus(bool bFocus);
 	// focus
 	virtual void setFocus(IControl *pFocus);
 	// hover

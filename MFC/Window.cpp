@@ -315,6 +315,13 @@ void Window::setCapture(IControl *p)
 	}
 }
 
+// alter focus.
+void Window::setFocus(bool bFocus)
+{
+	if (_pFocus)
+		_pFocus->setFocus(bFocus);
+}
+
 // focus
 void Window::setFocus(IControl *pFocus)
 {
