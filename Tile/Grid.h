@@ -1,5 +1,5 @@
 #include "Flow.h"
-#include "Property.h"
+#include "Table.h"
 
 /*
 Copyright © 2011 Rick Parrish
@@ -8,7 +8,7 @@ Copyright © 2011 Rick Parrish
 namespace Tiles
 {
 
-struct Grid : public Flow
+struct Grid : public Flow, public IRowNotify
 {
 	Grid(identity_t id, Theme &theme);
 	void setTable(ITable *p);
@@ -18,6 +18,21 @@ private:
     size_t getVisibleRowCount();
 	// called when grid resized or new table assigned.
 	void reflow();
+
+	// IControl
+	// key event sink
+	virtual bool dispatch(KeyEvent &action);
+	// mouse event sink
+	virtual bool dispatch(MouseEvent &action);
+
+	// row "i" added.
+	virtual void onAdded(size_t i);
+	// row "i" changed.
+	virtual void onChange(size_t i);
+	// row "i" removed.
+	virtual void onRemove(size_t i);
+	// row "i" moved to row "j".
+	virtual void onMoved(size_t i, size_t j);
 
 	ITable* _table;
 };

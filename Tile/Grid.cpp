@@ -2,6 +2,7 @@
 #include "Grid.h"
 #include "Text.h"
 #include "Fill.h"
+#include "IWindow.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -22,6 +23,57 @@ Row::Row(identity_t id, Theme &theme) : Flow(id, theme, eRight)
 
 Row::Row(identity_t id, Theme &theme, Theme::Font& desc) : Flow(id, theme, desc, eRight)
 {
+}
+
+struct TopRow : public Row
+{
+	TopRow(identity_t id, Theme &theme);
+	TopRow(identity_t id, Theme &theme, Theme::Font& desc);
+	virtual ~TopRow() { };
+
+	// IControl
+	// key event sink
+	virtual bool dispatch(KeyEvent &action);
+	// mouse event sink
+	virtual bool dispatch(MouseEvent &action);
+};
+
+// IControl
+// key event sink
+bool TopRow::dispatch(KeyEvent &action)
+{
+	return Row::dispatch(action);
+}
+
+// mouse event sink
+bool TopRow::dispatch(MouseEvent &action)
+{
+	return Row::dispatch(action);
+}
+
+struct BottomRow : public Row
+{
+	BottomRow(identity_t id, Theme &theme);
+	BottomRow(identity_t id, Theme &theme, Theme::Font& desc);
+	virtual ~BottomRow() { };
+	// IControl
+	// key event sink
+	virtual bool dispatch(KeyEvent &action);
+	// mouse event sink
+	virtual bool dispatch(MouseEvent &action);
+};
+
+// IControl
+// key event sink
+bool BottomRow::dispatch(KeyEvent &action)
+{
+	return Row::dispatch(action);
+}
+
+// mouse event sink
+bool BottomRow::dispatch(MouseEvent &action)
+{
+	return Row::dispatch(action);
 }
 
 struct Header : public Flow
@@ -47,6 +99,7 @@ Grid::Grid(identity_t id, Theme &theme) : Flow(id, theme, eDown), _table(NULL)
 void Grid::setTable(ITable *p)
 {
 	_table = p;
+	p->follow(this);
 	reflow();
 }
 
@@ -116,7 +169,7 @@ void Grid::reflow()
 		{
 			// compose data rows.
 			set = _table->getRow(i);
-			Row *row = new Row(0, theme);
+			Row* row = new Row(0, theme);
 			if (set == NULL)
 			{
 				Fill *pFill = new Fill(0, theme);
@@ -165,4 +218,107 @@ size_t Grid::getVisibleRowCount()
 		rows--;
 
 	return rows;
+}
+
+// row "i" added.
+void Grid::onAdded(size_t i)
+{
+	i;
+}
+
+// row "i" changed.
+void Grid::onChange(size_t i)
+{
+	i;
+}
+
+// row "i" removed.
+void Grid::onRemove(size_t i)
+{
+	i;
+}
+
+// row "i" moved to row "j".
+void Grid::onMoved(size_t i, size_t j)
+{
+	i;
+	j;
+}
+
+// IControl
+// key event sink
+bool Grid::dispatch(KeyEvent &action)
+{
+	if ( Flow::dispatch(action) )
+		return true;
+
+	if (action._what == KeyEvent::DOWN)
+	{
+		size_t offset = _table->getOffset();
+		size_t rows = getVisibleRowCount();
+		size_t index = getIndex();
+		// bottom most row in the grid?
+		if ( index + 1 == _listControls.size() &&
+			// down arrow key?
+			action._code == VK_DOWN)
+		{
+			// yes: scroll down one row.
+			if (offset + rows < _table->getCount())
+			{
+				_pDesktop->setFocus(NULL);
+				_table->setVisible(offset + 1, rows);
+				setChanged(true);
+			}
+			return true;
+		}
+		// top most row in the grid?
+		if ( index == 1 && 
+			// yes: up arrow key?
+			action._code == VK_UP)
+		{
+			// yes: scroll up one row.
+			if (offset > 0)
+			{
+				_pDesktop->setFocus(NULL);
+				_table->setVisible(offset - 1, rows);
+				setChanged(true);
+			}
+			return true;
+		}
+
+		if (action._code == VK_NEXT)
+		{
+			// yes: scroll down one page.
+			if (offset + rows < _table->getCount())
+			{
+				_pDesktop->setFocus(NULL);
+				_table->setVisible(offset + rows, rows);
+				setChanged(true);
+			}
+			return true;
+		}
+
+		if (action._code == VK_PRIOR)
+		{
+			// yes: scroll down one page.
+			if (offset > 0)
+			{
+				if (offset > rows)
+					offset -= rows;
+				else
+					offset = 0;
+				_pDesktop->setFocus(NULL);
+				_table->setVisible(offset, rows);
+				setChanged(true);
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+// mouse event sink
+bool Grid::dispatch(MouseEvent &action)
+{
+	return Flow::dispatch(action);
 }
