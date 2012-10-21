@@ -3,9 +3,9 @@
 
 #include "stdafx.h"
 
-#include "resource.h"
+#include "Resource.h"
 
-#include "aboutdlg.h"
+#include "AboutDlg.h"
 #include "MainFrame.h"
 
 CAppModule _Module;

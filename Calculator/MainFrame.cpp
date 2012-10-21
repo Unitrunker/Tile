@@ -19,23 +19,9 @@ MainFrame::MainFrame(Theme &theme) :
 
 #if 0
 	Theme::Font font = {Theme::eDefault, Font(_T("MS Reference Sans Serif"), 48, 0)};
-	static const TCHAR plus[] = {0x2B, 0};
-	static const TCHAR minus[] = {0x2D, 0};
-	static const TCHAR times[] = {_T('X'), 0};
-	static const TCHAR divide[] = {0xF7, 0};
-	static const TCHAR clear[] = {0xA9, 0};
-	static const TCHAR zero[] = {0x30, 0};
-	static const TCHAR one[] = {0x31, 0};
-	static const TCHAR two[] = {0x32, 0};
-	static const TCHAR three[] = {0x33, 0};
-	static const TCHAR four[] = {0x34, 0};
-	static const TCHAR five[] = {0x35, 0};
-	static const TCHAR six[] = {0x36, 0};
-	static const TCHAR seven[] = {0x37, 0};
-	static const TCHAR eight[] = {0x38, 0};
-	static const TCHAR nine[] = {0x39, 0};
 #else
 	Theme::Font font = {Theme::eDefault, Font(_T("OpenSymbol"), 48, 0)};
+#endif
 	static const TCHAR plus[] = {0xE109, 0};
 	static const TCHAR minus[] = {0xE10B, 0};
 	static const TCHAR times[] = {0xE129, 0};
@@ -55,7 +41,6 @@ MainFrame::MainFrame(Theme &theme) :
 	static const TCHAR equals[] = {0xE111, 0};
 	static const TCHAR negate[] = {0xE127, 0};
 	static const TCHAR exit[] = {0xE20C, 0};
-#endif
 
 	static const TCHAR* digits[] = {zero, one, two, three, four, five, six, seven, eight, nine};
 
@@ -65,6 +50,7 @@ MainFrame::MainFrame(Theme &theme) :
 
 	pRow = new Flow(0, theme, eRight);
 	pButton = new Button(0, theme, font, about);
+	pButton->Click.bind(this, &MainFrame::clickAbout);
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, negate);
 	pRow->Add(pButton, 0, 4096, 1);
