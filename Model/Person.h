@@ -1,6 +1,7 @@
 #include "../Tile/Types.h"
 #include "../Tile/Property.h"
 #include "../Tile/Follow.h"
+#include "../Tile/Table.h"
 
 using namespace Tiles;
 
@@ -25,8 +26,19 @@ struct Person : public Follow<Person*>
 	void broadcast(const char *);
 
 	static bool less(const string_t &left, const string_t &right) { return left.compare(right) < 0; }
-	static string_t extract(Person * const p) { return p->_last; }
+	static bool less(const time_t &left, const time_t &right) { return left < right; }
+	static string_t bySurname(Person * const p) { return p->_last; }
+	static string_t byFirst(Person * const p) { return p->_first; }
+	static string_t byCity(Person * const p) { return p->_city; }
+	static string_t byState(Person * const p) { return p->_state; }
+	static time_t byDate(Person * const p) { return p->_date; }
 };
+
+typedef AVL< string_t, Person *, Person *, Person::less, Person::byFirst > Firsts;
+typedef AVL<string_t, Person *, Person *, Person::less, Person::bySurname> Surnames;
+typedef AVL<string_t, Person *, Person *, Person::less, Person::byCity> Cities;
+typedef AVL<string_t, Person *, Person *, Person::less, Person::byState> States;
+typedef AVL<time_t, Person *, Person *, Person::less, Person::byDate> Dates;
 
 struct PersonSet : public SetT<Person>
 {
@@ -50,3 +62,4 @@ private:
 	IPv4 IPv4;
 };
 
+typedef Table<PersonSet, Person> Persons;
