@@ -6,9 +6,6 @@
 
 #pragma once
 
-typedef AVL<string_t, Person *, Person *, Person::less, Person::extract> Tree;
-typedef Table<PersonSet, Person> Persons;
-
 class CMainFrame : public CFrameWindowImpl<CMainFrame>, public CUpdateUI<CMainFrame>,
 		public CMessageFilter, public CIdleHandler
 {
@@ -17,7 +14,12 @@ class CMainFrame : public CFrameWindowImpl<CMainFrame>, public CUpdateUI<CMainFr
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-	Tree _tree;
+	Surnames _lasts;
+	Firsts _firsts;
+	Cities _cities;
+	States _states;
+	Dates _dates;
+
 	Persons _table;
 	Theme &_theme;
 	Window m_view;

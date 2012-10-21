@@ -6,6 +6,7 @@
 #include "../Tile/Fill.h"
 #include "../Tile/Flow.h"
 #include "../Tile/Check.h"
+#include <time.h>
 
 CMainFrame::CMainFrame(Theme &theme) : _theme(theme), m_view(theme), _table(theme)
 {
@@ -130,8 +131,13 @@ void CMainFrame::createForm()
 
 	for (size_t i = 0; i < columns; i++)
 	{
-		_table.setContent(i, &_tree);
+		_table.setContent(i, &_lasts);
 	}
+	_table.setContent(1, &_firsts);
+	_table.setContent(3, &_cities);
+	_table.setContent(4, &_states);
+	_table.setContent(6, &_dates);
+	_table.setContent(7, &_dates);
 
 	for (size_t i = 0; i < 10000; i++)
 	{
@@ -151,7 +157,14 @@ void CMainFrame::createForm()
 		person->_city = _T("Austin");
 		person->_state = _T("Texas");
 		person->_postal = _T("78704");
-		_tree.insert(person);
+
+		time(&person->_date);
+		person->_date += rand();
+		_lasts.insert(person);
+		_firsts.insert(person);
+		_cities.insert(person);
+		_states.insert(person);
+		_dates.insert(person);
 	}
 
 	Flow *pBox = new Flow(0, theme, eDown);
