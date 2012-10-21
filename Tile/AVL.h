@@ -1,6 +1,10 @@
 #ifndef _AVL2_H
 #define _AVL2_H
 
+/*
+Copyright © 2011 Rick Parrish
+*/
+
 #include <stdexcept>
 #include "Follow.h"
 
