@@ -41,7 +41,8 @@ Header::Header(identity_t id, Theme &theme, Theme::Font& desc) : Flow(id, theme,
 {
 }
 
-Grid::Grid(identity_t id, Theme &theme) : Flow(id, theme, eDown), _table(NULL)
+Grid::Grid(identity_t id, Theme &theme) : Flow(id, theme, eDown), 
+	_table(NULL), _scrollVert(NULL), _flowVert(NULL), _scrollHorz(NULL)
 {
 }
 

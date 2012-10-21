@@ -1,5 +1,6 @@
 #include "Flow.h"
 #include "Table.h"
+#include "Scroll.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -10,6 +11,7 @@ namespace Tiles
 
 struct Button;
 
+// Grid control
 struct Grid : public Flow, public INotify
 {
 	Grid(identity_t id, Theme &theme);
@@ -39,6 +41,21 @@ private:
 	virtual void onMoved(size_t i, size_t j);
 
 	ITable* _table;
+	// TODO: scrolling
+	// Plan is to embed a vertical flow in the grid.
+	// The vertical flow will contain the data rows.
+	// An additional row at the bottom will be the horizontal scroll.
+	// The Grid flow will itself be made to a horizontal flow.
+	// It's two immediate children will be the vertical flow and a vertical scroll.
+	// The two scroll controls will be hidden as needed by setting their width to zero.
+	// TODO: there is probably need for a scroll enabled flow.
+
+	// TODO: vertical scrolling.
+	Scroll* _scrollVert;
+	Flow* _flowVert;
+
+	// TODO: horizontal scrolling.
+	Scroll* _scrollHorz;
 };
 
 };
