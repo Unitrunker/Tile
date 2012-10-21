@@ -1,6 +1,10 @@
 #ifndef _FOLLOW_H
 #define _FOLLOW_H
 
+/*
+Copyright © 2011 Rick Parrish
+*/
+
 #include <list>
 
 // Change / remove following.
@@ -16,8 +20,8 @@ struct IFollow
 
 // Object inherits this to provide following.
 // Example: struct X : public Follow<X> { /* blah */ };
-// x.follow(sink, true);	// subscribe
-// x.follow(sink, false);	// unsubscribe
+// x.follow(sink);	// subscribe
+// x.ignore(sink);	// unsubscribe
 template <typename T>
 struct Follow
 {
