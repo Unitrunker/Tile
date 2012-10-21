@@ -1,6 +1,6 @@
 #include "Property.h"
 #include "AVL.h"
-#include <map>
+#include <vector>
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -10,6 +10,12 @@ Copyright © 2011, 2012 Rick Parrish
 
 namespace Tiles
 {
+
+// BIG TODO: create implementation that uses metakit View as the container.
+// The container can implement a mechanism where offline content that isn't
+// cached is fetched asychronously. 
+// A fake row appears in the grid while waiting for content to appear.
+// When real data arrives, fake row is replaced by real one.
 
 // Table interface for Grid control.
 // Note this is NOT a template. No type awareness needed.
@@ -28,16 +34,19 @@ struct ITable
 };
 
 // S presumed to derive from SetT<T>.
+// Cautioin: content is assumed to be IRowSet<T*> (eg. pointer to T).
 template <typename S, typename T>
 struct Table : public ITable, public INotify
 {
 	typedef IRowSet<T*> tree_t;
-	typedef std::map<size_t, tree_t *> columns_t;
+	typedef std::vector<tree_t *> columns_t;
 	Theme& _theme;
 
+	// content provider for a Grid.
 	Table(Theme &theme) : _theme(theme), _tree(NULL), _notify(NULL), _bAscending(true), _iColumn(0)
 	{
 		_header = new S(_theme);
+		_trees.resize(_header->Columns.size(), NULL);
 	}
 
 	// typeaware portion, need not be virtual.
@@ -45,51 +54,55 @@ struct Table : public ITable, public INotify
 	// The same tree can be used for multiple columns.
 	void setContent(size_t iColumn, tree_t *tree)
 	{
-		bool bFirst = _trees.size() == 0;
-		_trees[iColumn] = tree;
-		if (bFirst)
+		// sane column?
+		if (iColumn < _trees.size())
 		{
-			_tree = tree;
-			_iColumn = iColumn;
-			tree->follow(this);
+			// yes: associate ordered content with this column.
+			_trees[iColumn] = tree;
+			// have column selection?
+			if (!_tree)
+			{
+				// no: use this one as a default.
+				_tree = tree;
+				_iColumn = iColumn;
+				tree->follow(this);
+			}
 		}
 	}
 
 	// choose a sort column
 	virtual bool setColumn(size_t iColumn)
 	{
-		if (iColumn == _iColumn)
+		// sane column number.
+		if (iColumn < _trees.size())
 		{
-			_bAscending = !_bAscending;
-			setOffset(_offset);
-		}
-		else
-		{
-			columns_t::iterator it = _trees.find(iColumn);
-			if (it != _trees.end())
+			// get column?
+			tree_t *tree = _trees[iColumn];
+			// Do the two columns use the same ordering, 
+			if (_tree == tree)
 			{
-				// if two columns use the same ordering, 
-				// act as if the column has not changed.
+				// Yes: act as if the column has not changed.
 				// Toggle ascending / descending instead.
-				if (_tree == _trees[_iColumn])
-				{
-					_bAscending = !_bAscending;
-					setOffset(_offset);
-				}
-				else
-				{
-					_tree->ignore(this);
-					_iColumn = iColumn;
-					_tree = _trees[_iColumn];
-					_tree->follow(this);
-					setOffset(_offset);
-				}
-				return true;
+				_bAscending = !_bAscending;
+				setOffset(_offset);
 			}
+			// new column exists?
+			else if (tree != NULL)
+			{
+				// Yes
+				// swap ordered containers.
+				_tree->ignore(this);
+				_iColumn = iColumn;
+				_tree = tree;
+				_tree->follow(this);
+				setOffset(_offset);
+			}
+			return true;
 		}
 		return false;
 	}
 
+	// disassociate from containers.
 	virtual void clear()
 	{
 		_tree->ignore(this);
@@ -103,8 +116,15 @@ struct Table : public ITable, public INotify
 		_visible.clear();
 	}
 
+	// add value to all containers.
 	bool add(T* value)
 	{
+		// FIXME: this is kinda gross.
+		// have to build a list of unique row sets.
+		// and add the value once to each row.
+		// Otherwise, duplicate inserts occur.
+		// For now, this is broken.
+		// TODO: maintain separate list of unique row sets.
 		columns_t::iterator it = _trees.begin();
 		while (it != _trees.end())
 		{
@@ -114,30 +134,38 @@ struct Table : public ITable, public INotify
 		return true;
 	}
 
+	// specify scroll offset and number of visible rows.
+	// forms a sliding window into the row set.
 	virtual void setVisible(size_t offset, size_t count)
 	{
-		if (_visible.size() > count)
+		size_t vis = _visible.size();
+		// excess visible rows?
+		if (vis > count)
 		{
-			size_t i = _visible.size();
-			while (i > count)
+			// delete surplus rows.
+			while (vis > count)
 			{
-				delete _visible[--i];
+				delete _visible[--vis];
 			}
 			_visible.resize(count);
 		}
+		// shortage of rows?
 		else while (_visible.size() < count)
 		{
+			// yes: add them here.
 			_visible.push_back(new S(_theme));
 		}
-
+		// bind sets to data.
 		setOffset(offset);
 	}
 
+	// get scrolling offset.
 	virtual size_t getOffset() const
 	{
 		return _offset;
 	}
 
+	// set scrolling offset. 
 	virtual void setOffset(size_t offset)
 	{
 		_offset = offset;
@@ -172,11 +200,13 @@ struct Table : public ITable, public INotify
 		return NULL;
 	}
 
+	// retrieve property set used to describe header.
 	virtual Set* getHeader()
 	{
 		return _header;
 	}
 
+	// returns total row count.
 	virtual size_t size() const
 	{
 		return _tree != NULL ? _tree->size() : 0;
@@ -188,34 +218,39 @@ struct Table : public ITable, public INotify
 	}
 
 private:
-	// Node "t" at index "i" added.
+	// row at "i" added.
 	virtual void onAdded(size_t i)
 	{
 		if (_notify)
 			_notify->onAdded(i);
 	}
-	// Node "t" at index "i" changed.
+	// row at index "i" changed.
 	virtual void onChange(size_t i)
 	{
 		if (_notify)
 			_notify->onChange(i);
 	}
-	// Node "t" at index "i" removed.
+	// row at index "i" removed.
 	virtual void onRemove(size_t i)
 	{
 		if (_notify)
 			_notify->onRemove(i);
 	}
-	// Node "t" at index "i" moved to index "j".
+	// row index "i" moved to index "j".
 	virtual void onMoved(size_t i, size_t j)
 	{
 		if (_notify)
 			_notify->onMoved(i, j);
 	}
 
+	// scroll offset.
 	size_t _offset;
+	// header description
 	S* _header;
+	// list of sets for visible rows.
+	// each set binds to a different row of data.
 	std::vector<S *> _visible;
+	// map of containers.
 	columns_t _trees;
 	tree_t *_tree; // current tree.
 	bool _bAscending;
