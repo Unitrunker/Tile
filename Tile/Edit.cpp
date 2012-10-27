@@ -67,13 +67,12 @@ bool Edit::Draw(ICanvas *canvas, bool bFocus)
 
 	color_t fore = theme.getColor(_fore[focus]);
 	color_t back = theme.getColor(_back[focus]);
-	if (focus)
+	if (focus || _access == NULL)
 	{
 		canvas->DrawEditString(rect, box, fore, back, theme.Text, _align, _text, getIndex());
 	}
 	else
 	{
-		_ASSERT(_access != NULL);
 		const string_t &text = _access->getValue();
 		canvas->DrawString(rect, box, fore, back, theme.Text, _align, text);
 	}
