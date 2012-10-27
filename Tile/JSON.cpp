@@ -230,22 +230,24 @@ static bool loadFlow(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 	identity_t id = 0;
 	FlowDesc horz, vert;
 	bool bOK = false;
+	bool bOnce = false;
 
 	do
 	{
 		bOK = json.namedValue("orient", text) ||
-		json.namedValue("id", id) ||
-		loadFlowDesc(json, "Horz", horz) ||
-		loadFlowDesc(json, "Vert", vert);
+			json.namedValue("id", id) ||
+			loadFlowDesc(json, "Horz", horz) ||
+			loadFlowDesc(json, "Vert", vert);
+		bOnce = bOK || bOnce;
 	}
 	while (bOK && json.comma());
 
-	if (bOK)
+	if (bOnce)
 	{
 		pFlow = new Flow(id, theme, orient(text));
 		pFlow->setFlow(eRight, horz);
 		pFlow->setFlow(eDown, vert);
-		if ( json.comma() && json.beginNamedArray("Items") )
+		if ( json.beginNamedArray("Items") )
 		{
 			do
 			{
