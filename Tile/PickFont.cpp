@@ -13,7 +13,9 @@ using namespace Tiles;
 PickFont::PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<Font>* access) :
 	Flow(id, theme, eRight),
 	_access(access),
-	_prompt(prompt)
+	_prompt(prompt),
+	_edit(NULL),
+	_button(NULL)
 {
 	Theme::Font textFont = {Theme::eText, theme.Text};
 	Theme::Font arrowFont = {Theme::eArrow, theme.Arrow};
