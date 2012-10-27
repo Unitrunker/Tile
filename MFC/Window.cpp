@@ -11,27 +11,27 @@ Window::Window(Theme& theme) :
 	_theme(theme), // init theme before anything else :)
 	_pCapture(NULL),
 	_pFocus(NULL),
-	_pFlow(NULL),
+	_pPane(NULL),
 	_pHover(NULL),
 	_bInternal(false),
 	_pParent(NULL)
 {
-	Flow *pFlow = new Flow(0, _theme, eDown);
-	pFlow->setWeight(eDown, 1);
-	pFlow->watch(this);
-	pFlow->setDesktop(this);
+	Pane *pPane = new Pane(0, _theme, eDown);
+	pPane->setWeight(eDown, 1);
+	pPane->watch(this);
+	pPane->setDesktop(this);
 
 	Fill *pFill = new Fill(0, _theme);
-	pFlow->Add(pFill, 0, 2048, 1);
-	setFlow(pFlow);
+	pPane->Add(pFill, 0, 2048, 1);
+	setPane(pPane);
 }
 
-Window::Window(Window *pParent, const rect_t &rect, Flow *pContent, IControl *pOwner) :
+Window::Window(Window *pParent, const rect_t &rect, Pane *pContent, IControl *pOwner) :
 	_theme(pParent->_theme), // init theme before anything else :)
 	_pCapture(pContent),
 	_pFocus(pContent),
 	_pHover(NULL),
-	_pFlow(pContent),
+	_pPane(pContent),
 	_bInternal(false),
 	_pParent(pParent)
 {
@@ -43,8 +43,8 @@ Window::Window(Window *pParent, const rect_t &rect, Flow *pContent, IControl *pO
 
 Window::~Window()
 {
-	_pFlow->clear();
-	delete _pFlow;
+	_pPane->clear();
+	delete _pPane;
 }
 
 BEGIN_MESSAGE_MAP(Window, CWnd)
@@ -81,7 +81,7 @@ BOOL Window::PreCreateWindow(CREATESTRUCT& cs)
 void Window::OnPaint()
 {
 	Canvas dc(this);
-	if (_pFlow)
+	if (_pPane)
 	{
 		bool focus = ::GetFocus() == m_hWnd;
 		// internal paint operation?
@@ -95,7 +95,7 @@ void Window::OnPaint()
 			}
 		}
 		else
-			_pFlow->Draw(&dc, focus);
+			_pPane->Draw(&dc, focus);
 	}
 	_internal.clear();				
 }
@@ -130,8 +130,8 @@ void Window::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	press._what = KeyEvent::DOWN;
 	press._mask = getKeyMask();
 	press._code = nChar;
-	if (_pFlow)
-		_pFlow->dispatch(press);
+	if (_pPane)
+		_pPane->dispatch(press);
 }
 
 // native char event triggers framework keypress.
@@ -152,8 +152,8 @@ void Window::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	press._what = KeyEvent::UP;
 	press._mask = getKeyMask();
 	press._code = nChar;
-	if (_pFlow)
-		_pFlow->dispatch(press);
+	if (_pPane)
+		_pPane->dispatch(press);
 }
 
 // native mouse button event triggers framework event.
@@ -250,8 +250,8 @@ void Window::Layout(int wide, int high)
 	rect_t rect = {0};
 	rect.wide = wide;
 	rect.high = high;
-	if (_pFlow != NULL)
-		_pFlow->setRect(rect);
+	if (_pPane != NULL)
+		_pPane->setRect(rect);
 }
 
 void Window::OnSize(UINT code, int cx, int cy)
@@ -305,7 +305,7 @@ void Window::setCapture(IControl *p)
 {
 	if (p == NULL)
 	{
-		_pCapture = _pFlow;
+		_pCapture = _pPane;
 		ReleaseCapture();
 	}
 	else
@@ -350,22 +350,22 @@ void Window::setHover(IControl *pHover)
 	}
 }
 
-Flow *Window::getFlow()
+Pane *Window::getPane()
 {
-	return _pFlow;
+	return _pPane;
 }
 
-void Window::setFlow(Flow *pFlow)
+void Window::setPane(Pane *pPane)
 {
-	if (_pFlow != NULL)
+	if (_pPane != NULL)
 	{
 		_pFocus = NULL;
 		_pCapture = NULL;
-		delete _pFlow;
+		delete _pPane;
 	}
-	_pFlow = pFlow;
-	_pFlow->setDesktop(this);
-	_pFlow->watch(this);
+	_pPane = pPane;
+	_pPane->setDesktop(this);
+	_pPane->watch(this);
 	if (m_hWnd)
 	{
 		RECT client = {0};
@@ -375,14 +375,14 @@ void Window::setFlow(Flow *pFlow)
 		rect.y = client.top;
 		rect.wide = client.right - client.left;
 		rect.high = client.bottom - client.top;
-		_pFlow->setRect(rect);
+		_pPane->setRect(rect);
 		Invalidate();
 	}
-	_pCapture = _pFlow;
+	_pCapture = _pPane;
 }
 
 // popup window
-IWindow* Window::popup(const rect_t &rect, Flow *pContent, IControl *pOwner)
+IWindow* Window::popup(const rect_t &rect, Pane *pContent, IControl *pOwner)
 {
 	Window *pPopup = new Window(this, rect, pContent, pOwner);
 	RECT rc = {0};
@@ -419,5 +419,5 @@ void Window::OnClose()
 	// Important: need to revoke the focus'd control. Otherwise, when the window is shown again,
 	// the control will be stuck in false focused state and tab navigation will skip over it.
 	IControl *pNull = NULL;
-	_pFlow->setFocus(pNull);
+	_pPane->setFocus(pNull);
 }

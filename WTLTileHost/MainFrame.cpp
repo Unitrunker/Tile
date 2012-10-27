@@ -13,8 +13,8 @@ MainFrame::MainFrame(Theme &theme) :
 	srand( clock() );
 	time(&m_person._date);
 	// create a form with a toolbar and a list control.
-	Flow *pFlow = new Flow(0, theme, eDown);
-	Flow *pTools = new Flow(0, theme, eRight);
+	Pane *pPane = new Pane(0, theme, eDown);
+	Pane *pTools = new Pane(0, theme, eRight);
 	List *pList = new List(0, theme);
 
 	const TCHAR one[] = {0x203B, 0};
@@ -34,11 +34,11 @@ MainFrame::MainFrame(Theme &theme) :
 
 	Button *pButton = NULL;
 
-	pFlow->setBorder(2);
+	pPane->setBorder(2);
 
 	// construct toolbar.
 	Fill *fill = NULL;
-	FlowDesc tool = {0, 4096, 1, false};
+	Flow tool = {0, 4096, 1, false};
 
 	fill = new Fill(0, theme);
 	fill->setFlow(eDown, tool);
@@ -72,19 +72,19 @@ MainFrame::MainFrame(Theme &theme) :
 	fill->setFlow(eDown, tool);
 	pTools->Add(fill, 0, 4096, 1);
 
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	pTools->setFlow(eDown, desc);
 	pTools->setFont(font);
 	// add toolbar to form
-	pFlow->Add(pTools, true);
+	pPane->Add(pTools, true);
 	// add list control to form
-	pFlow->Add(pList, 0, 4096, 1);
+	pPane->Add(pList, 0, 4096, 1);
 	// connect adapter to the data.
 	m_adapter.setValue(&m_person);
 	// populate list control.
 	pList->setItems(&m_adapter);
 	// connect the form to the frame window.
-	setFlow(pFlow);
+	setPane(pPane);
 };
 
 // user clicked the theme editor button
@@ -102,7 +102,7 @@ void MainFrame::clickTheme(Button *, bool bDown)
 			RECT rect = {0, 0, 320, 480};
 			List *pList = new List(0, getTheme());
 			pList->setItems(&m_set);
-			m_editor.setFlow(pList);
+			m_editor.setPane(pList);
 			m_editor.Create(m_hWnd, rect, _T("Theme Editor"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW);
 			m_editor.CenterWindow(m_hWnd);
 			m_editor.ShowWindow(SW_SHOW);
@@ -127,8 +127,8 @@ void MainFrame::clickAbout(Button *, bool bDown)
 			Theme::Font dingFont = {Theme::eDefault, Font(_T("Wing dings"), theme.Text._height, 0)};
 			RECT rect = {0, 0, theme.Text._height*24, theme.Text._height * 3};
 			Fill* pFill = NULL;
-			Flow *pFlow = new Flow(0, theme, eDown);
-			Flow *pLine = new Flow(0, theme, eRight);
+			Pane *pPane = new Pane(0, theme, eDown);
+			Pane *pLine = new Pane(0, theme, eRight);
 			pLine->setSpace(0);
 			static const TCHAR frill1[] = {0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0};
 			static const TCHAR frill2[] = {0x97, 0x97, 0x97, 0x97, 0x97, 0x97, 0};
@@ -142,12 +142,12 @@ void MainFrame::clickAbout(Button *, bool bDown)
 			pOK->Click.bind(this, &MainFrame::clickOK);
 
 			pFill = new Fill(0, theme);
-			pFlow->Add(pFill, 0, 4096, 1, false);
-			pFlow->Add(pLine, 1, 1, 0, true);
-			pFlow->Add(pOK, 1, 1, 0, true);
+			pPane->Add(pFill, 0, 4096, 1, false);
+			pPane->Add(pLine, 1, 1, 0, true);
+			pPane->Add(pOK, 1, 1, 0, true);
 			pFill = new Fill(0, theme);
-			pFlow->Add(pFill, 0, 4096, 1, false);
-			m_about.setFlow(pFlow);
+			pPane->Add(pFill, 0, 4096, 1, false);
+			m_about.setPane(pPane);
 			m_about.Create(m_hWnd, rect, _T("About this sample app"), WS_POPUP|WS_BORDER);
 			m_about.CenterWindow(m_hWnd);
 			m_about.ShowWindow(SW_SHOW);
@@ -163,7 +163,7 @@ void MainFrame::clickOK(Button *, bool)
 void MainFrame::clickSnapshot(Button *, bool)
 {
 	Snapshot camera(m_hWnd);
-	getFlow()->Draw(&camera, true);
+	getPane()->Draw(&camera, true);
 	camera.Save(_T(".\\Picture.bmp"));
 }
 

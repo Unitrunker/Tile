@@ -32,6 +32,7 @@ void Person::broadcast(const char *)
 
 PersonSet::PersonSet(Theme &theme) : 
 	SetT<Person>(NULL),
+#pragma warning(disable:4355)
 	First(*this, &Person::_first),
 	Last(*this, &Person::_last),
 	Address(*this, &Person::_address),
@@ -46,6 +47,7 @@ PersonSet::PersonSet(Theme &theme) :
 	Date(_date, Time::eDate),
 	Time(_date, Time::eTime),
 	_ipv4(*this, &Person::_iIPv4),
+#pragma warning(default:4355)
 	IPv4(_ipv4)
 {
 	Section *section = NULL;

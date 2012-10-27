@@ -1,4 +1,4 @@
-#include "../Tile/Flow.h"
+#include "../Tile/Pane.h"
 #include "../Tile/Theme.h"
 #include "../Tile/IWindow.h"
 #include <list>
@@ -12,7 +12,7 @@ class Window : public CWindowImpl<Window>,
 {
 	Theme& _theme;
 	// all content goes here.
-	Flow *_pFlow;
+	Pane *_pPane;
 	// internal paint
 	bool _bInternal;
 	// use simpler batched painting
@@ -39,7 +39,7 @@ class Window : public CWindowImpl<Window>,
 	// hover
 	virtual void setHover(IControl *pHover);
 	// popup window
-	virtual IWindow* popup(const rect_t &rect, Flow *pContent, IControl *pOwner);
+	virtual IWindow* popup(const rect_t &rect, Pane *pContent, IControl *pOwner);
 	// close and destroy the window
 	virtual void close();
 	// get window handle
@@ -83,7 +83,7 @@ class Window : public CWindowImpl<Window>,
 
 public:
 	Window(Theme &theme);
-	Window(Window *pParent, const rect_t &rect, Flow *pContent, IControl *pOwner);
+	Window(Window *pParent, const rect_t &rect, Pane *pContent, IControl *pOwner);
 	~Window();
 
 	static ATL::CWndClassInfo& GetWndClassInfo();
@@ -111,7 +111,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 	END_MSG_MAP()
 
-	Flow *getFlow();
-	void setFlow(Flow *pFlow);
+	Pane *getPane();
+	void setPane(Pane *pPane);
 	Theme &getTheme() { return _theme; }
 };

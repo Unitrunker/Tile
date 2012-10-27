@@ -9,7 +9,7 @@ Copyright © 2011 Rick Parrish
 using namespace Tiles;
 
 Tree::Tree(identity_t id, Theme &theme) :
-	Flow(id, theme, eDown), _checked(true)
+	Pane(id, theme, eDown), _checked(true)
 {
 	_thick.local = true;
 	_thick.thick = 0;
@@ -47,7 +47,7 @@ bool Tree::setValue(const bool &value)
 	{
 		hideControls();
 	}
-	Flow *climb = this;
+	Pane *climb = this;
 	while ( climb->getContainer() != NULL )
 		climb = climb->getContainer();
 	climb->reflow();
@@ -85,7 +85,7 @@ size_t Tree::Add(IControl *pControl)
 {
 	if (_checked)
 	{
-		Flow::Add(pControl);
+		Pane::Add(pControl);
 	}
 	else
 	{

@@ -1,16 +1,16 @@
 #include "stdafx.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "../JSON/Writer.h"
 #include "ICanvas.h"
 #include "IWindow.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
 
-Flow::Flow(identity_t id, Theme &theme, orient_t flow) : 
+Pane::Pane(identity_t id, Theme &theme, orient_t flow) : 
 	_flow(flow),
 	_pDesktop(NULL),
 	_tile(id, theme),
@@ -37,7 +37,7 @@ Flow::Flow(identity_t id, Theme &theme, orient_t flow) :
 	_lines.color = RGB(0,0,0);
 }
 
-Flow::Flow(identity_t id, Theme &theme, Theme::Font& desc, orient_t flow) : 
+Pane::Pane(identity_t id, Theme &theme, Theme::Font& desc, orient_t flow) : 
 	_flow(flow),
 	_pDesktop(NULL),
 	_tile(id, theme, desc),
@@ -64,7 +64,7 @@ Flow::Flow(identity_t id, Theme &theme, Theme::Font& desc, orient_t flow) :
 	_lines.color = RGB(0,0,0);
 }
 
-Flow::~Flow()
+Pane::~Pane()
 {
 	_map.clear();
 	_listControls.clear();
@@ -76,13 +76,13 @@ Flow::~Flow()
 	_listTiles.clear();
 }
 
-void Flow::clear()
+void Pane::clear()
 {
 	_listTiles.clear();
 	_listControls.clear();
 }
 
-void Flow::reflow()
+void Pane::reflow()
 {
 #if 1
 	meter_t border = _tile.getTheme().getThick(_thick);
@@ -110,7 +110,7 @@ void Flow::reflow()
 	meter_t space = _tile.getTheme().getThick(_space);
 	meter_t border = _tile.getTheme().getThick(_thick);
 	size_t size = _listTiles.size();
-	FlowDesc flow = {0};
+	Flow flow = {0};
 	rect_t rect = {0};
 	_tile.getRect(rect);
 	rect_t work = rect;
@@ -136,7 +136,7 @@ void Flow::reflow()
 		for (size_t i = 0; i < size; i++)
 		{
 			ITile* pTile = _listTiles[i];
-			FlowDesc desc = {0};
+			Flow desc = {0};
 			pTile->getMin(_flow, desc._min);
 			pTile->getMax(_flow, desc._max);
 			pTile->getWeight(_flow, desc._weight);
@@ -172,7 +172,7 @@ void Flow::reflow()
 		for (size_t i = 0; i < size; i++)
 		{
 			ITile* pTile = _listTiles[i];
-			FlowDesc desc = {0};
+			Flow desc = {0};
 			pTile->getMin(_flow, desc._min);
 			pTile->getMax(_flow, desc._max);
 			pTile->getWeight(_flow, desc._weight);
@@ -202,15 +202,15 @@ void Flow::reflow()
 }
 
 // add layout item to the collection.
-size_t Flow::Add(ITile *pTile, meter_t min, meter_t max, meter_t weight, bool fontScale)
+size_t Pane::Add(ITile *pTile, meter_t min, meter_t max, meter_t weight, bool fontScale)
 {
-	FlowDesc desc = {min, max, weight, fontScale};
+	Flow desc = {min, max, weight, fontScale};
 	pTile->setFlow(_flow, desc);
 	return Add(pTile);
 }
 
 // add layout item to the collection.
-size_t Flow::Add(ITile *pTile)
+size_t Pane::Add(ITile *pTile)
 {
 	size_t last = _listTiles.size();
 	_listTiles.push_back(pTile);
@@ -220,15 +220,15 @@ size_t Flow::Add(ITile *pTile)
 }
 
 // add layout item to the collection.
-size_t Flow::Add(IControl* pControl, meter_t min, meter_t max, meter_t weight, bool fontScale)
+size_t Pane::Add(IControl* pControl, meter_t min, meter_t max, meter_t weight, bool fontScale)
 {
-	FlowDesc desc = {min, max, weight, fontScale};
+	Flow desc = {min, max, weight, fontScale};
 	pControl->setFlow(_flow, desc);
 	return Add(pControl);
 }
 
 // add layout item to the collection.
-size_t Flow::Add(IControl* pControl)
+size_t Pane::Add(IControl* pControl)
 {
 	size_t last = _listTiles.size();
 	_listTiles.push_back(pControl);
@@ -238,45 +238,45 @@ size_t Flow::Add(IControl* pControl)
 	pControl->setContainer(this);
 	if (pControl->identity() != 0)
 	{
-		Flow *pFlow = this;
-		while ( !pFlow->isRoot() )
-			pFlow = pFlow->getContainer();
-		pFlow->_map[pControl->identity()] = pControl;
+		Pane *pPane = this;
+		while ( !pPane->isRoot() )
+			pPane = pPane->getContainer();
+		pPane->_map[pControl->identity()] = pControl;
 	}
 	return last;
 }
 
 // add layout item to the collection.
-size_t Flow::Add(Flow* pFlow, meter_t min, meter_t max, meter_t weight, bool fontScale)
+size_t Pane::Add(Pane* pPane, meter_t min, meter_t max, meter_t weight, bool fontScale)
 {
-	IControl *pControl = pFlow;
-	std::map<identity_t, IControl*>::iterator it = pFlow->_map.begin();
-	while (it != pFlow->_map.end())
+	IControl *pControl = pPane;
+	std::map<identity_t, IControl*>::iterator it = pPane->_map.begin();
+	while (it != pPane->_map.end())
 	{
 		_map[ (*it).first ] = (*it).second;
 		it++;
 	}
-	pFlow->_map.clear();
-	pFlow->_local = false;
+	pPane->_map.clear();
+	pPane->_local = false;
 	return Add(pControl, min, max, weight, fontScale);
 }
 
 // add layout item to the collection.
-size_t Flow::Add(Flow* pFlow, bool local)
+size_t Pane::Add(Pane* pPane, bool local)
 {
-	IControl *pControl = pFlow;
-	std::map<identity_t, IControl*>::iterator it = pFlow->_map.begin();
-	while (it != pFlow->_map.end())
+	IControl *pControl = pPane;
+	std::map<identity_t, IControl*>::iterator it = pPane->_map.begin();
+	while (it != pPane->_map.end())
 	{
 		_map[ (*it).first ] = (*it).second;
 		it++;
 	}
-	pFlow->_map.clear();
-	pFlow->_local = local;
+	pPane->_map.clear();
+	pPane->_local = local;
 	return Add(pControl);
 }
 
-orient_t Flow::opposite(orient_t flow)
+orient_t Pane::opposite(orient_t flow)
 {
 	switch (flow)
 	{
@@ -297,22 +297,22 @@ orient_t Flow::opposite(orient_t flow)
 }
 
 // returns true for vertical flows
-bool Flow::vertical(orient_t flow)
+bool Pane::vertical(orient_t flow)
 {
 	return flow == eUp || flow == eDown;
 }
 // returns true for horizontal flows
-bool Flow::horizontal(orient_t flow)
+bool Pane::horizontal(orient_t flow)
 {
 	return flow == eLeft || flow == eRight;
 }
 
-orient_t Flow::getFlow() const
+orient_t Pane::getFlow() const
 {
 	return _flow;
 }
 
-const char *Flow::getName(orient_t flow)
+const char *Pane::getName(orient_t flow)
 {
 	switch (flow)
 	{
@@ -329,7 +329,7 @@ const char *Flow::getName(orient_t flow)
 }
 
 // serialize
-bool Flow::save(JSON::Writer &writer)
+bool Pane::save(JSON::Writer &writer)
 {
 	std::string name;
 	orient(name, _flow);
@@ -349,7 +349,7 @@ bool Flow::save(JSON::Writer &writer)
 	return true;
 }
 
-bool Flow::save(const TCHAR *path)
+bool Pane::save(const TCHAR *path)
 {
 	JSON::Writer writer;
 	return writer.Open(path) && 
@@ -358,7 +358,7 @@ bool Flow::save(const TCHAR *path)
 		writer.Close();
 }
 
-void Flow::Redraw(ITile* pDraw)
+void Pane::Redraw(ITile* pDraw)
 {
 	// already marked for change?
 	if (_pNotify != NULL && !getChanged())
@@ -368,23 +368,23 @@ void Flow::Redraw(ITile* pDraw)
 	}
 }
 
-void Flow::watch(IRedraw* pNotify)
+void Pane::watch(IRedraw* pNotify)
 {
 	_pNotify = pNotify;
 	_tile.watch(pNotify);
 }
 
-bool Flow::getChanged() const
+bool Pane::getChanged() const
 {
 	return _tile.getChanged();
 }
 
-void Flow::setChanged(bool bChanged)
+void Pane::setChanged(bool bChanged)
 {
 	_tile.setChanged(bChanged);
 }
 
-bool Flow::Draw(ICanvas *canvas, bool bFocus)
+bool Pane::Draw(ICanvas *canvas, bool bFocus)
 {
 	rect_t last = {0};
 	size_t size = _listTiles.size();
@@ -488,23 +488,23 @@ bool Flow::Draw(ICanvas *canvas, bool bFocus)
 }
 
 // ITile implementation
-identity_t Flow::identity() const
+identity_t Pane::identity() const
 {
 	return _tile.identity();
 }
 
 // instance type
-const char* Flow::getType() const
+const char* Pane::getType() const
 {
 	return "Flow";
 }
 
-const char* Flow::type()
+const char* Pane::type()
 {
 	return "Flow";
 }
 
-void Flow::getInsideMin(orient_t flow, meter_t &min)
+void Pane::getInsideMin(orient_t flow, meter_t &min)
 {
 	meter_t space = _tile.getTheme().getThick(_space);
 	meter_t alt = 0;
@@ -531,19 +531,19 @@ void Flow::getInsideMin(orient_t flow, meter_t &min)
 		min = alt;
 }
 
-void Flow::getMin(orient_t flow, meter_t &min)
+void Pane::getMin(orient_t flow, meter_t &min)
 {
 	meter_t border = _tile.getTheme().getThick(_thick);
 	getInsideMin(flow, min);
 	min += 2*border;
 }
 
-void Flow::setMin(orient_t flow, meter_t min)
+void Pane::setMin(orient_t flow, meter_t min)
 {
 	_tile.setMin(flow, min);
 }
 
-void Flow::getMax(orient_t flow, meter_t &max)
+void Pane::getMax(orient_t flow, meter_t &max)
 {
 	meter_t space = _tile.getTheme().getThick(_space);
 	meter_t border = _tile.getTheme().getThick(_thick);
@@ -577,40 +577,40 @@ void Flow::getMax(orient_t flow, meter_t &max)
 		max = alt;
 }
 
-void Flow::setMax(orient_t flow, meter_t max)
+void Pane::setMax(orient_t flow, meter_t max)
 {
 	_tile.setMax(flow, max);
 }
 
 // get/set accessors for layout weights
-void Flow::getWeight(orient_t flow, meter_t &weight)
+void Pane::getWeight(orient_t flow, meter_t &weight)
 {
 	_tile.getWeight(flow, weight);
 }
 
-void Flow::setWeight(orient_t flow, meter_t weight)
+void Pane::setWeight(orient_t flow, meter_t weight)
 {
 	_tile.setWeight(flow, weight);
 }
 
 // get/set accessors for layout descriptors
-void Flow::getFlow(orient_t flow, FlowDesc &desc)
+void Pane::getFlow(orient_t flow, Flow &desc)
 {
 	_tile.getFlow(flow, desc);
 }
 
-void Flow::setFlow(orient_t flow, const FlowDesc &desc)
+void Pane::setFlow(orient_t flow, const Flow &desc)
 {
 	_tile.setFlow(flow, desc);
 }
 
 // get/set accessor for bounding rectangle.
-void Flow::getRect(rect_t &rect) const
+void Pane::getRect(rect_t &rect) const
 {
 	_tile.getRect(rect);
 }
 
-void Flow::setRect(const rect_t &rect)
+void Pane::setRect(const rect_t &rect)
 {
 	_tile.setRect(rect);
 	reflow();
@@ -618,12 +618,12 @@ void Flow::setRect(const rect_t &rect)
 
 // get/set accessor for scroll box - width, height, and (x,y) offset
 // where the rect above exposes a portion of the scroll box.
-void Flow::getScrollBox(rect_t &box) const
+void Pane::getScrollBox(rect_t &box) const
 {
 	_tile.getScrollBox(box);
 }
 
-void Flow::setScrollBox(const rect_t &box)
+void Pane::setScrollBox(const rect_t &box)
 {
 #if 0
 	area_t area = box.getArea();
@@ -631,7 +631,7 @@ void Flow::setScrollBox(const rect_t &box)
 	size_t size = _listTiles.size();
 	meter_t space = _tile.getTheme().getThick(_space);
 	// assumes bounding rectangle is correct.
-	FlowDesc flow = {0};
+	Flow flow = {0};
 	rect_t rect = {0};
 
 	getRect(rect);
@@ -657,7 +657,7 @@ void Flow::setScrollBox(const rect_t &box)
 		{
 			area_t work = {0};
 			ITile* pTile = _listTiles[i];
-			FlowDesc desc = {0};
+			Flow desc = {0};
 			pTile->getMin(_flow, desc._min);
 			pTile->getMax(_flow, desc._max);
 			pTile->getWeight(_flow, desc._weight);
@@ -683,7 +683,7 @@ void Flow::setScrollBox(const rect_t &box)
 		{
 			area_t work = {0};
 			ITile* pTile = _listTiles[i];
-			FlowDesc desc = {0};
+			Flow desc = {0};
 			pTile->getMin(_flow, desc._min);
 			pTile->getMax(_flow, desc._max);
 			pTile->getWeight(_flow, desc._weight);
@@ -708,29 +708,29 @@ void Flow::setScrollBox(const rect_t &box)
 #endif
 }
 
-void Flow::getScrollArea(area_t &area) const
+void Pane::getScrollArea(area_t &area) const
 {
 	_tile.getScrollArea(area);
 }
 
-void Flow::setScrollArea(const area_t &area)
+void Pane::setScrollArea(const area_t &area)
 {
 	_tile.setScrollArea(area);
 }
 
-void Flow::getScrollPoint(point_t &pt) const
+void Pane::getScrollPoint(point_t &pt) const
 {
 	_tile.getScrollPoint(pt);
 }
 
-void Flow::setScrollPoint(const point_t &pt)
+void Pane::setScrollPoint(const point_t &pt)
 {
 	_tile.setScrollPoint(pt);
 	reflow();
 }
 
 // returns true if point lies within layout.
-bool Flow::contains(point_t pt)
+bool Pane::contains(point_t pt)
 {
 	if ( _tile.contains(pt) )
 	{
@@ -743,7 +743,7 @@ bool Flow::contains(point_t pt)
 
 // dispatch keypress
 // TODO: tidy this up.
-bool Flow::dispatch(KeyEvent &action)
+bool Pane::dispatch(KeyEvent &action)
 {
 	if (getIndex() < _listControls.size())
 	{
@@ -787,7 +787,7 @@ bool Flow::dispatch(KeyEvent &action)
 }
 
 // sink all mouse click/move events.
-bool Flow::dispatch(MouseEvent &action)
+bool Pane::dispatch(MouseEvent &action)
 {
 	bool bFocus = false;
 	size_t size = _listControls.size();
@@ -836,7 +836,7 @@ bool Flow::dispatch(MouseEvent &action)
 	return false;
 }
 
-bool Flow::getFocus() const
+bool Pane::getFocus() const
 {
 	size_t size = _listControls.size();
 	for (size_t i = 0; i < size; i++)
@@ -848,7 +848,7 @@ bool Flow::getFocus() const
 	return false;
 }
 
-void Flow::setFocus(bool focus)
+void Pane::setFocus(bool focus)
 {
 #if 0
 	if (getIndex() < _listControls.size())
@@ -862,21 +862,21 @@ void Flow::setFocus(bool focus)
 }
 
 // readonly
-bool Flow::getReadOnly() const
+bool Pane::getReadOnly() const
 {
 	return _readonly || !isRoot() && getContainer()->getReadOnly();
 }
 
-void Flow::setReadOnly(bool readonly)
+void Pane::setReadOnly(bool readonly)
 {
 	_readonly = readonly;
 }
 
-void Flow::setHover(bool)
+void Pane::setHover(bool)
 {
 }
 
-void Flow::setDesktop(IWindow *pDesktop)
+void Pane::setDesktop(IWindow *pDesktop)
 {
 	_pDesktop = pDesktop;
 	for (size_t i = 0; i < _listControls.size(); i++)
@@ -886,7 +886,7 @@ void Flow::setDesktop(IWindow *pDesktop)
 	}
 }
 
-void Flow::setIndex(size_t index)
+void Pane::setIndex(size_t index)
 {
 	size_t size = _listControls.size();
 	if (index > size)
@@ -898,9 +898,9 @@ void Flow::setIndex(size_t index)
 			_index = index;
 		else
 		{
-			Flow *pFlow = getContainer();
-			bool changed = pFlow->_shared != index;
-			pFlow->_shared = index;
+			Pane *pPane = getContainer();
+			bool changed = pPane->_shared != index;
+			pPane->_shared = index;
 			if (changed)
 			{
 				// TODO
@@ -909,7 +909,7 @@ void Flow::setIndex(size_t index)
 	}
 }
 
-size_t Flow::getIndex() const
+size_t Pane::getIndex() const
 {
 	if (_local || isRoot() )
 		return _index;
@@ -918,7 +918,7 @@ size_t Flow::getIndex() const
 }
 
 // tab key navigation
-bool Flow::onTab(bool bReverse)
+bool Pane::onTab(bool bReverse)
 {
 	orient_t goNear = static_cast<orient_t>(eLeft|eUp);
 	orient_t goFar = static_cast<orient_t>(eRight|eDown);
@@ -926,7 +926,7 @@ bool Flow::onTab(bool bReverse)
 }
 
 // left/up key navigation
-bool Flow::onNear(orient_t flow)
+bool Pane::onNear(orient_t flow)
 {
 	if ( !hasControls() )
 		return false;
@@ -968,7 +968,7 @@ bool Flow::onNear(orient_t flow)
 }
 
 // right/down key navigation
-bool Flow::onFar(orient_t flow)
+bool Pane::onFar(orient_t flow)
 {
 	if ( !hasControls() )
 		return false;
@@ -1018,7 +1018,7 @@ bool Flow::onFar(orient_t flow)
 	return false;
 }
 
-void Flow::setFocus(IControl *pControl)
+void Pane::setFocus(IControl *pControl)
 {
 	if ( isRoot() )
 	{
@@ -1029,12 +1029,12 @@ void Flow::setFocus(IControl *pControl)
 		getContainer()->setFocus(pControl);
 }
 
-bool Flow::hasControls() const
+bool Pane::hasControls() const
 {
 	return _listControls.size() != 0;
 }
 
-bool Flow::find(identity_t id, const char *type, IControl *&pControl)
+bool Pane::find(identity_t id, const char *type, IControl *&pControl)
 {
 	type; // ignored.
 	std::map<identity_t, IControl*>::iterator it = _map.find(id);
@@ -1046,12 +1046,12 @@ bool Flow::find(identity_t id, const char *type, IControl *&pControl)
 	return false;
 }
 
-size_t Flow::getControlCount() const
+size_t Pane::getControlCount() const
 {
 	return _listControls.size();
 }
 
-IControl* Flow::getControl(size_t index)
+IControl* Pane::getControl(size_t index)
 {
 	if (index < _listControls.size())
 		return _listControls[index];
@@ -1059,22 +1059,22 @@ IControl* Flow::getControl(size_t index)
 }
 
 // the tile's containing flow object
-Flow *Flow::getContainer() const
+Pane *Pane::getContainer() const
 {
 	return _tile.getContainer();
 }
 
-void Flow::setContainer(Flow *pFlow)
+void Pane::setContainer(Pane *pPane)
 {
-	_tile.setContainer(pFlow);
+	_tile.setContainer(pPane);
 }
 
-bool Flow::isRoot() const
+bool Pane::isRoot() const
 {
 	return getContainer() == NULL;
 }
 
-void Flow::setSpace(meter_t space)
+void Pane::setSpace(meter_t space)
 {
 	bool changed = _space.thick != space;
 	_space.thick = space;
@@ -1086,7 +1086,7 @@ void Flow::setSpace(meter_t space)
 }
 
 #if 0
-void Flow::Shown(ITile *pShow)
+void Pane::Shown(ITile *pShow)
 {
 	rect_t tile = {0};
 	rect_t rect = {0};
@@ -1189,7 +1189,7 @@ void Flow::Shown(ITile *pShow)
 }
 #endif
 
-void Flow::Shown(ITile *pTile)
+void Pane::Shown(ITile *pTile)
 {
 #if 0
 	if ( isRoot() || _scroll)
@@ -1197,19 +1197,19 @@ void Flow::Shown(ITile *pTile)
 		rect_t flow = {0};
 		rect_t tile = {0};
 		rect_t rect = {0};
-		Flow *pFlow = getContainer();
+		Flow *pPane = getContainer();
 		pTile->getScrollBox(tile);
 		getScrollBox(flow);
 		getRect(rect);
 		ITile *walk = pTile;
-		while (this != pFlow && pFlow != NULL)
+		while (this != pPane && pPane != NULL)
 		{
 			rect_t box = {0};
-			pFlow->getTileBox(walk, box);
+			pPane->getTileBox(walk, box);
 			tile.x += box.x;
 			tile.y += box.y;
-			walk = pFlow;
-			pFlow = pFlow->getContainer();
+			walk = pPane;
+			pPane = pPane->getContainer();
 		}
 		// scroll it, baby!
 
@@ -1261,7 +1261,7 @@ void Flow::Shown(ITile *pTile)
 #endif
 }
 
-void Flow::getTileBox(ITile *pTile, rect_t &box)
+void Pane::getTileBox(ITile *pTile, rect_t &box)
 {
 	meter_t head = 0;
 	meter_t tail = 0;
@@ -1296,7 +1296,7 @@ void Flow::getTileBox(ITile *pTile, rect_t &box)
 // Tile is the bounding rectangle in scroll space that we want to show.
 // It may be occluded due to scrolling. Adjust scrolling as needed.
 // A flow must be marked for scrolling for scroll adjustments to occur at that layer.
-void Flow::balance(rect_t tile)
+void Pane::balance(rect_t tile)
 {
 	rect_t rect = {0};
 	rect_t flow = {0};
@@ -1329,15 +1329,15 @@ void Flow::balance(rect_t tile)
 	}
 	else if ( !isRoot() )
 	{
-		Flow *parent = getContainer();
+		Pane *parent = getContainer();
 		rect_t box = {0};
 		parent->getTileBox(this, box);
-		if (Flow::horizontal(parent->getFlow()) )
+		if (Pane::horizontal(parent->getFlow()) )
 		{
 			tile.x += box.x;
 			tile.y = box.y;
 		}
-		else if (Flow::vertical(parent->getFlow()) )
+		else if (Pane::vertical(parent->getFlow()) )
 		{
 			tile.y += box.y;
 			tile.x = box.x;
@@ -1346,7 +1346,7 @@ void Flow::balance(rect_t tile)
 	}
 }
 
-void Flow::setBorder(meter_t border)
+void Pane::setBorder(meter_t border)
 {
 	_thick.local = true;
 	_thick.thick = border;
@@ -1357,7 +1357,7 @@ void Flow::setBorder(meter_t border)
 // border is excluded
 // TODO: merge this code with scroll(x,y) to 
 // take scroll offset into account in layout.
-void Flow::layout(rect_t rect, rect_t box)
+void Pane::layout(rect_t rect, rect_t box)
 {
 	meter_t space = _tile.getTheme().getThick(_space);
 	size_t size = _listTiles.size();
@@ -1384,7 +1384,7 @@ void Flow::layout(rect_t rect, rect_t box)
 		for (size_t i = 0; i < size; i++)
 		{
 			ITile* pTile = _listTiles[i];
-			FlowDesc desc = {0};
+			Flow desc = {0};
 			pTile->getMin(_flow, desc._min);
 			pTile->getMax(_flow, desc._max);
 			pTile->getWeight(_flow, desc._weight);
@@ -1458,7 +1458,7 @@ void Flow::layout(rect_t rect, rect_t box)
 		for (size_t i = 0; i < size; i++)
 		{
 			ITile* pTile = _listTiles[i];
-			FlowDesc desc = {0};
+			Flow desc = {0};
 			pTile->getMin(_flow, desc._min);
 			pTile->getMax(_flow, desc._max);
 			pTile->getWeight(_flow, desc._weight);
@@ -1525,12 +1525,12 @@ void Flow::layout(rect_t rect, rect_t box)
 	setChanged(true);
 }
 
-const Theme::Font &Flow::getFont() const
+const Theme::Font &Pane::getFont() const
 {
 	return _tile.getFont();
 }
 
-void Flow::setFont(const Theme::Font &font)
+void Pane::setFont(const Theme::Font &font)
 {
 	_tile.setFont(font);
 }

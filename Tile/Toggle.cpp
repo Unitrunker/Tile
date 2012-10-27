@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "Toggle.h"
 #include "ICanvas.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "../JSON/Writer.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -18,7 +18,7 @@ Toggle::Toggle(identity_t id, Theme &theme, Theme::Font& font, std::vector<Item>
 	_list(list),
 	_ignore(0)
 {
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	_tile.setFlow(eDown, desc);
 	_tile._pSelf = this;
 	_fore[0].index = Theme::eDataFore;
@@ -35,7 +35,7 @@ Toggle::Toggle(identity_t id, Theme &theme, Theme::Font& font, std::vector<Item>
 	_list(list),
 	_ignore(0)
 {
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	_tile.setFlow(eDown, desc);
 	_tile._pSelf = this;
 	_fore[0].index = Theme::eDataFore;

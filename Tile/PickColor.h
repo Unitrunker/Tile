@@ -1,4 +1,4 @@
-#include "Flow.h"
+#include "Pane.h"
 #include "Accessor.h"
 
 /*
@@ -11,7 +11,7 @@ namespace Tiles
 struct Arrow;
 struct Edit;
 
-struct PickColor : public Flow, private IAccessor<color_t>
+struct PickColor : public Pane, private IAccessor<color_t>
 {
 	PickColor(identity_t id, Theme &theme, IAccessor<color_t>& access);
 	virtual void setRect(const rect_t &rect);

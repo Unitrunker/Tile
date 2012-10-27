@@ -1,4 +1,4 @@
-#include "Flow.h"
+#include "Pane.h"
 #include "Button.h"
 #include "Edit.h"
 #include "Accessor.h"
@@ -10,7 +10,7 @@ Copyright © 2011 Rick Parrish
 namespace Tiles
 {
 
-struct PickPath : public Flow
+struct PickPath : public Pane
 {
 	PickPath(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<string_t>* access);
 	~PickPath();

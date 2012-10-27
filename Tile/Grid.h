@@ -1,4 +1,4 @@
-#include "Flow.h"
+#include "Pane.h"
 #include "Table.h"
 #include "Scroll.h"
 
@@ -12,7 +12,7 @@ namespace Tiles
 struct Button;
 
 // Grid control
-struct Grid : public Flow, public INotify
+struct Grid : public Pane, public INotify
 {
 	Grid(identity_t id, Theme &theme);
 	void setTable(ITable *p);
@@ -52,7 +52,7 @@ private:
 
 	// TODO: vertical scrolling.
 	Scroll* _scrollVert;
-	Flow* _flowVert;
+	Pane* _paneVert;
 
 	// TODO: horizontal scrolling.
 	Scroll* _scrollHorz;

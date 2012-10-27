@@ -18,7 +18,7 @@ the confines of a bounding rectangle. In the flow direction, each layout object 
 minimum length, maximum length, and a weight used to calculate how much surplus space
 can be absorbed by the object.
 */
-struct Flow : public IControl, public IRedraw
+struct Pane : public IControl, public IRedraw
 {
 	// returns opposite direction
 	static orient_t opposite(orient_t flow);
@@ -27,9 +27,9 @@ struct Flow : public IControl, public IRedraw
 	// returns true for horizontal flows
 	static bool horizontal(orient_t flow);
 
-	Flow(identity_t id, Theme &theme, orient_t flow = eRight);
-	Flow(identity_t id, Theme &theme, Theme::Font& desc, orient_t flow = eRight);
-	virtual ~Flow();
+	Pane(identity_t id, Theme &theme, orient_t Pane = eRight);
+	Pane(identity_t id, Theme &theme, Theme::Font& desc, orient_t Pane = eRight);
+	virtual ~Pane();
 
 	void clear();
 
@@ -47,8 +47,8 @@ struct Flow : public IControl, public IRedraw
 	virtual void getWeight(orient_t flow, meter_t &weight);
 	virtual void setWeight(orient_t flow, meter_t weight);
 	// get/set accessors for layout descriptors
-	virtual void getFlow(orient_t flow, FlowDesc &desc);
-	virtual void setFlow(orient_t flow, const FlowDesc &desc);
+	virtual void getFlow(orient_t flow, Flow &desc);
+	virtual void setFlow(orient_t flow, const Flow &desc);
 	// get/set accessor for bounding rectangle.
 	virtual void getRect(rect_t &rect) const;
 	virtual void setRect(const rect_t &rect);
@@ -92,8 +92,8 @@ struct Flow : public IControl, public IRedraw
 	// desktop
 	virtual void setDesktop(IWindow*);
 	// the tile's containing flow object
-	virtual Flow *getContainer() const;
-	virtual void setContainer(Flow *);
+	virtual Pane *getContainer() const;
+	virtual void setContainer(Pane *);
 
 	bool isRoot() const;
 	// pixel padding between child tiles.
@@ -113,9 +113,9 @@ struct Flow : public IControl, public IRedraw
 	// add layout item to the collection.
 	size_t Add(IControl* pControl);
 	// add layout item to the collection.
-	size_t Add(Flow* pFlow, meter_t min, meter_t max, meter_t weight, bool fontScale = false);
+	size_t Add(Pane* pPane, meter_t min, meter_t max, meter_t weight, bool fontScale = false);
 	// add layout item to the collection.
-	size_t Add(Flow* pFlow, bool local = false);
+	size_t Add(Pane* pPane, bool local = false);
 	// recompute items layout.
 	void reflow();
 

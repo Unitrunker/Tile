@@ -12,14 +12,14 @@ using namespace Tiles;
 static align_t zero = {0};
 
 Combo::Combo(identity_t id, Theme &theme, Theme::Font &font, std::vector<Item> &list, IAccessor<long>* access) :
-	Flow(id, theme, font, eRight), 
+	Pane(id, theme, font, eRight), 
 	_list(list), 
 	_drop(0, theme, eDown), 
 	_text(0, theme, font, eLeft, _T("null")),
 	_index(list.size()),
 	_theme(theme),
 	_popup(NULL),
-	_popFlow(NULL),
+	_popPane(NULL),
 	_focus(false),
 	_accessInt(access),
 	_accessText(NULL)
@@ -27,7 +27,7 @@ Combo::Combo(identity_t id, Theme &theme, Theme::Font &font, std::vector<Item> &
 	meter_t height = theme.Text._height;
 	Add(&_text, height, 2048, 1);
 	Add(&_drop, 1, 1, 0, 1);
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
 	_fore[0].index = Theme::eDataFore;
 	_back[0].index = Theme::eDataBack;
@@ -40,14 +40,14 @@ Combo::Combo(identity_t id, Theme &theme, Theme::Font &font, std::vector<Item> &
 }
 
 Combo::Combo(identity_t id, Theme &theme, Theme::Font& font, std::vector<Item> &list, IAccessor<string_t>* access) :
-	Flow(id, theme, font, eRight), 
+	Pane(id, theme, font, eRight), 
 	_list(list),
 	_drop(0, theme, eDown), 
 	_text(0, theme, font, zero, _T("null")),
 	_index(list.size()),
 	_theme(theme),
 	_popup(NULL),
-	_popFlow(NULL),
+	_popPane(NULL),
 	_focus(false),
 	_accessText(access),
 	_accessInt(NULL)
@@ -135,22 +135,22 @@ bool Combo::dispatch(MouseEvent &action)
 				rect.high = 0;
 
 				size_t size = _list.size();
-				Flow *pFlow = new Flow(0, _theme, eDown);
+				Pane *pPane = new Pane(0, _theme, eDown);
 				for (size_t i = 0; i < size; i++)
 				{
 					_Item *pItem = new _Item(i, _theme, _tile.getFont(), _list[i], *this);
 					pItem->setMin(eRight, rect.wide);
 					pItem->setMax(eRight, rect.wide);
-					pFlow->Add(pItem, 1, 1, 0, true);
+					pPane->Add(pItem, 1, 1, 0, true);
 					rect.high += _theme.Text._height;
 				}
-				pFlow->setIndex(size);
+				pPane->setIndex(size);
 				if (rect.high > 0)
 				{
-					_popFlow = pFlow;
-					_popup = _pDesktop->popup(rect, pFlow, this);
-					_popFlow->setIndex(_index);
-					_popup->setFocus(_popFlow->getControl(_index));
+					_popPane = pPane;
+					_popup = _pDesktop->popup(rect, pPane, this);
+					_popPane->setIndex(_index);
+					_popup->setFocus(_popPane->getControl(_index));
 				}
 			}
 		}
@@ -264,10 +264,10 @@ void Combo::setIndex(size_t index)
 		{
 			_text._text = _list[_index]._label;
 			_text.setChanged(true);
-			if (_popFlow != NULL)
+			if (_popPane != NULL)
 			{
-				_popFlow->setIndex(_index);
-				_popup->setFocus( _popFlow->getControl(_index) );
+				_popPane->setIndex(_index);
+				_popup->setFocus( _popPane->getControl(_index) );
 			}
 		}
 	}
@@ -286,7 +286,7 @@ bool Combo::save(JSON::Writer &writer)
 bool Combo::Draw(ICanvas *canvas, bool bFocus)
 {
 	synchronize();
-	return Flow::Draw(canvas, bFocus);
+	return Pane::Draw(canvas, bFocus);
 }
 
 void Combo::closePopup()
@@ -295,7 +295,7 @@ void Combo::closePopup()
 	{
 		_popup->close();
 		_popup = NULL;
-		_popFlow = NULL;
+		_popPane = NULL;
 	}
 }
 
@@ -333,7 +333,7 @@ void Combo::synchronize()
 	}
 }
 
-// pre-empt normal Flow logic for calculating horizontal flow
+// pre-empt normal Pane logic for calculating horizontal flow
 
 // get/set accessors for layout mimimums
 void Combo::getMin(orient_t flow, meter_t &min)
@@ -341,7 +341,7 @@ void Combo::getMin(orient_t flow, meter_t &min)
 	if ( horizontal(flow) )
 		_tile.getMin(flow, min);
 	else
-		Flow::getMin(flow, min);
+		Pane::getMin(flow, min);
 }
 
 // get/set accessors for layout mimimums
@@ -350,13 +350,13 @@ void Combo::getMax(orient_t flow, meter_t &max)
 	if ( horizontal(flow) )
 		_tile.getMax(flow, max);
 	else
-		Flow::getMax(flow, max);
+		Pane::getMax(flow, max);
 }
 
 // get/set accessors for layout mimimums
 void Combo::getWeight(orient_t flow, meter_t &weight)
 {
-	Flow::getWeight(flow, weight);
+	Pane::getWeight(flow, weight);
 }
 
 // Modified getMin above causes standard Flow::setRect to break so use

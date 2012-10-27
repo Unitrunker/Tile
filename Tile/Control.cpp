@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Control.h"
-#include "Flow.h"
+#include "Pane.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -15,7 +15,7 @@ Control::Control(identity_t id, Theme &theme, const Theme::Font &desc) :
 	_readonly(false),
 	_pDesktop(NULL)
 {
-	FlowDesc flow = {1, 1, 0, true};
+	Flow flow = {1, 1, 0, true};
 	_tile.setFlow(eDown, flow);
 	_tile._pSelf = this;
 }
@@ -27,7 +27,7 @@ Control::Control(identity_t id, Theme &theme) :
 	_readonly(false),
 	_pDesktop(NULL)
 {
-	FlowDesc flow = {1, 1, 0, true};
+	Flow flow = {1, 1, 0, true};
 	_tile.setFlow(eDown, flow);
 	_tile._pSelf = this;
 }
@@ -172,12 +172,12 @@ void Control::setWeight(orient_t flow, meter_t weight)
 	_tile.setWeight(flow, weight);
 }
 
-void Control::getFlow(orient_t flow, FlowDesc &desc)
+void Control::getFlow(orient_t flow, Flow &desc)
 {
 	_tile.getFlow(flow, desc);
 }
 
-void Control::setFlow(orient_t flow, const FlowDesc &desc)
+void Control::setFlow(orient_t flow, const Flow &desc)
 {
 	_tile.setFlow(flow, desc);
 }
@@ -214,14 +214,14 @@ bool Control::onFar(orient_t)
 }
 
 // the tile's containing flow object
-Flow *Control::getContainer() const
+Pane *Control::getContainer() const
 {
 	return _tile.getContainer();
 }
 
-void Control::setContainer(Flow *pFlow)
+void Control::setContainer(Pane *pPane)
 {
-	_tile.setContainer(pFlow);
+	_tile.setContainer(pPane);
 }
 
 // hover

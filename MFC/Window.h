@@ -1,4 +1,4 @@
-#include "../Tile/Flow.h"
+#include "../Tile/Pane.h"
 #include "../Tile/Theme.h"
 #include "../Tile/IWindow.h"
 #include <list>
@@ -16,7 +16,7 @@ class Window : public CWnd,
 {
 	Theme& _theme;
 	// all content goes here.
-	Flow *_pFlow;
+	Pane *_pPane;
 	// internal paint
 	bool _bInternal;
 	std::list<ITile*> _internal;
@@ -28,7 +28,7 @@ class Window : public CWnd,
 // Construction
 public:
 	Window(Theme &);
-	Window(Window *pParent, const rect_t &rect, Flow *pContent, IControl *pOwner);
+	Window(Window *pParent, const rect_t &rect, Pane *pContent, IControl *pOwner);
 
 // Attributes
 public:
@@ -47,14 +47,14 @@ public:
 	// hover
 	virtual void setHover(IControl *pHover);
 	// popup window
-	virtual IWindow* popup(const rect_t &rect, Flow *pContent, IControl *pOwner);
+	virtual IWindow* popup(const rect_t &rect, Pane *pContent, IControl *pOwner);
 	// close and destroy the window
 	virtual void close();
 	// get window handle
 	virtual Tiles::handle_t getHandle();
 
-	Flow *getFlow();
-	void setFlow(Flow *pFlow);
+	Pane *getPane();
+	void setPane(Pane *pPane);
 	Theme &getTheme() { return _theme; }
 
 // Overrides

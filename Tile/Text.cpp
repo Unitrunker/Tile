@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "Text.h"
 #include "ICanvas.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "../JSON/Writer.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -41,7 +41,7 @@ Text::Text(identity_t id, Theme &theme, Theme::Font& font, align_t align, const 
 {
 	// default to one line.
 	//meter_t height = _theme.Text._height;
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
 	_fore.index = Theme::eCaptionFore;
 	_fore.color = 0;

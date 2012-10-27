@@ -1,6 +1,6 @@
 #include "Arrow.h"
 #include "Text.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "Theme.h"
 #include "IWindow.h"
 #include "Accessor.h"
@@ -14,7 +14,7 @@ Copyright © 2011 Rick Parrish
 namespace Tiles
 {
 
-struct Combo : public Flow
+struct Combo : public Pane
 {
 	struct Item
 	{
@@ -27,10 +27,10 @@ struct Combo : public Flow
 	virtual ~Combo();
 
 	// get/set accessors for changed flag.
-	using Flow::getChanged;
-	using Flow::setChanged;
+	using Pane::getChanged;
+	using Pane::setChanged;
 	// set callback for change notification.
-	using Flow::watch;
+	using Pane::watch;
 	// IControl
 	// key event sink
 	virtual bool dispatch(KeyEvent &action);
@@ -40,8 +40,8 @@ struct Combo : public Flow
 	virtual bool getFocus() const;
 	virtual void setFocus(bool);
 	// readonly
-	using Flow::getReadOnly;
-	using Flow::setReadOnly;
+	using Pane::getReadOnly;
+	using Pane::setReadOnly;
 	// hover
 	virtual void setHover(bool hover);
 	// navigation
@@ -55,31 +55,31 @@ struct Combo : public Flow
 	void getValue(long &value);
 	bool setValue(long value);
 	// ITile implementation
-	using Flow::identity;
+	using Pane::identity;
 	// instance type
 	virtual const char* getType() const;
 
 	// get/set accessors for layout mimimums
 	virtual void getMin(orient_t flow, meter_t &min);
-	using Flow::setMin;
+	using Pane::setMin;
 	// get/set accessors for layout maximums
 	virtual void getMax(orient_t flow, meter_t &max);
-	using Flow::setMax;
+	using Pane::setMax;
 	// get/set accessors for layout weights
 	virtual void getWeight(orient_t flow, meter_t &weight);
-	using Flow::setWeight;
+	using Pane::setWeight;
 	// get/set accessors for layout descriptors
-	using Flow::getFlow;
-	using Flow::setFlow;
+	using Pane::getFlow;
+	using Pane::setFlow;
 	// get/set accessor for bounding rectangle.
 	virtual void setRect(const rect_t &rect);
-	using Flow::getRect;
+	using Pane::getRect;
 
-	using Flow::contains;
-	using Flow::setDesktop;
-	using Flow::getContainer;
-	using Flow::setContainer;
-	//using Flow::Draw;
+	using Pane::contains;
+	using Pane::setDesktop;
+	using Pane::getContainer;
+	using Pane::setContainer;
+	//using Pane::Draw;
 	bool Draw(ICanvas *canvas, bool bFocus);
 	// serialize
 	virtual bool save(JSON::Writer &writer);
@@ -99,7 +99,7 @@ private:
 	IAccessor<string_t> *_accessText;
 	Theme _theme;
 	IWindow* _popup;
-	Flow *_popFlow;
+	Pane *_popPane;
 	Theme::Color _fore[2], _back[2];
 	bool _reflow;
 };

@@ -2,7 +2,7 @@
 #include "Edit.h"
 #include <vector>
 #include "ICanvas.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "../JSON/Writer.h"
 
 /*
@@ -19,7 +19,7 @@ Edit::Edit(identity_t id, Theme &theme, const Theme::Font &font, IAccessor<strin
 	_local(true),
 	_edit(false)
 {
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
 	// color selections
 	_fore[0].index = Theme::eDataFore;
@@ -39,7 +39,7 @@ Edit::Edit(identity_t id, Theme &theme, const Theme::Font &font, string_t &text)
 	_align(eLeft),
 	_local(true)
 {
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
 	// color selections
 	_fore[0].index = Theme::eDataFore;

@@ -1,4 +1,4 @@
-#include "Flow.h"
+#include "Pane.h"
 #include "Button.h"
 #include "Accessor.h"
 
@@ -12,7 +12,7 @@ namespace Tiles
 struct Edit;
 struct Button;
 
-struct PickFont : public Flow, private IAccessor<string_t>
+struct PickFont : public Pane, private IAccessor<string_t>
 {
 	PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<Font>* access);
 	virtual void setRect(const rect_t &rect);

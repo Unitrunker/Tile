@@ -1,6 +1,6 @@
 #include "Arrow.h"
 #include "Fill.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "Theme.h"
 #include "IWindow.h"
 #include "Accessor.h"
@@ -14,17 +14,17 @@ Copyright © 2011 Rick Parrish
 namespace Tiles
 {
 
-struct Scroll : public Flow
+struct Scroll : public Pane
 {
 	Scroll(identity_t id, Theme &theme, orient_t flow, long &value);
 	Scroll(identity_t id, Theme &theme, orient_t flow, IAccessor<long> *pAccess);
 	virtual ~Scroll();
 
 	// get/set accessors for changed flag.
-	using Flow::getChanged;
-	using Flow::setChanged;
+	using Pane::getChanged;
+	using Pane::setChanged;
 	// set callback for change notification.
-	using Flow::watch;
+	using Pane::watch;
 	// IControl
 	// key event sink
 	virtual bool dispatch(KeyEvent &action);
@@ -48,30 +48,30 @@ struct Scroll : public Flow
 	void setValue(long value);
 	void getValue(long &value);
 	// ITile implementation
-	using Flow::identity;
+	using Pane::identity;
 	// instance type
 	virtual const char* getType() const;
 	// get/set accessors for layout mimimums
-	using Flow::getMin;
-	using Flow::setMin;
+	using Pane::getMin;
+	using Pane::setMin;
 	// get/set accessors for layout maximums
-	using Flow::getMax;
-	using Flow::setMax;
+	using Pane::getMax;
+	using Pane::setMax;
 	// get/set accessors for layout weights
-	using Flow::getWeight;
-	using Flow::setWeight;
+	using Pane::getWeight;
+	using Pane::setWeight;
 	// get/set accessors for layout descriptors
-	using Flow::getFlow;
-	using Flow::setFlow;
+	using Pane::getFlow;
+	using Pane::setFlow;
 	// get/set accessor for bounding rectangle.
-	using Flow::setRect;
-	using Flow::getRect;
+	using Pane::setRect;
+	using Pane::getRect;
 
-	using Flow::contains;
-	using Flow::setDesktop;
-	using Flow::Draw;
-	using Flow::getContainer;
-	using Flow::setContainer;
+	using Pane::contains;
+	using Pane::setDesktop;
+	using Pane::Draw;
+	using Pane::getContainer;
+	using Pane::setContainer;
 	// serialize
 	virtual bool save(JSON::Writer &writer);
 	static const char* type();

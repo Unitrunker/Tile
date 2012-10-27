@@ -19,6 +19,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	MainFrame dlgMain(theme);
 	RECT rect = {0, 0, 240, 380};
 
+	theme.load(_T("./Theme.json"));
+
 	if(dlgMain.Create(NULL, rect, _T("Calculator"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW) == NULL)
 	{
 		TCHAR log[64] = {0};

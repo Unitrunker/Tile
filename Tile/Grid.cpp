@@ -11,38 +11,38 @@ Copyright © 2011, 2012 Rick Parrish
 
 using namespace Tiles;
 
-struct Row : public Flow
+struct Row : public Pane
 {
 	Row(identity_t id, Theme &theme);
 	Row(identity_t id, Theme &theme, Theme::Font& desc);
 	virtual ~Row() { };
 };
 
-Row::Row(identity_t id, Theme &theme) : Flow(id, theme, eRight)
+Row::Row(identity_t id, Theme &theme) : Pane(id, theme, eRight)
 {
 }
 
-Row::Row(identity_t id, Theme &theme, Theme::Font& desc) : Flow(id, theme, desc, eRight)
+Row::Row(identity_t id, Theme &theme, Theme::Font& desc) : Pane(id, theme, desc, eRight)
 {
 }
 
-struct Header : public Flow
+struct Header : public Pane
 {
 	Header(identity_t id, Theme &theme);
 	Header(identity_t id, Theme &theme, Theme::Font& desc);
 	virtual ~Header() { };
 };
 
-Header::Header(identity_t id, Theme &theme) : Flow(id, theme, eRight)
+Header::Header(identity_t id, Theme &theme) : Pane(id, theme, eRight)
 {
 }
 
-Header::Header(identity_t id, Theme &theme, Theme::Font& desc) : Flow(id, theme, desc, eRight)
+Header::Header(identity_t id, Theme &theme, Theme::Font& desc) : Pane(id, theme, desc, eRight)
 {
 }
 
-Grid::Grid(identity_t id, Theme &theme) : Flow(id, theme, eDown), 
-	_table(NULL), _scrollVert(NULL), _flowVert(NULL), _scrollHorz(NULL)
+Grid::Grid(identity_t id, Theme &theme) : Pane(id, theme, eDown), 
+	_table(NULL), _scrollVert(NULL), _paneVert(NULL), _scrollHorz(NULL)
 {
 }
 
@@ -101,10 +101,10 @@ void Grid::reflow()
 		{
 			// TODO: include a "splitter" control with each Text 
 			// tile to allow users to adjust column widths.
-			FlowDesc desc = {0};
+			Flow desc = {0};
 			// Button is our column heading.
 			Button *button = new Button(col, theme, textFont, set->Columns[col]->Name);
-			// Cloning the controls flowdesc causes the header tiles 
+			// Cloning the controls Flow causes the header tiles 
 			// to align proportionately with the data cells.
 			IControl *pControl = set->Columns[col]->Control;
 			pControl->getFlow(eRight, desc);
@@ -145,7 +145,7 @@ void Grid::reflow()
 		Fill *pFill = new Fill(0, theme);
 		Add(pFill);
 	}
-	Flow::reflow();
+	Pane::reflow();
 }
 
 void Grid::setRect(const rect_t &rect)
@@ -211,7 +211,7 @@ void Grid::onMoved(size_t i, size_t j)
 // key event sink
 bool Grid::dispatch(KeyEvent &action)
 {
-	if ( Flow::dispatch(action) )
+	if ( Pane::dispatch(action) )
 		return true;
 
 	if (action._what == KeyEvent::DOWN)
@@ -286,7 +286,7 @@ bool Grid::dispatch(KeyEvent &action)
 // mouse event sink
 bool Grid::dispatch(MouseEvent &action)
 {
-	return Flow::dispatch(action);
+	return Pane::dispatch(action);
 }
 
 void Grid::clickHeader(Button *control, bool value)

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "Scroll.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "Identity.h"
 #include "../JSON/Writer.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -21,9 +21,9 @@ static long range(long min, long max, long value)
 }
 
 Scroll::Scroll(identity_t id, Theme& theme, orient_t flow, long &value) : 
-	Flow(id, theme, flow),
+	Pane(id, theme, flow),
 	_theme(theme),
-	_nearArrow(0, theme, Flow::opposite(flow) ), 
+	_nearArrow(0, theme, Pane::opposite(flow) ), 
 	_nearSpacer(0, theme),
 	_thumb(0, theme),
 	_farSpacer(0, theme),
@@ -54,14 +54,14 @@ Scroll::Scroll(identity_t id, Theme& theme, orient_t flow, long &value) :
 	_thick.local = true;
 	_thick.thick = 0;
 
-	FlowDesc desc = {_theme.Text._height, _theme.Text._height, 0};
-	setFlow(Flow::opposite(flow), desc);
+	Flow desc = {_theme.Text._height, _theme.Text._height, 0};
+	setFlow(Pane::opposite(flow), desc);
 }
 
 Scroll::Scroll(identity_t id, Theme& theme, orient_t flow, IAccessor<long> *pAccess) : 
-	Flow(id, theme, flow),
+	Pane(id, theme, flow),
 	_theme(theme),
-	_nearArrow(0, theme, Flow::opposite(flow) ), 
+	_nearArrow(0, theme, Pane::opposite(flow) ), 
 	_nearSpacer(0, theme),
 	_thumb(0, theme),
 	_farSpacer(0, theme),
@@ -91,8 +91,8 @@ Scroll::Scroll(identity_t id, Theme& theme, orient_t flow, IAccessor<long> *pAcc
 	_thumb._fill = thumb;
 
 	// TODO: verify font based height is same as near/far arrows
-	FlowDesc desc = {1, 1, 0, true};
-	setFlow(Flow::opposite(flow), desc);
+	Flow desc = {1, 1, 0, true};
+	setFlow(Pane::opposite(flow), desc);
 }
 
 Scroll::~Scroll()
@@ -186,7 +186,7 @@ bool Scroll::onClick(MouseEvent &action)
 {
 	if ( _nearSpacer.contains(action._place) )
 	{
-		if ( Flow::horizontal(getFlow()) )
+		if ( Pane::horizontal(getFlow()) )
 		{
 			// TODO: math is close but not 100%
 			meter_t span = 0;
@@ -202,7 +202,7 @@ bool Scroll::onClick(MouseEvent &action)
 			move /= span;
 			setValue(move);
 		}
-		else if ( Flow::vertical(getFlow()) )
+		else if ( Pane::vertical(getFlow()) )
 		{
 			// TODO: math is close but not 100%
 			meter_t span = 0;
@@ -221,7 +221,7 @@ bool Scroll::onClick(MouseEvent &action)
 	}
 	else if ( _farSpacer.contains(action._place) )
 	{
-		if ( Flow::horizontal(getFlow()) )
+		if ( Pane::horizontal(getFlow()) )
 		{
 			// TODO: math is close but not 100%
 			meter_t span = 0;
@@ -369,7 +369,7 @@ void Scroll::setValue(long value)
 		_thumb.setWeight(_flow, _min);
 		_nearSpacer.setWeight(_flow, value - _min);
 		_farSpacer.setWeight(_flow, _max - value);
-		Flow::reflow();
+		Pane::reflow();
 		setChanged(true);
 	}
 }
@@ -385,7 +385,7 @@ bool Scroll::save(JSON::Writer &writer)
 {
 	writer.writeStartObject();
 	writer.writeNamedValue("type", type());
-	writer.writeNamedValue("orient", Flow::getName(_flow));
+	writer.writeNamedValue("orient", Pane::getName(_flow));
 	_tile.save(writer);
 	// don't save underlying Flow's tiles.
 	// those are managed programmatically.

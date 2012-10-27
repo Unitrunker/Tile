@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Fill.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "ICanvas.h"
 #include "../JSON/Writer.h"
 

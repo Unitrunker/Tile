@@ -6,7 +6,7 @@
 #include <atldlgs.h>
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -36,7 +36,7 @@ static size_t distance(color_t a, color_t b)
 }
 
 PickColor::PickColor(identity_t id, Theme &theme, IAccessor<color_t> &access) :
-	Flow(id, theme, eRight),
+	Pane(id, theme, eRight),
 	_access(access),
 	_local(*this)
 {
@@ -57,7 +57,7 @@ PickColor::PickColor(identity_t id, Theme &theme, IAccessor<color_t> &access) :
 
 	Add(_edit, 0, 4096, 1, false);
 	Add(_arrow, 1, 1, 0, true);
-	FlowDesc flow = {1, 1, 0, true};
+	Flow flow = {1, 1, 0, true};
 	setFlow(eDown, flow);
 	_arrow->setFlow(eDown, flow);
 	//_space.local = true;
@@ -101,7 +101,7 @@ bool PickColor::dispatch(MouseEvent &action)
 			return true;
 		}
 	}
-	return Flow::dispatch(action);
+	return Pane::dispatch(action);
 }
 
 const color_t& PickColor::getValue() const
@@ -130,7 +130,7 @@ void PickColor::getMin(orient_t flow, meter_t &min)
 	if ( horizontal(flow) )
 		_tile.getMin(flow, min);
 	else
-		Flow::getMin(flow, min);
+		Pane::getMin(flow, min);
 }
 
 // get/set accessors for layout mimimums
@@ -139,7 +139,7 @@ void PickColor::getMax(orient_t flow, meter_t &max)
 	if ( horizontal(flow) )
 		_tile.getMax(flow, max);
 	else
-		Flow::getMax(flow, max);
+		Pane::getMax(flow, max);
 }
 
 // get/set accessors for layout mimimums
@@ -148,10 +148,10 @@ void PickColor::getWeight(orient_t flow, meter_t &weight)
 	if ( horizontal(flow) )
 		_tile.getWeight(flow, weight);
 	else
-		Flow::getWeight(flow, weight);
+		Pane::getWeight(flow, weight);
 }
 
-// Modified getMin above causes standard Flow::setRect to break so use
+// Modified getMin above causes standard Pane::setRect to break so use
 // this greatly simplified logic for layout of the text and drop arrow.
 void PickColor::setRect(const rect_t &rect)
 {

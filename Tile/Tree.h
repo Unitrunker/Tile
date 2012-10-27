@@ -1,5 +1,5 @@
 #include "Accessor.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "Check.h"
 
 /*
@@ -11,7 +11,7 @@ namespace Tiles
 
 // Tree describes a collapsible control.
 // Hint: Tree controls can be nested.
-struct Tree : public Flow, public IAccessor<bool>
+struct Tree : public Pane, public IAccessor<bool>
 {
 	Tree(identity_t id, Theme &theme);
 	virtual ~Tree();

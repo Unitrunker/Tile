@@ -1,6 +1,6 @@
 #include <string>
 #include "../Tile/Theme.h"
-#include "../Tile/Flow.h"
+#include "../Tile/Pane.h"
 
 /*
 Copyright © 2011 Rick Parrish
@@ -8,4 +8,4 @@ Copyright © 2011 Rick Parrish
 
 #pragma once
 
-bool loadForm(const TCHAR *path, Tiles::Theme &theme, Tiles::Flow* &pFlow);
+bool loadForm(const TCHAR *path, Tiles::Theme &theme, Tiles::Pane* &pPane);

@@ -1,7 +1,7 @@
 #include "Types.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 #pragma once
@@ -14,7 +14,7 @@ struct Writer;
 namespace Tiles
 {
 
-struct FlowDesc
+struct Flow
 {
 	// minimum distance
 	meter_t _min;
@@ -28,7 +28,7 @@ struct FlowDesc
 
 struct ICanvas;
 struct IRedraw;
-struct Flow;
+struct Pane;
 
 struct ITile
 {
@@ -45,8 +45,8 @@ struct ITile
 	virtual void getWeight(orient_t flow, meter_t &weight) = 0;
 	virtual void setWeight(orient_t flow, meter_t weight) = 0;
 	// get/set accessors for layout descriptors
-	virtual void getFlow(orient_t flow, FlowDesc &desc) = 0;
-	virtual void setFlow(orient_t flow, const FlowDesc &desc) = 0;
+	virtual void getFlow(orient_t flow, Flow &desc) = 0;
+	virtual void setFlow(orient_t flow, const Flow &desc) = 0;
 	// get/set accessor for bounding rectangle.
 	virtual void getRect(rect_t &rect) const = 0;
 	virtual void setRect(const rect_t &rect) = 0;
@@ -63,8 +63,8 @@ struct ITile
 	// serialize
 	virtual bool save(JSON::Writer&) = 0;
 	// the tile's containing flow object
-	virtual Flow *getContainer() const = 0;
-	virtual void setContainer(Flow *) = 0;
+	virtual Pane *getContainer() const = 0;
+	virtual void setContainer(Pane *) = 0;
 
 	// drawable
 	// get/set accessor: true if this has changed since last drawn.

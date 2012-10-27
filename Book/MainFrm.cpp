@@ -4,7 +4,7 @@
 #include "AboutDlg.h"
 #include "MainFrm.h"
 #include "../Tile/Fill.h"
-#include "../Tile/Flow.h"
+#include "../Tile/Pane.h"
 #include "../Tile/Check.h"
 #include <time.h>
 
@@ -167,14 +167,14 @@ void CMainFrame::createForm()
 		_dates.insert(person);
 	}
 
-	Flow *pBox = new Flow(0, theme, eDown);
+	Pane *pBox = new Pane(0, theme, eDown);
 	pBox->setSpace(0);
 
 	Grid *pGrid = new Grid(0, theme);
 	pGrid->setTable(&_table);
 	pBox->Add(pGrid, 0, 4096, 1);
 
-	m_view.setFlow(pBox);
+	m_view.setPane(pBox);
 }
 
 LRESULT CMainFrame::OnSizing(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)

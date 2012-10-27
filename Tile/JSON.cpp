@@ -6,7 +6,7 @@
 #include "Check.h"
 #include "Edit.h"
 #include "Fill.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "Font.h"
 #include "Glyph.h"
 #include "Scroll.h"
@@ -16,12 +16,12 @@
 #include "../Stream/FileInputStream.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
 
-static bool loadFlowDesc(JSON::Reader &json, const char *name, FlowDesc &desc)
+static bool loadFlow(JSON::Reader &json, const char *name, Flow &desc)
 {
 	bool bOK = json.beginNamedObject(name);
 	if (bOK) do
@@ -42,12 +42,12 @@ static bool loadFill(JSON::Reader &json, Theme& theme, ITile* &pDraw)
 	bool bOK = false;
 	identity_t id = 0;
 	color_t fill = 0;
-	FlowDesc horz, vert;
+	Flow horz, vert;
 	do 
 	{
 		bOK = json.namedValue("id", id) ||
-			loadFlowDesc(json, "Horz", horz) ||
-			loadFlowDesc(json, "Vert", vert) ||
+			loadFlow(json, "Horz", horz) ||
+			loadFlow(json, "Vert", vert) ||
 			json.namedValue("fill", fill);
 	}
 	while (bOK && json.comma());
@@ -65,14 +65,14 @@ static bool loadFill(JSON::Reader &json, Theme& theme, ITile* &pDraw)
 static bool loadText(JSON::Reader &json, Theme& theme, ITile * &pDraw)
 {
 	bool bOK = false;
-	FlowDesc horz, vert;
+	Flow horz, vert;
 	std::string text, align;
 	identity_t id = 0;
 	do
 	{
 		bOK = json.namedValue("id", id) ||
-			loadFlowDesc(json, "Horz", horz) ||
-			loadFlowDesc(json, "Vert", vert) ||
+			loadFlow(json, "Horz", horz) ||
+			loadFlow(json, "Vert", vert) ||
 			json.namedValue("text", text) ||
 			json.namedValue("align", align);
 	}
@@ -97,12 +97,12 @@ static bool loadEdit(JSON::Reader &json, Theme& theme, IControl* &pControl)
 {
 	bool bOK = false;
 	identity_t id = 0;
-	FlowDesc horz, vert;
+	Flow horz, vert;
 	do
 	{
 		bOK = json.namedValue("id", id) ||
-			loadFlowDesc(json, "Horz", horz) ||
-			loadFlowDesc(json, "Vert", vert);
+			loadFlow(json, "Horz", horz) ||
+			loadFlow(json, "Vert", vert);
 	}
 	while (bOK && json.comma());
 
@@ -123,13 +123,13 @@ static bool loadButton(JSON::Reader &json, Theme& theme, IControl* &pControl)
 	bool bOK = false;
 	identity_t id = 0;
 	std::string text;
-	FlowDesc horz, vert;
+	Flow horz, vert;
 	Theme::Font desc = {Theme::eDefault, Font(_T("MS Shell Dlg"), 18, 0)};
 	do
 	{
 		bOK = json.namedValue("id", id) ||
-			loadFlowDesc(json, "Horz", horz) ||
-			loadFlowDesc(json, "Vert", vert) ||
+			loadFlow(json, "Horz", horz) ||
+			loadFlow(json, "Vert", vert) ||
 			json.namedValue("text", text) ||
 			Font::load(json, desc.font);
 	}
@@ -154,14 +154,14 @@ static bool loadArrow(JSON::Reader &json, Theme& theme, ITile* &pDraw)
 	bool bOK = false;
 	identity_t id = 0;
 	std::string text;
-	FlowDesc horz, vert;
+	Flow horz, vert;
 	do
 	{
 		bOK = 
 			json.namedValue("orient", text) ||
 			json.namedValue("id", id) ||
-			loadFlowDesc(json, "Horz", horz) ||
-			loadFlowDesc(json, "Vert", vert);
+			loadFlow(json, "Horz", horz) ||
+			loadFlow(json, "Vert", vert);
 	}
 	while (bOK && json.comma());
 
@@ -180,12 +180,12 @@ static bool loadCheck(JSON::Reader &json, Theme& theme, IControl* &pControl)
 	bool bOK = false;
 	identity_t id = 0;
 	std::string text;
-	FlowDesc horz, vert;
+	Flow horz, vert;
 	do
 	{
 		bOK = json.namedValue("id", id) ||
-			loadFlowDesc(json, "Horz", horz) ||
-			loadFlowDesc(json, "Vert", vert);
+			loadFlow(json, "Horz", horz) ||
+			loadFlow(json, "Vert", vert);
 	}
 	while (bOK && json.comma());
 	if (bOK)
@@ -203,13 +203,13 @@ static bool loadScroll(JSON::Reader &json, Theme &theme, IControl* &pControl)
 	bool bOK = false;
 	identity_t id = 0;
 	std::string text;
-	FlowDesc horz, vert;
+	Flow horz, vert;
 	do
 	{
 		bOK = json.namedValue("orient", text) ||
 			json.namedValue("id", id) ||
-			loadFlowDesc(json, "Horz", horz) ||
-			loadFlowDesc(json, "Vert", vert);
+			loadFlow(json, "Horz", horz) ||
+			loadFlow(json, "Vert", vert);
 	}
 	while (bOK && json.comma());
 	if (bOK)
@@ -222,13 +222,13 @@ static bool loadScroll(JSON::Reader &json, Theme &theme, IControl* &pControl)
 	return bOK;
 }
 
-static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow);
+static bool loadUnknown(JSON::Reader &json, Theme &theme, Pane* &pPane);
 
-static bool loadFlow(JSON::Reader &json, Theme &theme, Flow* &pFlow)
+static bool loadPane(JSON::Reader &json, Theme &theme, Pane* &pPane)
 {
 	std::string text;
 	identity_t id = 0;
-	FlowDesc horz, vert;
+	Flow horz, vert;
 	bool bOK = false;
 	bool bOnce = false;
 
@@ -236,22 +236,22 @@ static bool loadFlow(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 	{
 		bOK = json.namedValue("orient", text) ||
 			json.namedValue("id", id) ||
-			loadFlowDesc(json, "Horz", horz) ||
-			loadFlowDesc(json, "Vert", vert);
+			loadFlow(json, "Horz", horz) ||
+			loadFlow(json, "Vert", vert);
 		bOnce = bOK || bOnce;
 	}
 	while (bOK && json.comma());
 
 	if (bOnce)
 	{
-		pFlow = new Flow(id, theme, orient(text));
-		pFlow->setFlow(eRight, horz);
-		pFlow->setFlow(eDown, vert);
+		pPane = new Pane(id, theme, orient(text));
+		pPane->setFlow(eRight, horz);
+		pPane->setFlow(eDown, vert);
 		if ( json.beginNamedArray("Items") )
 		{
 			do
 			{
-				bOK = loadUnknown(json, theme, pFlow);
+				bOK = loadUnknown(json, theme, pPane);
 			}
 			while ( bOK && json.comma() );
 			if (bOK)
@@ -262,7 +262,7 @@ static bool loadFlow(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 	return false;
 }
 
-static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
+static bool loadUnknown(JSON::Reader &json, Theme &theme, Pane* &pPane)
 {
 	bool bOK = false;
 	if (json.beginObject() )
@@ -279,7 +279,7 @@ static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 				_ASSERT(bOK);
 				if (bOK)
 				{
-					pFlow->Add(pDraw);
+					pPane->Add(pDraw);
 				}
 			}
 			else if ( type.compare(Button::type()) == 0 )
@@ -288,7 +288,7 @@ static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 				_ASSERT(bOK);
 				if (bOK)
 				{
-					pFlow->Add(pControl);
+					pPane->Add(pControl);
 				}
 			}
 			else if ( type.compare(Check::type()) == 0 )
@@ -297,7 +297,7 @@ static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 				_ASSERT(bOK);
 				if (bOK)
 				{
-					pFlow->Add(pControl);
+					pPane->Add(pControl);
 				}
 			}
 			else if ( type.compare(Edit::type()) == 0 )
@@ -306,7 +306,7 @@ static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 				_ASSERT(bOK);
 				if (bOK)
 				{
-					pFlow->Add(pControl);
+					pPane->Add(pControl);
 				}
 			}
 			else if ( type.compare(Fill::type()) == 0 )
@@ -315,17 +315,17 @@ static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 				_ASSERT(bOK);
 				if (bOK)
 				{
-					pFlow->Add(pDraw);
+					pPane->Add(pDraw);
 				}
 			}
-			else if ( type.compare(Flow::type()) == 0 )
+			else if ( type.compare(Pane::type()) == 0 )
 			{
-				Flow *pChild = NULL;
-				bOK = loadFlow(json, theme, pChild);
+				Pane *pChild = NULL;
+				bOK = loadPane(json, theme, pChild);
 				if (bOK)
 				{
-					pFlow->Add(pChild);
-					//pChild->setIndex(pFlow->getShared()); // TODO
+					pPane->Add(pChild);
+					//pChild->setIndex(pPane->getShared()); // TODO
 				}
 			}
 			else if ( type.compare(Scroll::type()) == 0 )
@@ -334,7 +334,7 @@ static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 				_ASSERT(bOK);
 				if (bOK)
 				{
-					pFlow->Add(pControl);
+					pPane->Add(pControl);
 				}
 			}
 			else if ( type.compare(Text::type()) == 0 )
@@ -343,7 +343,7 @@ static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 				_ASSERT(bOK);
 				if (bOK)
 				{
-					pFlow->Add(pDraw);
+					pPane->Add(pDraw);
 				}
 			}
 		}
@@ -352,7 +352,7 @@ static bool loadUnknown(JSON::Reader &json, Theme &theme, Flow* &pFlow)
 	return bOK;
 }
 
-bool loadForm(const TCHAR *path, Theme &theme, Flow* &pFlow)
+bool loadForm(const TCHAR *path, Theme &theme, Pane* &pPane)
 {
 	JSON::Reader json;
 	FileInputStream stream;
@@ -360,10 +360,10 @@ bool loadForm(const TCHAR *path, Theme &theme, Flow* &pFlow)
 	std::string type;
 	return stream.Open(path) &&
 		json.open(&stream) &&
-		json.beginNamedObject("Flow") &&
+		json.beginNamedObject("Pane") &&
 		json.namedValue("type", type) &&
-		type.compare(Flow::type()) == 0 &&
+		type.compare(Pane::type()) == 0 &&
 		json.comma() &&
-		loadFlow(json, theme, pFlow) &&
+		loadPane(json, theme, pPane) &&
 		json.endObject();
 }

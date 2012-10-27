@@ -19,7 +19,7 @@ struct MockWindow : public IWindow
 	// hover
 	virtual void setHover(IControl *pFocus);
 	// popup window
-	virtual IWindow* popup(const rect_t &rect, Flow *pContent, IControl *pOwner);
+	virtual IWindow* popup(const rect_t &rect, Pane *pContent, IControl *pOwner);
 	// close and destroy the window
 	virtual void close();
 	// window handle

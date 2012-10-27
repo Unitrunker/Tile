@@ -10,7 +10,7 @@
 #include "../Tile/Check.h"
 #include "../Tile/Edit.h"
 #include "../Tile/Scroll.h"
-#include "../Tile/Flow.h"
+#include "../Tile/Pane.h"
 #include "../Tile/Tree.h"
 #include "../Tile/Grid.h"
 #include "../Tile/Glyph.h"
@@ -75,11 +75,11 @@ static void testFill()
 	MockWatch watch;
 	Theme theme;
 	Fill fill(1, theme);
-	Flow flow(0, theme);
-	flow.Add(&fill);
+	Pane pane(0, theme);
+	pane.Add(&fill);
 	printf("%s\n", __FUNCTION__);
 	testITile(&fill, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testText()
@@ -88,11 +88,11 @@ static void testText()
 	Theme theme;
 	Theme::Font textFont = {Theme::eText, theme.Text};
 	Text text(1, theme, textFont);
-	Flow flow(0, theme);
-	flow.Add(&text);
+	Pane pane(0, theme);
+	pane.Add(&text);
 	printf("%s\n", __FUNCTION__);
 	testITile(&text, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testArrow()
@@ -100,11 +100,11 @@ static void testArrow()
 	MockWatch watch;
 	Theme theme;
 	Arrow arrow(1, theme, eRight);
-	Flow flow(0, theme);
-	flow.Add(&arrow);
+	Pane pane(0, theme);
+	pane.Add(&arrow);
 	printf("%s\n", __FUNCTION__);
 	testITile(&arrow, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testButton()
@@ -113,11 +113,11 @@ static void testButton()
 	Theme theme;
 	Theme::Font font = {Theme::eDefault, Font(_T("Arial"), 18, 0)};
 	Button button(1, theme, font, _T("Test"), _T("Test"), _T("Test"));
-	Flow flow(0, theme);
-	flow.Add(&button);
+	Pane pane(0, theme);
+	pane.Add(&button);
 	printf("%s\n", __FUNCTION__);
 	testIControl(&button, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testCheck()
@@ -126,11 +126,11 @@ static void testCheck()
 	Theme theme;
 	bool toggle = false;
 	Check check(1, theme, toggle);
-	Flow flow(0, theme);
-	flow.Add(&check);
+	Pane pane(0, theme);
+	pane.Add(&check);
 	printf("%s\n", __FUNCTION__);
 	testIControl(&check, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testEdit()
@@ -140,8 +140,8 @@ static void testEdit()
 	string_t string = _T("Test");
 	Theme::Font textFont = {Theme::eText, theme.Text};
 	Edit edit(1, theme, textFont, string);
-	Flow flow(0, theme);
-	flow.Add(&edit);
+	Pane pane(0, theme);
+	pane.Add(&edit);
 	printf("%s\n", __FUNCTION__);
 
 	Tiles::KeyEvent action;
@@ -170,7 +170,7 @@ static void testEdit()
 
 	testIControl(&edit, watch);
 
-	flow.clear();
+	pane.clear();
 }
 
 static void testScroll()
@@ -179,35 +179,35 @@ static void testScroll()
 	Theme theme;
 	long value = 0;
 	Scroll scroll(1, theme, eRight, value);
-	Flow flow(0, theme);
-	flow.Add(&scroll);
+	Pane pane(0, theme);
+	pane.Add(&scroll);
 	printf("%s\n", __FUNCTION__);
 	testIControl(&scroll, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testTree()
 {
 	MockWatch watch;
 	Theme theme;
-	Flow flow(0, theme);
+	Pane pane(0, theme);
 	Tree tree(0, theme);
-	flow.Add(&tree);
+	pane.Add(&tree);
 	printf("%s\n", __FUNCTION__);
 	testIControl(&tree, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testGrid()
 {
 	MockWatch watch;
 	Theme theme;
-	Flow flow(0, theme);
+	Pane pane(0, theme);
 	Grid grid(0, theme);
-	flow.Add(&grid);
+	pane.Add(&grid);
 	printf("%s\n", __FUNCTION__);
 	testIControl(&grid, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testGlyph()
@@ -215,12 +215,12 @@ static void testGlyph()
 	MockWatch watch;
 	Theme theme;
 	Theme::Font font = {Theme::eText, theme.Text};
-	Flow flow(0, theme);
+	Pane pane(0, theme);
 	Glyph glyph(0, theme, font);
-	flow.Add(&glyph);
+	pane.Add(&glyph);
 	printf("%s\n", __FUNCTION__);
 	testITile(&glyph, watch);
-	flow.clear();
+	pane.clear();
 }
 
 static void testRectangle()
@@ -277,26 +277,26 @@ static void testRectangle()
 static void testFlow()
 {
 	Theme theme;
-	Flow flow(0, theme, eDown);
+	Pane pane(0, theme, eDown);
 	Theme::Font textFont = {Theme::eText, theme.Text};
 
 	Text a(0, theme, textFont, eLeft, _T("A"));
 	Text b(0, theme, textFont, eLeft, _T("B"));
 	Text c(0, theme, textFont, eLeft, _T("C"));
 
-	flow.Add(&a);
-	flow.Add(&b);
-	flow.Add(&c);
+	pane.Add(&a);
+	pane.Add(&b);
+	pane.Add(&c);
 
 	rect_t rect = {0, 0, 320, 40};
-	flow.setRect(rect);
+	pane.setRect(rect);
 
 	rect_t box = {0}, view = {0};
 
 	for (meter_t i = 0; i < 30; i++)
 	{
-		flow.getRect(view);
-		flow.getScrollBox(box);
+		pane.getRect(view);
+		pane.getScrollBox(box);
 		fprintf(stderr, "Flow: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n",
 			view.x, view.y, view.wide, view.high, box.x, box.y, box.wide, box.high);
 
@@ -316,9 +316,9 @@ static void testFlow()
 			view.x, view.y, view.wide, view.high, box.x, box.y, box.wide, box.high);
 
 		point_t pt = {0, i};
-		flow.setScrollPoint(pt);
+		pane.setScrollPoint(pt);
 	}
-	flow.clear();
+	pane.clear();
 }
 
 /*

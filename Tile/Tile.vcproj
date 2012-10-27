@@ -202,10 +202,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Flow.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Font.cpp"
 				>
 			</File>
@@ -239,6 +235,10 @@
 			</File>
 			<File
 				RelativePath=".\List.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Pane.cpp"
 				>
 			</File>
 			<File
@@ -376,10 +376,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Flow.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Follow.h"
 				>
 			</File>
@@ -437,6 +433,10 @@
 			</File>
 			<File
 				RelativePath=".\multicast.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pane.h"
 				>
 			</File>
 			<File

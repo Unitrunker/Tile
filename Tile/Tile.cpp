@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Tile.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "../JSON/Writer.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -15,13 +15,13 @@ Tile::Tile(identity_t id, Theme &theme) :
 	_bChanged(true),
 	_pSelf(this),
 	_theme(theme),
-	_pFlow(NULL)
+	_pPane(NULL)
 {
 	_font.index = Theme::eText;
 	_font.font = theme.Text;
 	_rect.x = _rect.wide = _rect.y = _rect.high = 0;
 	_scrollBox = _rect;
-	FlowDesc desc = {0, 4096, 1, false};
+	Flow desc = {0, 4096, 1, false};
 	_vert = desc;
 	_horz = desc;
 }
@@ -33,11 +33,11 @@ Tile::Tile(identity_t id, Theme &theme, const Theme::Font &font) :
 	_pSelf(this),
 	_theme(theme),
 	_font(font),
-	_pFlow(NULL)
+	_pPane(NULL)
 {
 	_rect.x = _rect.wide = _rect.y = _rect.high = 0;
 	_scrollBox = _rect;
-	FlowDesc desc = {0, 4096, 1, false};
+	Flow desc = {0, 4096, 1, false};
 	_vert = desc;
 	_horz = desc;
 }
@@ -51,7 +51,7 @@ Tile::Tile(const Tile &copy) :
 	_pSelf(this),
 	_font(copy._font),
 	_theme(copy._theme),
-	_pFlow(NULL),
+	_pPane(NULL),
 	_pNotify(NULL)
 {
 }
@@ -292,7 +292,7 @@ void Tile::setWeight(orient_t flow, meter_t weight)
 	}
 }
 
-void Tile::getFlow(orient_t flow, FlowDesc &desc)
+void Tile::getFlow(orient_t flow, Flow &desc)
 {
 	switch (flow)
 	{
@@ -310,7 +310,7 @@ void Tile::getFlow(orient_t flow, FlowDesc &desc)
 	}
 }
 
-void Tile::setFlow(orient_t flow, const FlowDesc &desc)
+void Tile::setFlow(orient_t flow, const Flow &desc)
 {
 	switch (flow)
 	{
@@ -347,7 +347,7 @@ const rect_t &Tile::scrollBox() const
 	return _scrollBox;
 }
 
-static bool saveFlowDesc(JSON::Writer &writer, const char *alias, const FlowDesc &desc)
+static bool saveFlow(JSON::Writer &writer, const char *alias, const Flow &desc)
 {
 	writer.writeStartNamedObject(alias);
 	writer.writeNamedValue("min", desc._min);
@@ -393,19 +393,19 @@ void Tile::watch(IRedraw* pNotify)
 bool Tile::save(JSON::Writer &writer)
 {
 	return writer.writeNamedValue("id", identity()) &&
-		saveFlowDesc(writer, "Horz", _horz) &&
-		saveFlowDesc(writer, "Vert", _vert);
+		saveFlow(writer, "Horz", _horz) &&
+		saveFlow(writer, "Vert", _vert);
 }
 
 // the tile's containing flow object
-Flow *Tile::getContainer() const
+Pane *Tile::getContainer() const
 {
-	return _pFlow;
+	return _pPane;
 }
 
-void Tile::setContainer(Flow *pFlow)
+void Tile::setContainer(Pane *pPane)
 {
-	_pFlow = pFlow;
+	_pPane = pPane;
 }
 
 color_t Tile::getColor(const Theme::Color &pick) const

@@ -4,7 +4,7 @@
 #include "AboutDlg.h"
 #include "MainFrm.h"
 #include "../Tile/Fill.h"
-#include "../Tile/Flow.h"
+#include "../Tile/Pane.h"
 #include "../Tile/Check.h"
 
 CMainFrame::CMainFrame() : m_view(_theme)
@@ -127,7 +127,7 @@ void CMainFrame::createForm()
 	Theme &theme = m_view.getTheme();
 	theme.setHeight(144);
 
-	Flow *pBox = new Flow(0, theme, eDown);
+	Pane *pBox = new Pane(0, theme, eDown);
 	pBox->setSpace(0);
 
 	Fill *pFill = NULL;
@@ -135,15 +135,15 @@ void CMainFrame::createForm()
 	pFill = new Fill(0, theme);
 	pBox->Add(pFill, 0, 4096, 1);
 
-	Flow *pCenter = new Flow(0, theme, eRight);
+	Pane *pCenter = new Pane(0, theme, eRight);
 	pCenter->setSpace(0);
 	pFill = new Fill(0, theme);
 	pCenter->Add(pFill, 0, 4096, 1);
 
-	Flow *pFlow = new Flow(0, theme, eDown);
+	Pane *pPane = new Pane(0, theme, eDown);
 	for (size_t row = 0; row < 3; row++)
 	{
-		Flow *pRow = new Flow(0, theme, eRight);
+		Pane *pRow = new Pane(0, theme, eRight);
 		for (size_t col = 0; col < 3; col++)
 		{
 			Check *pControl = new Check(0, theme, &m_map[row][col], eLeft|eRight);
@@ -153,11 +153,11 @@ void CMainFrame::createForm()
 			pRow->Add(pControl, 1, 1, 0, true);
 		}
 		pRow->setSpace(8);
-		pFlow->Add(pRow, 1, 1, 0, true);
+		pPane->Add(pRow, 1, 1, 0, true);
 	}
-	pFlow->setSpace(8);
+	pPane->setSpace(8);
 
-	pCenter->Add(pFlow, 0, 4096, 0);
+	pCenter->Add(pPane, 0, 4096, 0);
 	pFill = new Fill(0, theme);
 	pFill->setWeight(eDown, 1);
 	pCenter->Add(pFill, 0, 4096, 1);
@@ -168,7 +168,7 @@ void CMainFrame::createForm()
 	pFill->setWeight(eDown, 1);
 	pBox->Add(pFill, 0, 4096, 1);
 
-	m_view.setFlow(pBox);
+	m_view.setPane(pBox);
 	cycle();
 }
 

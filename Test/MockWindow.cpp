@@ -31,7 +31,7 @@ void MockWindow::setHover(IControl *pHover)
 }
 
 // popup window
-IWindow* MockWindow::popup(const rect_t &rect, Flow *pContent, IControl *pOwner)
+IWindow* MockWindow::popup(const rect_t &rect, Pane *pContent, IControl *pOwner)
 {
 	rect;		// ignored.
 	pContent;	// ignored.

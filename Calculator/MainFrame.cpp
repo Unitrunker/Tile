@@ -10,8 +10,8 @@ MainFrame::MainFrame(Theme &theme) :
 	Frame(theme), m_editor(theme), m_about(theme), m_set(theme)
 {
 	// create a form with a toolbar and a list control.
-	Flow *pFlow = new Flow(0, theme, eDown);
-	Flow *pRow = NULL;
+	Pane *pPane = new Pane(0, theme, eDown);
+	Pane *pRow = NULL;
 	Button *pButton = NULL;
 
 	theme.setHeight(48);
@@ -46,9 +46,9 @@ MainFrame::MainFrame(Theme &theme) :
 
 	// construct calculator keypad
 	Edit *pEdit = new Edit(0, theme, font, &m_value);
-	pFlow->Add(pEdit, 1, 1, 0, true);
+	pPane->Add(pEdit, 1, 1, 0, true);
 
-	pRow = new Flow(0, theme, eRight);
+	pRow = new Pane(0, theme, eRight);
 	pButton = new Button(0, theme, font, about);
 	pButton->Click.bind(this, &MainFrame::clickAbout);
 	pRow->Add(pButton, 0, 4096, 1);
@@ -58,9 +58,9 @@ MainFrame::MainFrame(Theme &theme) :
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, exit);
 	pRow->Add(pButton, 0, 4096, 1);
-	pFlow->Add(pRow, 0, 4096, 1);
+	pPane->Add(pRow, 0, 4096, 1);
 
-	pRow = new Flow(0, theme, eRight);
+	pRow = new Pane(0, theme, eRight);
 	pButton = new Button(0, theme, font, digits[7]);
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, digits[8]);
@@ -69,9 +69,9 @@ MainFrame::MainFrame(Theme &theme) :
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, divide);
 	pRow->Add(pButton, 0, 4096, 1);
-	pFlow->Add(pRow, 0, 4096, 1);
+	pPane->Add(pRow, 0, 4096, 1);
 
-	pRow = new Flow(0, theme, eRight);
+	pRow = new Pane(0, theme, eRight);
 	pButton = new Button(0, theme, font, digits[4]);
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, digits[5]);
@@ -80,9 +80,9 @@ MainFrame::MainFrame(Theme &theme) :
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, times); // 0x2716
 	pRow->Add(pButton, 0, 4096, 1);
-	pFlow->Add(pRow, 0, 4096, 1);
+	pPane->Add(pRow, 0, 4096, 1);
 
-	pRow = new Flow(0, theme, eRight);
+	pRow = new Pane(0, theme, eRight);
 	pButton = new Button(0, theme, font, digits[1]);
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, digits[2]);
@@ -91,9 +91,9 @@ MainFrame::MainFrame(Theme &theme) :
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, minus);
 	pRow->Add(pButton, 0, 4096, 1);
-	pFlow->Add(pRow, 0, 4096, 1);
+	pPane->Add(pRow, 0, 4096, 1);
 
-	pRow = new Flow(0, theme, eRight);
+	pRow = new Pane(0, theme, eRight);
 	pButton = new Button(0, theme, font, clear);
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, digits[0]);
@@ -102,12 +102,12 @@ MainFrame::MainFrame(Theme &theme) :
 	pRow->Add(pButton, 0, 4096, 1);
 	pButton = new Button(0, theme, font, plus); // 0x271A
 	pRow->Add(pButton, 0, 4096, 1);
-	pFlow->Add(pRow, 0, 4096, 1);
+	pPane->Add(pRow, 0, 4096, 1);
 
-	pFlow->setBorder(8);
+	pPane->setBorder(8);
 
 	// connect the form to the frame window.
-	setFlow(pFlow);
+	setPane(pPane);
 };
 
 // user clicked the theme editor button
@@ -125,7 +125,7 @@ void MainFrame::clickTheme(Button *, bool bDown)
 			RECT rect = {0, 0, 320, 480};
 			List *pList = new List(0, getTheme());
 			pList->setItems(&m_set);
-			m_editor.setFlow(pList);
+			m_editor.setPane(pList);
 			m_editor.Create(m_hWnd, rect, _T("Theme Editor"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW);
 			m_editor.CenterWindow(m_hWnd);
 			m_editor.ShowWindow(SW_SHOW);
@@ -150,8 +150,8 @@ void MainFrame::clickAbout(Button *, bool bDown)
 			Theme::Font dingFont = {Theme::eDefault, Font(_T("Wing dings"), theme.Text._height, 0)};
 			RECT rect = {0, 0, theme.Text._height*24, theme.Text._height * 3};
 			Fill* pFill = NULL;
-			Flow *pFlow = new Flow(0, theme, eDown);
-			Flow *pLine = new Flow(0, theme, eRight);
+			Pane *pPane = new Pane(0, theme, eDown);
+			Pane *pLine = new Pane(0, theme, eRight);
 			pLine->setSpace(0);
 			static const TCHAR frill1[] = {0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0};
 			static const TCHAR frill2[] = {0x97, 0x97, 0x97, 0x97, 0x97, 0x97, 0};
@@ -165,12 +165,12 @@ void MainFrame::clickAbout(Button *, bool bDown)
 			pOK->Click.bind(this, &MainFrame::clickOK);
 
 			pFill = new Fill(0, theme);
-			pFlow->Add(pFill, 0, 4096, 1, false);
-			pFlow->Add(pLine, 1, 1, 0, true);
-			pFlow->Add(pOK, 1, 1, 0, true);
+			pPane->Add(pFill, 0, 4096, 1, false);
+			pPane->Add(pLine, 1, 1, 0, true);
+			pPane->Add(pOK, 1, 1, 0, true);
 			pFill = new Fill(0, theme);
-			pFlow->Add(pFill, 0, 4096, 1, false);
-			m_about.setFlow(pFlow);
+			pPane->Add(pFill, 0, 4096, 1, false);
+			m_about.setPane(pPane);
 			m_about.Create(m_hWnd, rect, _T("About this sample app"), WS_POPUP|WS_BORDER);
 			m_about.CenterWindow(m_hWnd);
 			m_about.ShowWindow(SW_SHOW);
@@ -186,6 +186,6 @@ void MainFrame::clickOK(Button *, bool)
 void MainFrame::clickSnapshot(Button *, bool)
 {
 	Snapshot camera(m_hWnd);
-	getFlow()->Draw(&camera, true);
+	getPane()->Draw(&camera, true);
 	camera.Save(_T(".\\Picture.bmp"));
 }

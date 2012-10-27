@@ -6,7 +6,7 @@
 #include "Tree.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -46,16 +46,16 @@ void _Section::setItems(Section *section)
 {
 	_section = section;
 	Theme& theme = _tile.getTheme();
-	FlowDesc text = {0, 4096, 1, false};
-	FlowDesc edit = {0, 4096, 3, false};
-	FlowDesc line = {1, 1, 0, true};
-	FlowDesc coil = {0, 4096, 0, false};
+	Flow text = {0, 4096, 1, false};
+	Flow edit = {0, 4096, 3, false};
+	Flow line = {1, 1, 0, true};
+	Flow coil = {0, 4096, 0, false};
 	Theme::Font textFont = {Theme::eText, theme.Text};
 
 	setFlow(eDown, coil);
 	setFlow(eRight, coil);
 
-	Flow *pSection = new Flow(0, theme, eRight);
+	Pane *pSection = new Pane(0, theme, eRight);
 	Check *pCheck = new Check(0, theme, this);
 	Text *pText = new Text(0, theme, textFont, eLeft, section->Caption);
 	pText->setFlow(eRight, text);
@@ -72,13 +72,13 @@ void _Section::setItems(Section *section)
 	pSection->Add(pCheck);
 	pSection->Add(pText);
 	pSection->setFlow(eDown, line);
-	Flow::Add(pSection);
+	Pane::Add(pSection);
 	_control = pCheck;
 	size_t size = _section->Items.size();
 	for (size_t j = 0; j < size; j++)
 	{
 		Property *item = _section->Items[j];
-		Flow *pItem = new Flow(0, theme, eRight);
+		Pane *pItem = new Pane(0, theme, eRight);
 		Text *pLabel = new Text(0, theme, textFont, eRight, item->Name);
 		pLabel->setFlow(eRight, text);
 		IControl *pControl = item->Control;
@@ -92,13 +92,13 @@ void _Section::setItems(Section *section)
 
 void _Section::setFocus(IControl *pControl)
 {
-	Flow::setFocus(pControl);
+	Pane::setFocus(pControl);
 
 	if ( getIndex() == 0 )
 	{
 		// tell property list control to update the descriptive text section.
-		Flow *flow = getContainer();
-		List *list = static_cast<List*>(flow);
+		Pane *pane = getContainer();
+		List *list = static_cast<List*>(pane);
 		list->select(_section);
 	}
 	else if (pControl != NULL)
@@ -118,8 +118,8 @@ void _Section::setFocus(IControl *pControl)
 		if (i < size)
 		{
 			// tell property list control to update the descriptive text section.
-			Flow *flow = getContainer();
-			List *list = static_cast<List*>(flow);
+			Pane *pane = getContainer();
+			List *list = static_cast<List*>(pane);
 			list->select(_section->Items[i]);
 		}
 	}
@@ -128,7 +128,7 @@ void _Section::setFocus(IControl *pControl)
 //
 
 List::List(identity_t id, Theme &theme) : 
-	Flow(id, theme, eDown),
+	Pane(id, theme, eDown),
 	_set(NULL), 
 	_note(NULL)
 {
@@ -169,7 +169,7 @@ void List::setItems(struct Set *set)
 	{
 		Theme& theme = _tile.getTheme();
 		Theme::Font textFont = {Theme::eText, theme.Text};
-		FlowDesc text = {0, 4096, 1, false};
+		Flow text = {0, 4096, 1, false};
 		for (size_t i = 0; i < _set->Sections.size(); i++)
 		{
 			_Section *pSection = new _Section(0, theme);

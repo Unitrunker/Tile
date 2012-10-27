@@ -10,7 +10,7 @@ namespace Tiles
 {
 
 struct IControl;
-struct Flow;
+struct Pane;
 
 // Soon to be renamed "IWindow"
 
@@ -25,7 +25,7 @@ struct IWindow
 	// hover
 	virtual void setHover(IControl *pFocus) = 0;
 	// popup window associated with this window
-	virtual IWindow* popup(const rect_t &rect, Flow *pContent, IControl *pOwner) = 0;
+	virtual IWindow* popup(const rect_t &rect, Pane *pContent, IControl *pOwner) = 0;
 	// close and destroy the window
 	virtual void close() = 0;
 	// window handle

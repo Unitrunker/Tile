@@ -5,13 +5,13 @@
 #include <atldlgs.h>
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
 
 PickFont::PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<Font>* access) :
-	Flow(id, theme, eRight),
+	Pane(id, theme, eRight),
 	_access(access),
 	_prompt(prompt),
 	_edit(NULL),
@@ -19,7 +19,7 @@ PickFont::PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<F
 {
 	Theme::Font textFont = {Theme::eText, theme.Text};
 	Theme::Font arrowFont = {Theme::eArrow, theme.Arrow};
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 
 	_edit = new Edit(0, theme, textFont, this);
 

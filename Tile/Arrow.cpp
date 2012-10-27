@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "Arrow.h"
-#include "Flow.h"
+#include "Pane.h"
 #include "ICanvas.h"
 #include "../JSON/Writer.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -16,7 +16,7 @@ Arrow::Arrow(identity_t id, Theme& theme, orient_t flow) :
 {
 	_font.index = Theme::eArrow;
 	_text = _T("?");
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	setFlow(eRight, desc);
 	setFlow(eDown, desc);
 	_fore.color = _back.color = 0;
@@ -79,7 +79,7 @@ bool Arrow::save(JSON::Writer &writer)
 	writer.writeStartObject();
 	writer.writeNamedValue("type", type());
 	Tile::save(writer);
-	writer.writeNamedValue("orient", Flow::getName(_flow));
+	writer.writeNamedValue("orient", Pane::getName(_flow));
 	writer.writeEndObject(true);
 	return true;
 }

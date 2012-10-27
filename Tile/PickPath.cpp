@@ -13,7 +13,7 @@ static const Theme::Font placebo = {0};
 static const TCHAR text[] = {0xFEFF, 0x2B5C, 0};
 
 PickPath::PickPath(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<string_t>* access) :
-	Flow(id, theme, eRight),
+	Pane(id, theme, eRight),
 	_access(access),
 	_prompt(prompt),
 	_edit(NULL),
@@ -67,7 +67,7 @@ void PickPath::click(Button*, bool down)
 	}
 }
 
-// Modified getMin above causes standard Flow::setRect to break so use
+// Modified getMin above causes standard Pane::setRect to break so use
 // this greatly simplified logic for layout of the text and drop arrow.
 void PickPath::setRect(const rect_t &rect)
 {

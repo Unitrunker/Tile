@@ -1,4 +1,4 @@
-#include "Flow.h"
+#include "Pane.h"
 #include "Property.h"
 
 /*
@@ -13,7 +13,7 @@ namespace Tiles
 struct Text;
 
 // A deceptively simple property list control!
-struct List : public Flow
+struct List : public Pane
 {
 	List(identity_t id, Theme &theme);
 	virtual ~List();

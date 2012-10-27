@@ -1,4 +1,4 @@
-#include "../Tile/Flow.h"
+#include "../Tile/Pane.h"
 #include "../Tile/Theme.h"
 #include "../Tile/IWindow.h"
 #include <list>
@@ -12,7 +12,7 @@ class Popup : public CWindowImpl<Popup>,
 {
 	Theme& _theme;
 	// all content goes here.
-	Flow *_pFlow;
+	Pane *_pPane;
 	// internal paint
 	bool _bInternal;
 	std::list<ITile*> _internal;
@@ -32,7 +32,7 @@ class Popup : public CWindowImpl<Popup>,
 	// hover
 	virtual void setHover(IControl *pHover);
 	// popup window
-	virtual IWindow* popup(const rect_t &rect, Flow *pContent, IControl *pOwner);
+	virtual IWindow* popup(const rect_t &rect, Pane *pContent, IControl *pOwner);
 	// close and destroy the window
 	virtual void close();
 	// get window handle
@@ -76,7 +76,7 @@ class Popup : public CWindowImpl<Popup>,
 
 public:
 	Popup(Theme &theme);
-	Popup(Theme &theme, const rect_t &rect, Flow *pContent, IControl *pOwner);
+	Popup(Theme &theme, const rect_t &rect, Pane *pContent, IControl *pOwner);
 	~Popup();
 
 	static ATL::CWndClassInfo& GetWndClassInfo();
@@ -104,7 +104,7 @@ public:
 		MESSAGE_HANDLER(WM_MOUSEACTIVATE, OnMouseActivate)
 	END_MSG_MAP()
 
-	Flow *getFlow();
-	void setFlow(Flow *pFlow);
+	Pane *getPane();
+	void setPane(Pane *pPane);
 	Theme &getTheme() { return _theme; }
 };

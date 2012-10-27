@@ -2,7 +2,7 @@
 #include "Theme.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 #pragma once
@@ -31,8 +31,8 @@ struct Tile : public ITile
 	virtual void getWeight(orient_t flow, meter_t &weight);
 	virtual void setWeight(orient_t flow, meter_t weight);
 
-	virtual void getFlow(orient_t flow, FlowDesc &desc);
-	virtual void setFlow(orient_t flow, const FlowDesc &desc);
+	virtual void getFlow(orient_t flow, Flow &desc);
+	virtual void setFlow(orient_t flow, const Flow &desc);
 
 	// get/set accessor for bounding rectangle.
 	virtual void getRect(rect_t &rect) const;
@@ -50,8 +50,8 @@ struct Tile : public ITile
 	// serialize
 	virtual bool save(JSON::Writer &);
 	// the tile's containing flow object
-	virtual Flow *getContainer() const;
-	virtual void setContainer(Flow *);
+	virtual Pane *getContainer() const;
+	virtual void setContainer(Pane *);
 	// get color from underlying theme.
 	color_t getColor(const Theme::Color &color) const;
 	// get grid thickness
@@ -84,13 +84,13 @@ protected:
 	identity_t _id;
 	rect_t _rect;
 	rect_t _scrollBox;
-	FlowDesc _vert;
-	FlowDesc _horz;
+	Flow _vert;
+	Flow _horz;
 	Theme& _theme;
 	Theme::Font _font;
 	IRedraw* _pNotify;
 	bool _bChanged;
-	Flow *_pFlow;
+	Pane *_pPane;
 private:
 	Tile & operator = (const Tile &never);
 };

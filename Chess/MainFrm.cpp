@@ -3,7 +3,7 @@
 
 #include "AboutDlg.h"
 #include "MainFrm.h"
-#include "../Tile/Flow.h"
+#include "../Tile/Pane.h"
 #include "../Tile/Fill.h"
 #include "../Tile/Check.h"
 
@@ -195,11 +195,11 @@ void CMainFrame::createForm()
 	theme.setHeight(48);
 	theme.Arrow._style = 0; // not symbol (oddly enough)
 
-	Flow *pBox = new Flow(0, theme, eDown);
+	Pane *pBox = new Pane(0, theme, eDown);
 	pBox->setSpace(0);
 
-	FlowDesc rowDesc = {0, 4096, 0};
-	FlowDesc fillDesc = {0, 4096, 1};
+	Flow rowDesc = {0, 4096, 0};
+	Flow fillDesc = {0, 4096, 1};
 
 	Fill *pFill = NULL;
 
@@ -207,17 +207,17 @@ void CMainFrame::createForm()
 	pBox->Add(pFill, 0, 4096, 1);
 	pFill->setFlow(eRight, fillDesc);
 
-	Flow *pCenter = new Flow(0, theme, eRight);
+	Pane *pCenter = new Pane(0, theme, eRight);
 	pCenter->setSpace(0);
 	pFill = new Fill(0, theme);
 	pCenter->Add(pFill, 0, 4096, 1);
 	pFill->setFlow(eDown, fillDesc);
 
-	Flow *pFlow = new Flow(0, theme, eDown);
-	pFlow->setSpace(0);
+	Pane *pPane = new Pane(0, theme, eDown);
+	pPane->setSpace(0);
 	for (size_t row = 0; row < MAG; row++)
 	{
-		Flow *pRow = new Flow(0, theme, eRight);
+		Pane *pRow = new Pane(0, theme, eRight);
 		pRow->setSpace(0);
 		pRow->setFlow(eRight, rowDesc);
 		for (size_t col = 0; col < MAG; col++)
@@ -229,12 +229,12 @@ void CMainFrame::createForm()
 			m_controls[row][col] = pControl;
 			pRow->Add(pControl, 1, 1, 0, true);
 		}
-		pFlow->Add(pRow, 1, 1, 0, true);
+		pPane->Add(pRow, 1, 1, 0, true);
 	}
 
-	pCenter->Add(pFlow, 0, 4096, 0);
-	pFlow->setFlow(eDown, rowDesc);
-	pFlow->setFlow(eRight, rowDesc);
+	pCenter->Add(pPane, 0, 4096, 0);
+	pPane->setFlow(eDown, rowDesc);
+	pPane->setFlow(eRight, rowDesc);
 	pFill = new Fill(0, theme);
 	pFill->setFlow(eDown, fillDesc);
 	pFill->setFlow(eRight, fillDesc);
@@ -291,7 +291,7 @@ void CMainFrame::createForm()
 				m_controls[row][col]->setBack(normal, focus);
 		}
 	}
-	m_view.setFlow(pBox);
+	m_view.setPane(pBox);
 }
 
 LRESULT CMainFrame::OnSizing(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)

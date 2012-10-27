@@ -48,8 +48,8 @@ CMainFrame::CMainFrame() :
 {
 	Theme& theme = _theme;
 	// create a form with a toolbar and a list control.
-	Flow *pFlow = new Flow(0, theme, eDown);
-	Flow *pTools = new Flow(0, theme, eRight);
+	Pane *pPane = new Pane(0, theme, eDown);
+	Pane *pTools = new Pane(0, theme, eRight);
 	List *pList = new List(0, theme);
 
 	const TCHAR one[] = {0x203B, 0};
@@ -92,18 +92,18 @@ CMainFrame::CMainFrame() :
 	pTools->Add(pButton, 1, 1, 0, true );
 	pTools->Add( new Fill(0, theme), 0, 4096, 1);
 
-	FlowDesc desc = {1, 1, 0, true};
+	Flow desc = {1, 1, 0, true};
 	pTools->setFlow(eDown, desc);
 	// add toolbar to form
-	pFlow->Add(pTools, true);
+	pPane->Add(pTools, true);
 	// add list control to form
-	pFlow->Add(pList, 0, 4096, 1);
+	pPane->Add(pList, 0, 4096, 1);
 	// connect adapter to the data.
 	m_adapter.setValue(&m_person);
 	// populate list control.
 	pList->setItems(&m_adapter);
 	// connect the form to the frame window.
-	m_wndView.setFlow(pFlow);
+	m_wndView.setPane(pPane);
 }
 
 CMainFrame::~CMainFrame()

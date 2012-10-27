@@ -7,29 +7,29 @@ Popup::Popup(Theme &theme) :
 	_theme(theme), // init theme before anything else :)
 	_pCapture(NULL),
 	_pFocus(NULL),
-	_pFlow(NULL),
+	_pPane(NULL),
 	_pHover(NULL),
 	_bInternal(false)
 {
-	Flow *pFlow = new Flow(0, _theme, eDown);
-	pFlow->setWeight(eDown, 1);
-	//pFlow->watch(this);
-	//pFlow->setDesktop(this);
+	Pane *pPane = new Pane(0, _theme, eDown);
+	pPane->setWeight(eDown, 1);
+	//pPane->watch(this);
+	//pPane->setDesktop(this);
 
 	Fill *pFill = new Fill(0, _theme);
-	pFlow->Add(pFill, 0, 2048, 1);
-	setFlow(pFlow);
+	pPane->Add(pFill, 0, 2048, 1);
+	setPane(pPane);
 }
 
-Popup::Popup(Theme &theme, const rect_t &rect, Flow *pContent, IControl *pOwner) :
+Popup::Popup(Theme &theme, const rect_t &rect, Pane *pContent, IControl *pOwner) :
 	_theme(theme), // init theme before anything else :)
 	_pCapture(NULL),
 	_pFocus(NULL),
-	_pFlow(NULL),
+	_pPane(NULL),
 	_pHover(NULL),
 	_bInternal(false)
 {
-	setFlow(pContent);
+	setPane(pContent);
 	// TODO
 	rect;	// needed?
 	pOwner; // needed?
@@ -37,7 +37,7 @@ Popup::Popup(Theme &theme, const rect_t &rect, Flow *pContent, IControl *pOwner)
 
 Popup::~Popup()
 {
-	delete _pFlow;
+	delete _pPane;
 }
 
 ATL::CWndClassInfo& Popup::GetWndClassInfo()
@@ -61,7 +61,7 @@ BOOL Popup::PreTranslateMessage(MSG* pMsg)
 LRESULT Popup::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	Canvas dc(m_hWnd);
-	if (_pFlow)
+	if (_pPane)
 	{
 		bool focus = GetFocus() == m_hWnd;
 		// internal paint operation?
@@ -75,7 +75,7 @@ LRESULT Popup::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL
 			}
 		}
 		else
-			_pFlow->Draw(&dc, focus);
+			_pPane->Draw(&dc, focus);
 	}
 	_internal.clear();				
 	return 0;
@@ -103,8 +103,8 @@ LRESULT Popup::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 	press._what = KeyEvent::DOWN;
 	press._mask = getKeyMask();
 	press._code = wParam;
-	if (_pFlow)
-		bHandled = _pFlow->dispatch(press);
+	if (_pPane)
+		bHandled = _pPane->dispatch(press);
 	return 0;
 }
 
@@ -122,8 +122,8 @@ LRESULT Popup::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bH
 	press._what = KeyEvent::UP;
 	press._mask = getKeyMask();
 	press._code = wParam;
-	if (_pFlow)
-		bHandled = _pFlow->dispatch(press);
+	if (_pPane)
+		bHandled = _pPane->dispatch(press);
 	return 0;
 }
 
@@ -228,8 +228,8 @@ void Popup::Layout(int wide, int high)
 	rect_t rect = {0};
 	rect.wide = wide;
 	rect.high = high;
-	if (_pFlow != NULL)
-		_pFlow->setRect(rect);
+	if (_pPane != NULL)
+		_pPane->setRect(rect);
 }
 
 LRESULT Popup::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -328,22 +328,22 @@ void Popup::setHover(IControl *pHover)
 	}
 }
 
-Flow *Popup::getFlow()
+Pane *Popup::getPane()
 {
-	return _pFlow;
+	return _pPane;
 }
 
-void Popup::setFlow(Flow *pFlow)
+void Popup::setPane(Pane *pPane)
 {
-	if (_pFlow != NULL)
+	if (_pPane != NULL)
 	{
 		_pFocus = NULL;
 		_pCapture = NULL;
-		delete _pFlow;
+		delete _pPane;
 	}
-	_pFlow = pFlow;
-	_pFlow->setDesktop(this);
-	_pFlow->watch(this);
+	_pPane = pPane;
+	_pPane->setDesktop(this);
+	_pPane->watch(this);
 	if (m_hWnd)
 	{
 		RECT client = {0};
@@ -353,14 +353,14 @@ void Popup::setFlow(Flow *pFlow)
 		rect.y = client.top;
 		rect.wide = client.right - client.left;
 		rect.high = client.bottom - client.top;
-		_pFlow->setRect(rect);
+		_pPane->setRect(rect);
 		Invalidate();
 	}
-	_pCapture = _pFlow;
+	_pCapture = _pPane;
 }
 
 // popup window
-IWindow* Popup::popup(const rect_t &rect, Flow *pContent, IControl *pOwner)
+IWindow* Popup::popup(const rect_t &rect, Pane *pContent, IControl *pOwner)
 {
 	rect;		// ignore
 	pContent;	// ignore
