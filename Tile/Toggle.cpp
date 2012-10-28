@@ -2,7 +2,7 @@
 #include "Toggle.h"
 #include "ICanvas.h"
 #include "Pane.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -126,6 +126,14 @@ const char* Toggle::type()
 	return "Toggle";
 }
 
+void Toggle::setAccessor(IAccessor<long>* pAccess)
+{
+	if (pAccess == NULL)
+		_access = &_inside;
+	else
+		_access = pAccess;
+}
+
 // serialize
 bool Toggle::save(JSON::Writer &writer)
 {
@@ -136,10 +144,32 @@ bool Toggle::save(JSON::Writer &writer)
 	return true;
 }
 
-void Toggle::setAccessor(IAccessor<long>* pAccess)
+// de-serialize
+bool Toggle::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl)
 {
-	if (pAccess == NULL)
-		_access = &_inside;
-	else
-		_access = pAccess;
+	bool bOK = false;
+	if ( !strcmp(type, Toggle::type()) )
+	{
+		identity_t id = 0;
+		std::string text;
+		Flow horz, vert;
+		Theme::Font desc = {Theme::eDefault, Font(_T("MS Shell Dlg"), 18, 0)};
+		do
+		{
+			bOK = reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert) ||
+				loadFont(reader, "Font", desc);
+		}
+		while (bOK && reader.comma());
+		if (bOK)
+		{
+			std::vector<Item> list;
+			Toggle *p = new Toggle(id, theme, desc, list, NULL);
+			p->setFlow(eRight, horz);
+			p->setFlow(eDown, vert);
+			pControl = p;
+		}
+	}
+	return bOK;
 }

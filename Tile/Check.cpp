@@ -3,7 +3,7 @@
 #include <vector>
 #include "ICanvas.h"
 #include "Pane.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -130,16 +130,6 @@ const char* Check::type()
 	return "Check";
 }
 
-// serialize
-bool Check::save(JSON::Writer &writer)
-{
-	writer.writeStartObject();
-	writer.writeNamedValue("type", type());
-	_tile.save(writer);
-	writer.writeEndObject(true);
-	return true;
-}
-
 // Check box specific methods
 
 void Check::setAccessor(IAccessor<bool> *pAccess)
@@ -171,3 +161,41 @@ void Check::setAlign(align_t align)
 {
 	_align = align;
 }
+
+// serialize
+bool Check::save(JSON::Writer &writer)
+{
+	writer.writeStartObject();
+	writer.writeNamedValue("type", type());
+	_tile.save(writer);
+	writer.writeEndObject(true);
+	return true;
+}
+
+// de-serialize
+bool Check::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl)
+{
+	bool bOK = false;
+	if ( !strcmp(type, Check::type()) )
+	{
+		identity_t id = 0;
+		std::string text;
+		Flow horz, vert;
+		do
+		{
+			bOK = reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert);
+		}
+		while (bOK && reader.comma());
+		if (bOK)
+		{
+			Check *p = new Check(id, theme, NULL);
+			p->setFlow(eRight, horz);
+			p->setFlow(eDown, vert);
+			pControl = p;
+		}
+	}
+	return bOK;
+}
+

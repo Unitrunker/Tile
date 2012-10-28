@@ -52,8 +52,12 @@ struct Arrow : public Tile
 	virtual bool save(JSON::Writer &writer);
 	static const char* type();
 
+	static bool load(JSON::Reader &reader, Theme &theme, const char *type, ITile *&pArrow);
+
+	// PickColor needs access to these.
 	Theme::Color _fore;
 	Theme::Color _back;
+
 private:
 	// glyph index
 	string_t _text;

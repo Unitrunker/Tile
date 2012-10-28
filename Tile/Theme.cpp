@@ -124,7 +124,7 @@ bool Theme::save(const TCHAR *path)
 	{
 		writer.writeStartNamedObject("Theme");
 		writer.writeNamedValue("gridline", GridLines, 16);
-		Tiles::Font::save(writer, Text);
+		Tiles::Font::save(writer, "Font", Text);
 
 		writer.writeStartNamedObject("Caption");
 		writer.writeNamedValue("fore", CaptionFore, 16);
@@ -157,7 +157,7 @@ bool Theme::save(const TCHAR *path)
 		writer.writeNamedValue("dn", ArrowDn.c_str());
 		writer.writeNamedValue("lt", ArrowLt.c_str());
 		writer.writeNamedValue("rt", ArrowRt.c_str());
-		Tiles::Font::save(writer, Arrow);
+		Tiles::Font::save(writer, "Font", Arrow);
 		writer.writeEndObject();
 
 		writer.writeEndObject();
@@ -208,7 +208,7 @@ static bool arrow(Theme& self, JSON::Reader &json)
 	{
 		do
 		{
-			bOK = Font::load(json, self.Arrow) ||
+			bOK = Font::load(json, "Font", self.Arrow) ||
 				json.namedValue("up", self.ArrowUp) ||
 				json.namedValue("dn", self.ArrowDn) ||
 				json.namedValue("lt", self.ArrowLt) ||
@@ -226,7 +226,7 @@ static bool loadTheme(Theme& self, JSON::Reader &json)
 	bool bOK = json.beginNamedObject("Theme");
 	if (bOK) do
 	{
-		bOK = Font::load(json, self.Text) ||
+		bOK = Font::load(json, "Font", self.Text) ||
 			json.namedValue("gridline", self.GridLines) ||
 			tagForeBack(json, "Caption", self.CaptionFore, self.CaptionBack) ||
 			tagForeBack(json, "Data", self.DataFore, self.DataBack) ||

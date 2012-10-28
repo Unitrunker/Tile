@@ -27,6 +27,8 @@ struct Check : public Control
 	virtual bool Draw(ICanvas *canvas, bool bFocus);
 	// serialize
 	virtual bool save(JSON::Writer &writer);
+	// de-serialize
+	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl);
 
 	// IControl implementation
 	// key event sink

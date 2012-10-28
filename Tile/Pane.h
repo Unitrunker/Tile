@@ -64,6 +64,8 @@ struct Pane : public IControl, public IRedraw
 	virtual bool contains(point_t pt);
 	// serialize
 	virtual bool save(JSON::Writer &writer);
+	// de-serialize
+	static bool load(JSON::Reader &reader, Theme &theme, const char *type, Pane *&pPane);
 
 	// draw this pane (and the drawable artifacts contained therein).
 	virtual bool Draw(ICanvas *canvas, bool bFocus);

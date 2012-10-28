@@ -2,7 +2,7 @@
 #include "Scroll.h"
 #include "Pane.h"
 #include "Identity.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -411,4 +411,31 @@ bool Scroll::onFar(orient_t)
 		return true;
 	}
 	return false;
+}
+
+bool Scroll::load(JSON::Reader &json, Theme &theme, const char *type, IControl* &pControl)
+{
+	bool bOK = false;
+	if ( !strcmp(type, Scroll::type()) )
+	{
+		identity_t id = 0;
+		std::string text;
+		Flow horz, vert;
+		do
+		{
+			bOK = json.namedValue("orient", text) ||
+				json.namedValue("id", id) ||
+				loadFlow(json, "Horz", horz) ||
+				loadFlow(json, "Vert", vert);
+		}
+		while (bOK && json.comma());
+		if (bOK)
+		{
+			Scroll *p = new Scroll(id, theme, orient(text), NULL);
+			p->setFlow(eRight, horz);
+			p->setFlow(eDown, vert);
+			pControl = p;
+		}
+	}
+	return bOK;
 }

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Pane.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 #include "ICanvas.h"
 #include "IWindow.h"
+#include "Factory.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -328,36 +329,6 @@ const char *Pane::getName(orient_t flow)
 	return "?";
 }
 
-// serialize
-bool Pane::save(JSON::Writer &writer)
-{
-	std::string name;
-	orient(name, _flow);
-	writer.writeStartObject();
-	writer.writeNamedValue("type", type());
-	writer.writeNamedValue("orient", name.c_str());
-	_tile.save(writer);
-	writer.writeStartNamedArray("Items");
-	// Note: the tiles list includes both tiles and controls so no need to skim the controls list.
-	for (std::vector<ITile *>::iterator it = _listTiles.begin(); it != _listTiles.end(); it++)
-	{
-		ITile *p = *it;
-		p->save(writer);
-	}
-	writer.writeEndArray();
-	writer.writeEndObject(true);
-	return true;
-}
-
-bool Pane::save(const TCHAR *path)
-{
-	JSON::Writer writer;
-	return writer.Open(path) && 
-		writer.writeName("Flow") &&
-		save(writer) && 
-		writer.Close();
-}
-
 void Pane::Redraw(ITile* pDraw)
 {
 	// already marked for change?
@@ -496,12 +467,13 @@ identity_t Pane::identity() const
 // instance type
 const char* Pane::getType() const
 {
-	return "Flow";
+	return Pane::type();
 }
 
+// static type
 const char* Pane::type()
 {
-	return "Flow";
+	return "Pane";
 }
 
 void Pane::getInsideMin(orient_t flow, meter_t &min)
@@ -1533,4 +1505,75 @@ const Theme::Font &Pane::getFont() const
 void Pane::setFont(const Theme::Font &font)
 {
 	_tile.setFont(font);
+}
+
+// serialize
+bool Pane::save(JSON::Writer &writer)
+{
+	std::string name;
+	orient(name, _flow);
+	writer.writeStartObject();
+	writer.writeNamedValue("type", type());
+	writer.writeNamedValue("orient", name.c_str());
+	_tile.save(writer);
+	writer.writeStartNamedArray("Items");
+	// Note: the tiles list includes both tiles and controls so no need to skim the controls list.
+	for (std::vector<ITile *>::iterator it = _listTiles.begin(); it != _listTiles.end(); it++)
+	{
+		ITile *p = *it;
+		p->save(writer);
+	}
+	writer.writeEndArray();
+	writer.writeEndObject(true);
+	return true;
+}
+
+bool Pane::save(const TCHAR *path)
+{
+	JSON::Writer writer;
+	return writer.Open(path) && 
+		writer.writeName(Pane::type()) &&
+		save(writer) && 
+		writer.Close();
+}
+
+// de-serialize
+bool Pane::load(JSON::Reader &reader, Theme &theme, const char *type, Pane *&pPane)
+{
+	bool bOK = false;
+	if ( !strcmp(type, Pane::type()) )
+	{
+		std::string text;
+		identity_t id = 0;
+		Flow horz, vert;
+		bool bOnce = false;
+
+		do
+		{
+			bOK = reader.namedValue("orient", text) ||
+				reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert);
+			bOnce = bOK || bOnce;
+		}
+		while (bOK && reader.comma());
+
+		if (bOnce)
+		{
+			pPane = new Pane(id, theme, orient(text));
+			pPane->setFlow(eRight, horz);
+			pPane->setFlow(eDown, vert);
+			if ( reader.beginNamedArray("Items") )
+			{
+				do
+				{
+					bOK = loadUnknown(reader, theme, pPane);
+				}
+				while ( bOK && reader.comma() );
+				if (bOK)
+					bOK = reader.endArray();
+			}
+		}
+	}
+	return bOK;
 }

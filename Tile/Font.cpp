@@ -30,7 +30,7 @@ Font::Font(const TCHAR *face, meter_t height, style_t style) :
 {
 }
 
-bool Font::save(JSON::Writer &writer, const Font &desc)
+bool Font::save(JSON::Writer &writer, const char *name, const Font &desc)
 {
 	std::string face;
 	size_t used = 0;
@@ -39,17 +39,17 @@ bool Font::save(JSON::Writer &writer, const Font &desc)
 	wcstombs_s(&used, &face[0], face.size(), desc._face.c_str(), desc._face.size());
 	face.resize(used);
 
-	writer.writeStartNamedObject("Font");
+	writer.writeStartNamedObject(name);
 	writer.writeNamedValue("face", face.c_str());
 	writer.writeNamedValue("height", desc._height);
 	writer.writeEndObject();
 	return true;
 }
 
-bool Font::load(JSON::Reader &json, Font &desc)
+bool Font::load(JSON::Reader &json, const char *name, Font &desc)
 {
 	bool bOK = false;
-	if ( json.beginNamedObject("Font") )
+	if ( json.beginNamedObject(name) )
 	{
 		std::string face;
 		bOK = json.namedValue("face", face) &&

@@ -18,6 +18,11 @@ struct Grid : public Pane, public INotify
 	void setTable(ITable *p);
 	virtual void setRect(const rect_t &rect);
 
+	// serialize
+	virtual bool save(JSON::Writer &writer);
+	// de-serialize
+	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl);
+
 private:
 	void clickHeader(Button *control, bool value);
 

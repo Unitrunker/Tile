@@ -3,7 +3,7 @@
 #include <vector>
 #include "ICanvas.h"
 #include "Pane.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -383,16 +383,6 @@ const char* Edit::type()
 	return "Edit";
 }
 
-// serialize
-bool Edit::save(JSON::Writer &writer)
-{
-	writer.writeStartObject();
-	writer.writeNamedValue("type", "Edit");
-	_tile.save(writer);
-	writer.writeEndObject(true);
-	return true;
-}
-
 void Edit::setAccessor(IAccessor<string_t> *pAccess)
 {
 	_access = pAccess;
@@ -429,3 +419,44 @@ void Edit::setHover(bool hover)
 {
 	_hover = hover;
 }
+
+// serialize
+bool Edit::save(JSON::Writer &writer)
+{
+	writer.writeStartObject();
+	writer.writeNamedValue("type", "Edit");
+	_tile.save(writer);
+	// TODO: save colors.
+	writer.writeEndObject(true);
+	return true;
+}
+
+// de-serialize
+bool Edit::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl)
+{
+	bool bOK = false;
+	if ( !strcmp(type, Edit::type()) )
+	{
+		identity_t id = 0;
+		Flow horz, vert;
+		do
+		{
+			bOK = reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert);
+		}
+		while (bOK && reader.comma());
+
+		if (bOK)
+		{
+			Theme::Font textFont = {Theme::eText, theme.Text};
+			// accessor/reference binding to be filled in later.
+			Edit *p = new Edit(id, theme, textFont, NULL);
+			p->setFlow(eRight, horz);
+			p->setFlow(eDown, vert);
+			pControl = p;
+		}
+	}
+	return bOK;
+}
+

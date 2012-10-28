@@ -74,6 +74,7 @@ struct Scroll : public Pane
 	using Pane::setContainer;
 	// serialize
 	virtual bool save(JSON::Writer &writer);
+	static bool load(JSON::Reader &json, Theme &theme, const char *type, IControl* &pControl);
 	static const char* type();
 private:
 	bool onMove(MouseEvent &action);

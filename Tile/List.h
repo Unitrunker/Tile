@@ -20,6 +20,12 @@ struct List : public Pane
 
 	// instance type
 	virtual const char* getType() const;
+
+	// serialize
+	virtual bool save(JSON::Writer &writer);
+	// de-serialize
+	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl);
+
 	// the property set you provide drives this control.
 	void setItems(struct Set *set);
 	// clear the property list

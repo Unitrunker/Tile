@@ -4,6 +4,7 @@
 #include "Button.h"
 #include "Fill.h"
 #include "IWindow.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -297,4 +298,43 @@ void Grid::clickHeader(Button *control, bool value)
 		_table->setColumn(iColumn);
 		setChanged(true);
 	}
+}
+
+// serialize
+bool Grid::save(JSON::Writer &writer)
+{
+	writer.writeStartObject();
+	writer.writeNamedValue("type", type());
+	_tile.save(writer);
+	writer.writeEndObject(true);
+	return true;
+}
+
+// de-serialize
+bool Grid::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl)
+{
+	bool bOK = false;
+	if ( !strcmp(type, Grid::type()) )
+	{
+		identity_t id = 0;
+		Flow horz, vert;
+		do
+		{
+			bOK = reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert);
+		}
+		while (bOK && reader.comma());
+
+		if (bOK)
+		{
+			Grid *pGrid = new Grid(id, theme);
+			pGrid->setFlow(eDown, vert);
+			pGrid->setFlow(eRight, horz);
+			// nested content cannot be loaded via JSON. Must come from a Table.
+			// Don't have a JSON spec for Tables.
+			pControl = pGrid;
+		}
+	}
+	return bOK;
 }

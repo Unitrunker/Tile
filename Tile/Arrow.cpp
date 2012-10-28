@@ -2,7 +2,7 @@
 #include "Arrow.h"
 #include "Pane.h"
 #include "ICanvas.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -27,7 +27,7 @@ Arrow::Arrow(identity_t id, Theme& theme, orient_t flow) :
 // instance type
 const char* Arrow::getType() const
 {
-	return "Arrow";
+	return Arrow::type();
 }
 
 const char* Arrow::type()
@@ -82,4 +82,36 @@ bool Arrow::save(JSON::Writer &writer)
 	writer.writeNamedValue("orient", Pane::getName(_flow));
 	writer.writeEndObject(true);
 	return true;
+}
+
+// :)
+bool Arrow::load(JSON::Reader &reader, Theme &theme, const char *type, ITile *&pArrow)
+{
+	bool bOK = false;
+	if ( !strcmp(type, Arrow::type()) )
+	{
+		identity_t id = 0;
+		std::string text;
+		Flow horz, vert;
+		Theme::Color fore, back;
+		Theme::Font font;
+		do
+		{
+			bOK = 
+				reader.namedValue("orient", text) ||
+				reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert);
+		}
+		while (bOK && reader.comma());
+
+		if (bOK)
+		{
+			Arrow *p = new Arrow(id, theme, orient(text));
+			p->setFlow(eRight, horz);
+			p->setFlow(eDown, vert);
+			pArrow = p;
+		}
+	}
+	return bOK;
 }

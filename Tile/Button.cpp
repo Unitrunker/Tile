@@ -2,7 +2,7 @@
 #include "Button.h"
 #include "Pane.h"
 #include "ICanvas.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011 Rick Parrish
@@ -220,26 +220,6 @@ bool Button::dispatch(MouseEvent &action)
 	return false;
 }
 
-// serialize
-bool Button::save(JSON::Writer &writer)
-{
-	std::string text;
-	size_t used = 0;
-
-	text.resize(_textUp.size() + 2, ' ');
-	wcstombs_s(&used, &text[0], text.size(), _textUp.c_str(), _textUp.size());
-	text.resize(used);
-
-	writer.writeStartObject();
-	writer.writeNamedValue("type", type());
-	_tile.save(writer);
-
-	writer.writeNamedValue("text", text.c_str());
-	Font::save(writer, _tile.getFont().font);
-	writer.writeEndObject(true);
-	return true;
-}
-
 /// <param name="focus">true if this control has focus</param>
 void Button::setFocus(bool focus)
 {
@@ -256,4 +236,146 @@ const string_t &Button::text(bool focus)
 	return focus ? 
 		_tile.getTheme().getGlyph(_iGlyphOver, _textOver) :
 		_tile.getTheme().getGlyph(_iGlyphUp, _textUp);
+}
+
+// serialize
+bool Button::save(JSON::Writer &writer)
+{
+	std::string text;
+	size_t used = 0;
+
+	text.resize(_textUp.size() + 2, ' ');
+	wcstombs_s(&used, &text[0], text.size(), _textUp.c_str(), _textUp.size());
+	text.resize(used);
+
+	writer.writeStartObject();
+	writer.writeNamedValue("type", type());
+	_tile.save(writer);
+
+	writer.writeStartNamedObject("Up");
+	writer.writeNamedValue("glyph", _iGlyphUp, 10);
+	 saveColor(writer, "Fore", _colorUp[true], false);
+	 saveColor(writer, "Back", _colorUp[false], false);
+	writer.writeEndObject(false);
+
+	writer.writeStartNamedObject("Down");
+	 writer.writeNamedValue("glyph", _iGlyphDn, 10);
+	 saveColor(writer, "Fore", _colorDn[true], false);
+	 saveColor(writer, "Back", _colorDn[false], false);
+	writer.writeEndObject(false);
+
+	writer.writeStartNamedObject("Over");
+	 writer.writeNamedValue("glyph", _iGlyphOver, 10);
+	 saveColor(writer, "Fore", _colorOver[true], false);
+	 saveColor(writer, "Back", _colorOver[false], false);
+	writer.writeEndObject(false);
+
+	writer.writeStartNamedObject("Focus");
+	 // no glyph needed here.
+	 saveColor(writer, "Fore", _colorFocus[true], false);
+	 saveColor(writer, "Back", _colorFocus[false], false);
+	writer.writeEndObject(false);
+
+	writer.writeNamedValue("text", text.c_str());
+	saveFont(writer, "Font", _tile.getFont(), false);
+	writer.writeEndObject(true);
+	return true;
+}
+
+// de-serialize
+bool Button::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pButton)
+{
+	bool bOK = false;
+	if ( !strcmp(type, Button::type()) )
+	{
+		identity_t id = 0;
+		std::string text;
+		Flow horz, vert;
+		Theme::Color up[2];
+		Theme::Color dn[2];
+		Theme::Color over[2];
+		Theme::Color focus[2];
+		long iUp = 0, iDn = 0, iOver = 0;
+		Theme::Font desc = {Theme::eDefault, Font(_T("MS Shell Dlg"), 18, 0)};
+		do
+		{
+			bOK = reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert) ||
+				reader.namedValue("text", text) ||
+				loadFont(reader, "Font", desc);
+
+			if (!bOK)
+			{
+				if ( reader.beginNamedObject("Up") )
+				{
+					do
+					{
+						bOK = reader.namedValue("glyph", iUp) ||
+							loadColor(reader, "Fore", up[true]) ||
+							loadColor(reader, "Back", up[false]);
+					}
+					while (bOK && reader.comma());
+					bOK = reader.endObject();
+				}
+				else if ( reader.beginNamedObject("Down") )
+				{
+					do
+					{
+						bOK = reader.namedValue("glyph", iDn) ||
+							loadColor(reader, "Fore", dn[true]) ||
+							loadColor(reader, "Back", dn[false]);
+					}
+					while (bOK && reader.comma());
+					bOK = reader.endObject();
+				}
+				else if ( reader.beginNamedObject("Over") )
+				{
+					do
+					{
+						bOK = reader.namedValue("glyph", iOver) ||
+							loadColor(reader, "Fore", over[true]) ||
+							loadColor(reader, "Back", over[false]);
+					}
+					while (bOK && reader.comma());
+					bOK = reader.endObject();
+				}
+				else if ( reader.beginNamedObject("Focus") )
+				{
+					do
+					{
+						bOK = loadColor(reader, "Fore", focus[true]) ||
+							loadColor(reader, "Back", focus[false]);
+					}
+					while (bOK && reader.comma());
+					bOK = reader.endObject();
+				}
+			}
+		}
+		while (bOK && reader.comma());
+		if (bOK)
+		{
+			string_t wide;
+			wide.resize(text.size() + 1, ' ');
+			size_t used = 0;
+			mbstowcs_s(&used, &wide[0], wide.size(), text.c_str(), text.size());
+			wide.resize(used);
+			Button *p = new Button(id, theme, desc, wide.c_str(), wide.c_str(), wide.c_str());
+			p->setFlow(eRight, horz);
+			p->setFlow(eDown, vert);
+			p->_colorDn[false] = dn[false];
+			p->_colorDn[true] = dn[true];
+			p->_iGlyphDn = (unsigned char)iDn;
+			p->_colorUp[false] = up[false];
+			p->_colorUp[true] = up[true];
+			p->_iGlyphUp = (unsigned char)iUp;
+			p->_colorOver[false] = over[false];
+			p->_colorOver[true] = over[true];
+			p->_iGlyphOver = (unsigned char)iOver;
+			p->_colorFocus[false] = focus[false];
+			p->_colorFocus[true] = focus[true];
+			pButton = p;
+		}
+	}
+	return bOK;
 }

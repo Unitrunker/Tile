@@ -4,6 +4,7 @@
 #include "Edit.h"
 #include "Check.h"
 #include "Tree.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -192,4 +193,43 @@ void List::select(Section* s)
 {
 	_note->_text = s->Notes;
 	_note->setChanged(true);
+}
+
+// serialize
+bool List::save(JSON::Writer &writer)
+{
+	writer.writeStartObject();
+	writer.writeNamedValue("type", type());
+	_tile.save(writer);
+	writer.writeEndObject(true);
+	return true;
+}
+
+// de-serialize
+bool List::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl)
+{
+	bool bOK = false;
+	if ( !strcmp(type, List::type()) )
+	{
+		identity_t id = 0;
+		Flow horz, vert;
+		do
+		{
+			bOK = reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert);
+		}
+		while (bOK && reader.comma());
+
+		if (bOK)
+		{
+			List *pList = new List(id, theme);
+			pList->setFlow(eDown, vert);
+			pList->setFlow(eRight, horz);
+			// Nested content cannot be loaded via JSON. Must come from a Set.
+			// Don't have a JSON spec for Sets.
+			pControl = pList;
+		}
+	}
+	return bOK;
 }

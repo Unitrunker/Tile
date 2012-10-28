@@ -61,6 +61,8 @@ struct Text : public Tile
 	using Tile::contains;
 	// serialize
 	virtual bool save(JSON::Writer &writer);
+	// de-serialize
+	static bool load(JSON::Reader &reader, Theme &theme, const char *type, ITile *&pText);
 	static const char* type();
 };
 

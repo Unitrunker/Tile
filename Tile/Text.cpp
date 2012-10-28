@@ -2,7 +2,7 @@
 #include "Text.h"
 #include "ICanvas.h"
 #include "Pane.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -64,7 +64,7 @@ Text::Text(const Text &copy) :
 // instance type
 const char* Text::getType() const
 {
-	return "Text";
+	return Text::type();
 }
 
 const char* Text::type()
@@ -101,6 +101,43 @@ bool Text::save(JSON::Writer &writer)
 	Tile::save(writer);
 	writer.writeNamedValue("text", text.c_str());
 	writer.writeNamedValue("align", align.c_str());
+	saveColor(writer, "Fore", _fore, false);
+	saveColor(writer, "Back", _back, false);
 	writer.writeEndObject(true);
 	return true;
+}
+
+// de-serialize
+bool Text::load(JSON::Reader &reader, Theme &theme, const char *type, ITile *&pText)
+{
+	bool bOK = false;
+	if ( !strcmp(type, Text::type()) )
+	{
+		Flow horz, vert;
+		std::string text, align;
+		identity_t id = 0;
+		do
+		{
+			bOK = reader.namedValue("id", id) ||
+				loadFlow(reader, "Horz", horz) ||
+				loadFlow(reader, "Vert", vert) ||
+				reader.namedValue("text", text) ||
+				reader.namedValue("align", align);
+		}
+		while (bOK && reader.comma());
+		if (bOK)
+		{
+			string_t wide;
+			wide.resize(text.size() + 1, ' ');
+			size_t used = 0;
+			mbstowcs_s(&used, &wide[0], wide.size(), text.c_str(), text.size());
+			wide.resize(used); 
+			Theme::Font textFont = {Theme::eText, theme.Text};
+			Text *p = new Text(id, theme, textFont, (align_t)orient(align), wide.c_str());
+			p->setFlow(eRight, horz);
+			p->setFlow(eDown, vert);
+			pText = p;
+		}
+	}
+	return bOK;
 }

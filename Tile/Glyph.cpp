@@ -2,7 +2,7 @@
 #include "Glyph.h"
 #include "Pane.h"
 #include "ICanvas.h"
-#include "../JSON/Writer.h"
+#include "JSON.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -47,6 +47,7 @@ bool Glyph::save(JSON::Writer &writer)
 	writer.writeStartObject();
 	writer.writeNamedValue("type", type());
 	Tile::save(writer);
+	saveFont(writer, "Font", _font, false);
 	writer.writeEndObject(true);
 	return true;
 }
