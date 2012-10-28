@@ -297,7 +297,7 @@ static void testFlow()
 	{
 		pane.getRect(view);
 		pane.getScrollBox(box);
-		fprintf(stderr, "Flow: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n",
+		fprintf(stderr, "Pane: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n",
 			view.x, view.y, view.wide, view.high, box.x, box.y, box.wide, box.high);
 
 		a.getRect(view);
