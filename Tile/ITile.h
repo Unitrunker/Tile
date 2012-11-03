@@ -59,7 +59,7 @@ struct ITile
 	virtual void getScrollPoint(point_t &pt) const = 0;
 	virtual void setScrollPoint(const point_t &pt) = 0;
 	// returns true if point lies within layout.
-	virtual bool contains(point_t pt) = 0;
+	virtual bool contains(point_t pt) const = 0;
 	// serialize
 	virtual bool save(JSON::Writer&) = 0;
 	// the tile's containing flow object

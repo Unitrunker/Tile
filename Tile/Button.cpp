@@ -192,7 +192,7 @@ bool Button::dispatch(MouseEvent &action)
 		switch (action._what)
 		{
 			case MouseEvent::eDownClick:
-				if (!_readonly)
+				if (!_readOnly)
 				{
 					_down = true;
 					setChanged(true);
@@ -201,17 +201,17 @@ bool Button::dispatch(MouseEvent &action)
 				}
 				if (!_focus)
 					getContainer()->setFocus(this);
-				break;
+				return true;
 
 			case MouseEvent::eUpClick:
-				if (!_readonly)
+				if (!_readOnly)
 				{
 					_down = false;
 					setChanged(true);
 					if (!Click.empty())
 						Click(this, _down);
 				}
-				break;
+				return true;
 
 			default:
 				break;

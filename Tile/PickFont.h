@@ -3,7 +3,7 @@
 #include "Accessor.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011-2012 Rick Parrish
 */
 
 namespace Tiles
@@ -16,6 +16,10 @@ struct PickFont : public Pane, private IAccessor<string_t>
 {
 	PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<Font>* access);
 	virtual void setRect(const rect_t &rect);
+
+	// readonly
+	using Pane::getReadOnly;
+	virtual void setReadOnly(bool);
 
 private:
 	void click(Button*, bool down);

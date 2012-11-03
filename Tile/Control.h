@@ -65,7 +65,7 @@ struct Control : public IControl
 	virtual void getScrollPoint(point_t &rect) const;
 	virtual void setScrollPoint(const point_t &area);
     // true if point lies in this tile.
-	virtual bool contains(point_t pt);
+	virtual bool contains(point_t pt) const;
 	// the tile's containing flow object
 	virtual Pane *getContainer() const;
 	virtual void setContainer(Pane *);
@@ -85,7 +85,7 @@ protected:
 	/// true if mouse hovering over this control.
 	bool _hover;
 	/// true if this control is display-only
-	bool _readonly;
+	bool _readOnly;
 };
 
 };

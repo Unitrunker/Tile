@@ -323,12 +323,12 @@ void Scroll::setFocus(bool focus)
 // readonly
 bool Scroll::getReadOnly() const
 {
-	return _readonly;
+	return _readOnly;
 }
 
-void Scroll::setReadOnly(bool readonly)
+void Scroll::setReadOnly(bool readOnly)
 {
-	_readonly = readonly;
+	_readOnly = readOnly;
 }
 
 // get/set accessors for scroll range

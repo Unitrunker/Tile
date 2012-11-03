@@ -38,6 +38,10 @@ Property::~Property()
 	delete Control;
 }
 
+Set::Set(bool readOnly) : _readOnly(readOnly)
+{
+}
+
 Set::~Set()
 {
 	Columns.clear();
@@ -53,5 +57,23 @@ void Set::Add(Section *s)
 {
 	Sections.push_back(s);
 	for (size_t i = 0; i < s->Items.size(); i++)
-		Columns.push_back(s->Items[i]);
+	{
+		Property *prop = s->Items[i];
+		prop->Control->setReadOnly(_readOnly);
+		Columns.push_back(prop);
+	}
+}
+
+void Set::setReadOnly(bool bSet)
+{
+	for (size_t i = 0; i < Columns.size(); i++)
+	{
+		Columns[i]->Control->setReadOnly(bSet);
+	}
+	_readOnly = bSet;
+}
+
+bool Set::getReadOnly() const
+{
+	return _readOnly;
 }

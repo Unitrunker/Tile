@@ -68,7 +68,7 @@ void Toggle::step()
 	size_t index = 0;
 	long value = _access->getValue();
 
-	if (_readonly)
+	if (_readOnly)
 		return;
 
 	if (_list.size() > 0)

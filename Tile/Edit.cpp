@@ -144,7 +144,7 @@ bool Edit::onDelete()
 bool Edit::dispatch(KeyEvent &action)
 {
 	// key down
-	if (action._what == KeyEvent::DOWN)
+	if (action._what == KeyEvent::DOWN && !_readOnly)
 	{
 		// 
 		switch (action._code)
@@ -363,7 +363,7 @@ void Edit::setFocus(bool focus)
 		}
 		else
 		{
-			if (_access != NULL && _edit)
+			if (_access != NULL && _edit && !_readOnly)
 				_access->setValue(_text);
 			if (!Select.empty())
 				Select(this, _text);

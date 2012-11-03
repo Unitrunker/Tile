@@ -14,8 +14,11 @@ struct Button;
 // Grid control
 struct Grid : public Pane, public INotify
 {
+	// create a grid control.
 	Grid(identity_t id, Theme &theme);
+	// Sets the content for this grid using an interface that is oblivious to the underlying data type.
 	void setTable(ITable *p);
+	// set bounding rectangle.
 	virtual void setRect(const rect_t &rect);
 
 	// serialize
@@ -45,6 +48,9 @@ private:
 	// row "i" moved to row "j".
 	virtual void onMoved(size_t i, size_t j);
 
+	meter_t _datum;
+	bool _capture;
+	size_t _drag;
 	ITable* _table;
 	// TODO: scrolling
 	// Plan is to embed a vertical flow in the grid.

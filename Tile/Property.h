@@ -43,8 +43,13 @@ struct Set
 {
 	std::vector<Section*> Sections;
 	std::vector<Property*> Columns;
-	void Add(Section *);
+	Set(bool bReadOnly = false);
 	virtual ~Set();
+	void Add(Section *);
+	void setReadOnly(bool bSet);
+	bool getReadOnly() const;
+private:
+	bool _readOnly;
 };
 
 // A type specialized property set base class - the Value accessor allows swapping out object pointers.
@@ -52,7 +57,7 @@ struct Set
 template <typename T>
 struct SetT : public Value<T *>, public Set
 {
-	SetT(T *p) : Value(p) { };
+	SetT(T *p, bool readOnly = false) : Set(readOnly), Value(p) { };
 };
 
 };

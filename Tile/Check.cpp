@@ -79,7 +79,7 @@ bool Check::dispatch(KeyEvent &action)
 	if (action._what == KeyEvent::DOWN)
 	{
 		// space bar
-		if (action._code == VK_SPACE && !_readonly)
+		if (action._code == VK_SPACE && !_readOnly)
 		{
 			if (_access != NULL)
 				_checked = _access->getValue();
@@ -102,7 +102,7 @@ bool Check::dispatch(MouseEvent &action)
 	if (action._button == MouseEvent::eLeft &&
 		action._what == action.eDownClick)
 	{
-		if (!_readonly)
+		if (!_readOnly)
 		{
 			if (_access != NULL)
 				_checked = _access->getValue();
@@ -112,9 +112,9 @@ bool Check::dispatch(MouseEvent &action)
 			if (!Select.empty())
 				Select(this, _checked);
 			setChanged(true);
-			if (!_focus)
-				getContainer()->setFocus(this);
 		}
+		if (!_focus)
+			getContainer()->setFocus(this);
 	}
 	return true;
 }

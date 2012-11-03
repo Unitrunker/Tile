@@ -16,7 +16,7 @@ using namespace Tiles;
 // Expands and collapses items just like a Tree control.
 struct _Section : public Tree
 {
-	_Section(identity_t id, Theme &theme);
+	_Section(identity_t id, Theme &theme, const Theme::Font &font);
 	virtual ~_Section();
 
 	// instance type
@@ -30,14 +30,18 @@ private:
 	Section* _section;
 };
 
-_Section::_Section(identity_t id, Theme &theme) :
-	Tree(id, theme), _section(NULL)
+_Section::_Section(identity_t id, Theme &theme, const Theme::Font &font) :
+	Tree(id, theme, font), _section(NULL)
 {
 	_checked = true;
 }
 
 _Section::~_Section()
 {
+	// The property set's controls belong to the property set so
+	// remove the property set's controls from the Pane's tile list.
+	// Otherwise the Pane's descructor presumes responsibility for deleting them.
+	hideControls();
 }
 
 // instance type
@@ -46,35 +50,14 @@ const char* _Section::getType() const { return "Section"; }
 void _Section::setItems(Section *section)
 {
 	_section = section;
+
+	_label._text = section->Caption;
 	Theme& theme = _tile.getTheme();
 	Flow text = {0, 4096, 1, false};
 	Flow edit = {0, 4096, 3, false};
 	Flow line = {1, 1, 0, true};
-	Flow coil = {0, 4096, 0, false};
 	Theme::Font textFont = {Theme::eText, theme.Text};
 
-	setFlow(eDown, coil);
-	setFlow(eRight, coil);
-
-	Pane *pSection = new Pane(0, theme, eRight);
-	Check *pCheck = new Check(0, theme, this);
-	Text *pText = new Text(0, theme, textFont, eLeft, section->Caption);
-	pText->setFlow(eRight, text);
-	//pCheck->setGlyphs(_T("\x71"), _T("\x75"));
-	//static Font dings(_T("Wingdings 3"), 18, 1);
-	//static const TCHAR plus[] = {0xFEFF, 0x2295, 0};
-	//static const TCHAR minus[] = {0xFEFF, 0x229D, 0};
-	//static Font dings(_T("Lucida Sans Unicode"), 18, 0);
-	//static Font dings(_T("Segoe UI Symbol"), 18, 0);
-	//static Font dings(_T("Cambria"), 18, 0);
-	pCheck->setGlyphs(theme.Collapse.c_str(), theme.Expand.c_str());
-	pCheck->setAlign(eLeft|eRight);
-	//pCheck->setFont(dings);
-	pSection->Add(pCheck);
-	pSection->Add(pText);
-	pSection->setFlow(eDown, line);
-	Pane::Add(pSection);
-	_control = pCheck;
 	size_t size = _section->Items.size();
 	for (size_t j = 0; j < size; j++)
 	{
@@ -173,7 +156,7 @@ void List::setItems(struct Set *set)
 		Flow text = {0, 4096, 1, false};
 		for (size_t i = 0; i < _set->Sections.size(); i++)
 		{
-			_Section *pSection = new _Section(0, theme);
+			_Section *pSection = new _Section(0, theme, textFont);
 			pSection->setItems(_set->Sections[i]);
 			Add(pSection, true);
 		}

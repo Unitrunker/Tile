@@ -32,6 +32,8 @@ PickFont::PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<F
 	Add(_button, 1, 1, 0, true);
 	_edit->setFlow(eDown, desc);
 	_button->setFlow(eDown, desc);
+	_edit->setReadOnly(_readOnly);
+	_button->setReadOnly(_readOnly);
 	setFlow(eDown, desc);
 	_thick.local = true;
 	_thick.thick = 0;
@@ -102,4 +104,11 @@ void PickFont::setRect(const rect_t &rect)
 	text.wide -= _tile.getThick(_space);
 	_edit->setRect(text);
 	_button->setRect(arrow);
+}
+
+void PickFont::setReadOnly(bool bSet)
+{
+	Pane::setReadOnly(bSet);
+	_edit->setReadOnly(_readOnly);
+	_button->setReadOnly(_readOnly);
 }

@@ -329,7 +329,7 @@ void Tile::setFlow(orient_t flow, const Flow &desc)
 }
 
 // true if point lies in this tile.
-bool Tile::contains(point_t pt)
+bool Tile::contains(point_t pt) const
 {
 	if (pt.x >= _rect.x && pt.x < _rect.x + _rect.wide)
 		if (pt.y >= _rect.y && pt.y < _rect.y + _rect.high)

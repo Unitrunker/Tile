@@ -20,8 +20,8 @@ struct Text : public Tile
 	Theme::Color _fore, _back;
 
 	Text(identity_t id, Theme &theme);
-	Text(identity_t id, Theme &theme, Theme::Font& font);
-	Text(identity_t id, Theme &theme, Theme::Font& font, align_t align, const TCHAR *text);
+	Text(identity_t id, Theme &theme, const Theme::Font& font);
+	Text(identity_t id, Theme &theme, const Theme::Font& font, align_t align, const TCHAR *text);
 	Text(const Text &copy);
 	virtual ~Text() { };
     /// <param name="canvas">Canvas where text will appear.</param>

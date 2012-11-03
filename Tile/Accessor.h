@@ -33,6 +33,7 @@ struct Reference : public IAccessor<T>
 	}
 
 private:
+	Reference & operator = (const Reference &never); // never used.
 	T &_value;
 };
 

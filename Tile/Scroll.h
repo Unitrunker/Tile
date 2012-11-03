@@ -85,7 +85,7 @@ private:
 	Fill _farSpacer;
 	Fill _thumb;
 	bool _focus;
-	bool _readonly;
+	bool _readOnly;
 	long _min, _max, _value;
 	size_t _indexNear, _indexThumb, _indexFar;
 	bool _drag;

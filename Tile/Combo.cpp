@@ -86,7 +86,7 @@ const char* Combo::type()
 // key event sink
 bool Combo::dispatch(KeyEvent &action)
 {
-	if (action._what == KeyEvent::DOWN)
+	if (action._what == KeyEvent::DOWN && !_readOnly)
 	{
 		switch (action._code)
 		{
@@ -121,7 +121,8 @@ bool Combo::dispatch(MouseEvent &action)
 	if (action._what == MouseEvent::eDownClick &&
 		action._button == MouseEvent::eLeft)
 	{
-		if ( _drop.contains(action._place) )
+		// don't show pop-up if we're read-only.
+		if ( !_readOnly && _drop.contains(action._place) )
 		{
 			if (_popup != NULL)
 			{

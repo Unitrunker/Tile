@@ -1,6 +1,7 @@
 #include "Accessor.h"
 #include "Pane.h"
 #include "Check.h"
+#include "Text.h"
 
 /*
 Copyright © 2011 Rick Parrish
@@ -13,7 +14,7 @@ namespace Tiles
 // Hint: Tree controls can be nested.
 struct Tree : public Pane, public IAccessor<bool>
 {
-	Tree(identity_t id, Theme &theme);
+	Tree(identity_t id, Theme &theme, const Theme::Font &font, const TCHAR *text = _T(""));
 	virtual ~Tree();
 
 	// accessor for expand / collapse.
@@ -32,7 +33,9 @@ struct Tree : public Pane, public IAccessor<bool>
 protected:
 	void hideControls();
 	std::vector<IControl*> _listHidden;
-	Check* _control;
+	Pane _header;
+	Check _control;
+	Text _label;
 	bool _checked;
 };
 

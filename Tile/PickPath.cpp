@@ -3,7 +3,7 @@
 #include <atldlgs.h>
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011-2012 Rick Parrish
 */
 
 using namespace Tiles;
@@ -82,3 +82,10 @@ void PickPath::setRect(const rect_t &rect)
 	_button->setRect(arrow);
 }
 
+
+void PickPath::setReadOnly(bool bSet)
+{
+	Pane::setReadOnly(bSet);
+	_edit->setReadOnly(_readOnly);
+	_button->setReadOnly(_readOnly);
+}

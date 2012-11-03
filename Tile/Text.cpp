@@ -22,7 +22,7 @@ Text::Text(identity_t id, Theme &theme) :
 }
 
 /// <param name="font">.</param>
-Text::Text(identity_t id, Theme &theme, Theme::Font &font) : 
+Text::Text(identity_t id, Theme &theme, const Theme::Font &font) : 
 	Tile(id, theme, font),
 	_align(eLeft)
 {
@@ -34,7 +34,7 @@ Text::Text(identity_t id, Theme &theme, Theme::Font &font) :
 /// <param name="theme">.</param>
 /// <param name="align">text alignment</param>
 /// <param name="text">displayed</param>
-Text::Text(identity_t id, Theme &theme, Theme::Font& font, align_t align, const TCHAR *text) :
+Text::Text(identity_t id, Theme &theme, const Theme::Font& font, align_t align, const TCHAR *text) :
 	Tile(id, theme, font),
 	_align(align), 
 	_text(text)

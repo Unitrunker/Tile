@@ -46,6 +46,7 @@ PickColor::PickColor(identity_t id, Theme &theme, IAccessor<color_t> &access) :
 	color_t black = 0;
 	color_t white = RGB(255,255,255);
 	_edit = new Edit(0, theme, textFont, &_local);
+	_edit->setReadOnly(_readOnly);
 	_arrow = new Arrow(0, theme, eDown);
 	_arrow->_back.index = Theme::eDefault;
 	_arrow->_back.color = color;
@@ -73,7 +74,8 @@ bool PickColor::dispatch(MouseEvent &action)
 	// 2. uses WTL to grab the window handle of the current message to use as the parent window.
 	// Both mean this code really belongs in the WTL Tile library, not the generic Tile library.
 	if (action._what == MouseEvent::eDownClick && 
-		action._button == MouseEvent::eLeft)
+		action._button == MouseEvent::eLeft && 
+		!_readOnly)
 	{
 		// clicked arrow?
 		if ( _arrow->contains(action._place) )
@@ -164,4 +166,10 @@ void PickColor::setRect(const rect_t &rect)
 	text.wide -= _tile.getThick(_space);
 	_edit->setRect(text);
 	_arrow->setRect(arrow);
+}
+
+void PickColor::setReadOnly(bool bSet)
+{
+	Pane::setReadOnly(bSet);
+	_edit->setReadOnly(bSet);
 }

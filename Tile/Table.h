@@ -31,6 +31,8 @@ struct ITable
 	virtual void follow(INotify *) = 0;
 	virtual size_t size() const = 0;
 	virtual bool setColumn(size_t) = 0;
+	virtual void setReadOnly(bool bSet) = 0;
+	virtual bool getReadOnly() const = 0;
 };
 
 // S presumed to derive from SetT<T>.
@@ -43,7 +45,8 @@ struct Table : public ITable, public INotify
 	Theme& _theme;
 
 	// content provider for a Grid.
-	Table(Theme &theme) : _theme(theme), _tree(NULL), _notify(NULL), _bAscending(true), _iColumn(0)
+	Table(Theme &theme) : 
+		_theme(theme), _tree(NULL), _notify(NULL), _bAscending(true), _iColumn(0), _readOnly(false)
 	{
 		_header = new S(_theme);
 		_trees.resize(_header->Columns.size(), NULL);
@@ -119,14 +122,31 @@ struct Table : public ITable, public INotify
 	// add value to all containers.
 	bool add(T* value)
 	{
-		// FIXME: this is kinda gross.
-		// have to build a list of unique row sets.
-		// and add the value once to each row.
-		// Otherwise, duplicate inserts occur.
-		// For now, this is broken.
-		// TODO: maintain separate list of unique row sets.
+		columns_t uniq;
+
+		// Containers may be used for more than one column. 
+		// Must avoid duplicates in the same container.
+		// Construct a unique list of tree containers.
 		columns_t::iterator it = _trees.begin();
 		while (it != _trees.end())
+		{
+			bool bInsert = true;
+			tree_t *tree = *it++;
+			columns_t::iterator itu = uniq.begin();
+			while (bInsert && itu != uniq.end())
+			{
+				if (tree == *itu++)
+				{
+					bInsert = false;
+				}
+			}
+			if (bInsert)
+				uniq.push_back(tree);
+		}
+		// Now have uniq list of containers.
+		it = uniq.begin();
+		// Add the value to each container - once!
+		while (it != uniq.end())
 		{
 			tree_t *tree = *it++;
 			tree->insert(value);
@@ -152,8 +172,10 @@ struct Table : public ITable, public INotify
 		// shortage of rows?
 		else while (_visible.size() < count)
 		{
+			S *set = new S(_theme);
+			set->setReadOnly(getReadOnly());
 			// yes: add them here.
-			_visible.push_back(new S(_theme));
+			_visible.push_back(set);
 		}
 		// bind sets to data.
 		setOffset(offset);
@@ -217,6 +239,21 @@ struct Table : public ITable, public INotify
 		_notify = notify;
 	}
 
+	// Make the table read-only. Store setting in the header and also set all visible rows.
+	virtual void setReadOnly(bool bSet)
+	{
+		if (_header)
+			_header->setReadOnly(bSet);
+		for (size_t i = 0; i < _visible.size(); i++)
+			_visible[i]->setReadOnly(bSet);
+	}
+
+	// Default to true if somehow we have no header.
+	virtual bool getReadOnly() const
+	{
+		return _header ? _header->getReadOnly() : true;
+	}
+
 private:
 	// row at "i" added.
 	virtual void onAdded(size_t i)
@@ -254,6 +291,7 @@ private:
 	columns_t _trees;
 	tree_t *_tree; // current tree.
 	bool _bAscending;
+	bool _readOnly;
 	size_t _iColumn; // current column.
 	INotify *_notify;
 };

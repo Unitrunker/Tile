@@ -61,7 +61,7 @@ struct Pane : public IControl, public IRedraw
 	virtual void getScrollPoint(point_t &pt) const;
 	virtual void setScrollPoint(const point_t &pt);
 	// returns true if point lies within layout.
-	virtual bool contains(point_t pt);
+	virtual bool contains(point_t pt) const;
 	// serialize
 	virtual bool save(JSON::Writer &writer);
 	// de-serialize
@@ -185,7 +185,7 @@ protected:
 	// index to child control with hover.
 	size_t _hover;
 	// read only
-	bool _readonly;
+	bool _readOnly;
 	// true if this flow uses own _index instead of parent's _shared index.
 	// sibling flows may use a shared index to allow cursor navigation
 	// across rows and columns. Moving across columns stay in same row. 

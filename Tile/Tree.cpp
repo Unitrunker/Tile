@@ -10,19 +10,37 @@ Copyright © 2011-2012 Rick Parrish
 
 using namespace Tiles;
 
-Tree::Tree(identity_t id, Theme &theme) :
-	Pane(id, theme, eDown), _checked(true)
+Tree::Tree(identity_t id, Theme &theme, const Theme::Font &font, const TCHAR *label) :
+	Pane(id, theme, eDown), _checked(true),
+	_header(0, theme, eRight), 
+	_control(0, theme, this, eLeft),
+	_label(0, theme, font, eLeft, label)
 {
+	Flow text = {0, 4096, 1, false};
+	//Flow edit = {0, 4096, 3, false};
+	Flow line = {1, 1, 0, true};
+	Flow coil = {0, 4096, 0, false};
+
+	setFlow(eDown, coil);
+	setFlow(eRight, coil);
+
+	_label.setFlow(eRight, text);
+	_control.setGlyphs(theme.Collapse.c_str(), theme.Expand.c_str());
+	_control.setAlign(eLeft|eRight);
+	_header.Add(&_control);
+	_header.Add(&_label);
+	_header.setFlow(eDown, line);
+	Pane::Add(&_header);
+
 	_thick.local = true;
 	_thick.thick = 0;
 }
 
 Tree::~Tree()
 {
-	// Remove property set controls from tile list so that they are not destroyed in Flow's 
-	// destructor. The property set controls are owned by the property set, not this control.
-	hideControls();
-	_listHidden.clear();
+	_header.clear();
+	// remove the first tile - which is a pane holding our checkbox and text label.
+	_listTiles.erase(_listTiles.begin());
 }
 
 // instance type
@@ -62,7 +80,7 @@ bool Tree::setValue(const bool &value)
 	// toggle focus to force ourselves into view.
 	_pDesktop->setFocus(null);
 	//_pDesktop->setFocus(this);
-	_pDesktop->setFocus(_control);
+	_pDesktop->setFocus(&_control);
 	return true;
 }
 
@@ -148,9 +166,10 @@ bool Tree::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *
 	bool bOK = false;
 	if ( !strcmp(type, Tree::type()) )
 	{
-		std::string text;
+		string_t text;
 		identity_t id = 0;
 		Flow horz, vert;
+		Theme::Font font = { Theme::eDefault, theme.Text };
 		bool bOnce = false;
 
 		do
@@ -158,14 +177,17 @@ bool Tree::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *
 			bOK = reader.namedValue("orient", text) || // orientation - if given - is ignored.
 				reader.namedValue("id", id) ||
 				loadFlow(reader, "Horz", horz) ||
-				loadFlow(reader, "Vert", vert);
+				loadFlow(reader, "Vert", vert) ||
+				reader.namedValue("text", text) ||
+				loadFont(reader, "Font", font);
+
 			bOnce = bOK || bOnce;
 		}
 		while (bOK && reader.comma());
 
 		if (bOnce)
 		{
-			Tree *pTree = new Tree(id, theme);
+			Tree *pTree = new Tree(id, theme, font, text.c_str());
 			pTree->setFlow(eRight, horz);
 			pTree->setFlow(eDown, vert);
 			if ( reader.beginNamedArray("Items") )

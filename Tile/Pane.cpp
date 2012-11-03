@@ -18,7 +18,7 @@ Pane::Pane(identity_t id, Theme &theme, orient_t flow) :
 	_pNotify(NULL),
 	_index(0),
 	_shared(0),
-	_readonly(false),
+	_readOnly(false),
 	_local(true),
 	_scroll(false),
 	_hover(0)
@@ -45,7 +45,7 @@ Pane::Pane(identity_t id, Theme &theme, Theme::Font& desc, orient_t flow) :
 	_pNotify(NULL),
 	_index(0),
 	_shared(0),
-	_readonly(false),
+	_readOnly(false),
 	_local(true),
 	_scroll(false),
 	_hover(0)
@@ -702,7 +702,7 @@ void Pane::setScrollPoint(const point_t &pt)
 }
 
 // returns true if point lies within layout.
-bool Pane::contains(point_t pt)
+bool Pane::contains(point_t pt) const
 {
 	if ( _tile.contains(pt) )
 	{
@@ -836,12 +836,12 @@ void Pane::setFocus(bool focus)
 // readonly
 bool Pane::getReadOnly() const
 {
-	return _readonly || !isRoot() && getContainer()->getReadOnly();
+	return _readOnly || !isRoot() && getContainer()->getReadOnly();
 }
 
-void Pane::setReadOnly(bool readonly)
+void Pane::setReadOnly(bool readOnly)
 {
-	_readonly = readonly;
+	_readOnly = readOnly;
 }
 
 void Pane::setHover(bool)

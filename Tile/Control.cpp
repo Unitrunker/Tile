@@ -12,7 +12,7 @@ Control::Control(identity_t id, Theme &theme, const Theme::Font &desc) :
 	_tile(id, theme, desc),
 	_focus(false),
 	_hover(false),
-	_readonly(false),
+	_readOnly(false),
 	_pDesktop(NULL)
 {
 	Flow flow = {1, 1, 0, true};
@@ -24,7 +24,7 @@ Control::Control(identity_t id, Theme &theme) :
 	_tile(id, theme),
 	_focus(false),
 	_hover(false),
-	_readonly(false),
+	_readOnly(false),
 	_pDesktop(NULL)
 {
 	Flow flow = {1, 1, 0, true};
@@ -78,15 +78,15 @@ void Control::setFocus(bool focus)
 	}
 }
 
-// readonly
+// readOnly
 bool Control::getReadOnly() const
 {
-	return _readonly;
+	return _readOnly;
 }
 
-void Control::setReadOnly(bool readonly)
+void Control::setReadOnly(bool readOnly)
 {
-	_readonly = readonly;
+	_readOnly = readOnly;
 }
 
 identity_t Control::identity() const
@@ -183,7 +183,7 @@ void Control::setFlow(orient_t flow, const Flow &desc)
 }
 
 // true if point lies in this tile.
-bool Control::contains(point_t pt)
+bool Control::contains(point_t pt) const
 {
 	return _tile.contains(pt);
 }

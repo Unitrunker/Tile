@@ -2,7 +2,7 @@
 #include "Accessor.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011-2012 Rick Parrish
 */
 
 namespace Tiles
@@ -23,6 +23,10 @@ struct PickColor : public Pane, private IAccessor<color_t>
 	virtual void getWeight(orient_t flow, meter_t &weight);
 	// mouse event sink
 	virtual bool dispatch(MouseEvent &action);
+
+	// readonly
+	using Pane::getReadOnly;
+	virtual void setReadOnly(bool);
 
 private:
 	//void click(Button*, bool down);
