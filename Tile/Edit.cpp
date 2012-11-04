@@ -337,12 +337,14 @@ bool Edit::dispatch(KeyEvent &action)
 // mouse event sink
 bool Edit::dispatch(MouseEvent &action)
 {
-	Control::dispatch(action);
-
+	bool bOK = Control::dispatch(action);
 	if (action._what == MouseEvent::eDownClick)
+	{
 		if (!_focus)
 			getContainer()->setFocus(this);
-	return true;
+		bOK = true;
+	}
+	return bOK;
 }
 
 /// <param name="focus">true if this control has focus</param>
