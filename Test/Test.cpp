@@ -5,6 +5,7 @@
 #include "MockWindow.h"
 #include "../Tile/Fill.h"
 #include "../Tile/Arrow.h"
+#include "../Tile/Combo.h"
 #include "../Tile/Text.h"
 #include "../Tile/Button.h"
 #include "../Tile/Check.h"
@@ -13,37 +14,49 @@
 #include "../Tile/Pane.h"
 #include "../Tile/Tree.h"
 #include "../Tile/Grid.h"
+#include "../Tile/List.h"
 #include "../Tile/Glyph.h"
+#include "../Tile/Toggle.h"
+#include "../Stream/FileOutputStream.h"
+#include "../JSON/Reader.h"
+#include "../JSON/Writer.h"
+#include <io.h>
 
 /*
-Copyright 2011 Rick Parrish
+Copyright 2011-2012 Rick Parrish
 */
 
 using namespace Tiles;
+
+#ifdef UNICODE
+#define _tfprintf fwprintf
+#else
+#define _tfprintf fprintf
+#endif
 
 static void testITile(ITile *pTile, MockWatch &watch)
 {
 	MockCanvas canvas;
 
-	printf("Test %s starts on %ld\n", __FUNCTION__, pTile->identity());
+	_tfprintf(stdout, _T("Test %s starts on %ld\n"), _T(__FUNCTION__), pTile->identity());
 
 	rect_t rect = {100, 100, 100, 100};
 	pTile->setRect(rect);
 
 	// notify test 1
-	printf("%ld should *not* trigger Redraw\n", pTile->identity());
+	_tfprintf(stdout, _T("%ld should *not* trigger Redraw\n"), pTile->identity());
 	pTile->setChanged(false);
 	pTile->watch(&watch);
 	// notify test 2
-	printf("%ld should trigger Redraw\n", pTile->identity());
+	_tfprintf(stdout, _T("%ld should trigger Redraw\n"), pTile->identity());
 	pTile->setChanged(true);
 	// notify test 3
-	printf("%ld should trigger another Redraw\n", pTile->identity());
+	_tfprintf(stdout, _T("%ld should trigger another Redraw\n"), pTile->identity());
 	pTile->watch(&watch);
 	// setChanged test
-	printf("%ld change state before draw %d\n", pTile->identity(), pTile->getChanged());
+	_tfprintf(stdout, _T("%ld change state before draw %d\n"), pTile->identity(), pTile->getChanged());
 	pTile->Draw(&canvas, false);
-	printf("%ld change state after draw %d\n", pTile->identity(), pTile->getChanged());
+	_tfprintf(stdout, _T("%ld change state after draw %d\n"), pTile->identity(), pTile->getChanged());
 }
 
 static void testIControl(IControl *pControl, MockWatch &watch)
@@ -61,7 +74,7 @@ static void testIControl(IControl *pControl, MockWatch &watch)
 	mouse._place.x = 1;
 	mouse._place.y = 1;
 
-	printf("Test %s starts on %ld\n", __FUNCTION__, pControl->identity());
+	_tfprintf(stdout, _T("Test %s starts on %ld\n"), _T(__FUNCTION__), pControl->identity());
 
 	pControl->setDesktop(&desktop);
 	testITile(pControl, watch);
@@ -77,7 +90,7 @@ static void testFill()
 	Fill fill(1, theme);
 	Pane pane(0, theme);
 	pane.Add(&fill);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testITile(&fill, watch);
 	pane.clear();
 }
@@ -90,7 +103,7 @@ static void testText()
 	Text text(1, theme, textFont);
 	Pane pane(0, theme);
 	pane.Add(&text);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testITile(&text, watch);
 	pane.clear();
 }
@@ -102,7 +115,7 @@ static void testArrow()
 	Arrow arrow(1, theme, eRight);
 	Pane pane(0, theme);
 	pane.Add(&arrow);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testITile(&arrow, watch);
 	pane.clear();
 }
@@ -115,7 +128,7 @@ static void testButton()
 	Button button(1, theme, font, _T("Test"), _T("Test"), _T("Test"));
 	Pane pane(0, theme);
 	pane.Add(&button);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testIControl(&button, watch);
 	pane.clear();
 }
@@ -128,7 +141,7 @@ static void testCheck()
 	Check check(1, theme, toggle);
 	Pane pane(0, theme);
 	pane.Add(&check);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testIControl(&check, watch);
 	pane.clear();
 }
@@ -142,31 +155,31 @@ static void testEdit()
 	Edit edit(1, theme, textFont, string);
 	Pane pane(0, theme);
 	pane.Add(&edit);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 
 	Tiles::KeyEvent action;
 	action._mask = 0;
 	action._what = KeyEvent::DOWN;
 	action._code = VK_RIGHT;
 
-	_tprintf(_T("Edit text [%s]\n"), string.c_str());
+	_tfprintf(stdout, _T("Edit text [%s]\n"), string.c_str());
 
 	//edit.setLocal(false);
 	edit.setFocus(true);
-	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	_tfprintf(stdout, _T("Edit index %d\n"), edit.getIndex());
 	edit.dispatch(action);
-	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	_tfprintf(stdout, _T("Edit index %d\n"), edit.getIndex());
 	edit.dispatch(action);
-	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	_tfprintf(stdout, _T("Edit index %d\n"), edit.getIndex());
 	edit.dispatch(action);
-	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	_tfprintf(stdout, _T("Edit index %d\n"), edit.getIndex());
 	edit.dispatch(action);
-	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	_tfprintf(stdout, _T("Edit index %d\n"), edit.getIndex());
 	action._code = VK_BACK;
 	edit.dispatch(action);
-	_tprintf(_T("Edit index %d\n"), edit.getIndex());
+	_tfprintf(stdout, _T("Edit index %d\n"), edit.getIndex());
 	edit.setFocus(false);
-	_tprintf(_T("Edit text [%s]\n"), string.c_str());
+	_tfprintf(stdout, _T("Edit text [%s]\n"), string.c_str());
 
 	testIControl(&edit, watch);
 
@@ -181,7 +194,7 @@ static void testScroll()
 	Scroll scroll(1, theme, eRight, value);
 	Pane pane(0, theme);
 	pane.Add(&scroll);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testIControl(&scroll, watch);
 	pane.clear();
 }
@@ -190,10 +203,11 @@ static void testTree()
 {
 	MockWatch watch;
 	Theme theme;
+	Theme::Font font = {Theme::eDefault, theme.Text};
 	Pane pane(0, theme);
-	Tree tree(0, theme);
+	Tree tree(0, theme, font);
 	pane.Add(&tree);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testIControl(&tree, watch);
 	pane.clear();
 }
@@ -205,7 +219,7 @@ static void testGrid()
 	Pane pane(0, theme);
 	Grid grid(0, theme);
 	pane.Add(&grid);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testIControl(&grid, watch);
 	pane.clear();
 }
@@ -218,7 +232,7 @@ static void testGlyph()
 	Pane pane(0, theme);
 	Glyph glyph(0, theme, font);
 	pane.Add(&glyph);
-	printf("%s\n", __FUNCTION__);
+	_tfprintf(stdout, _T("%s\n"), _T(__FUNCTION__));
 	testITile(&glyph, watch);
 	pane.clear();
 }
@@ -238,7 +252,7 @@ static void testRectangle()
 	line.push_back(pt);
 
 	rect.clipPolyline(line, lines);
-	printf("line segment left of box: %s\n", lines.size() == 0 ? "passes" : "fails");
+	_tfprintf(stdout, _T("line segment left of box: %s\n"), lines.size() == 0 ? _T("passes") : _T("fails"));
 	lines.clear();
 	line.clear();
 
@@ -250,7 +264,7 @@ static void testRectangle()
 	line.push_back(pt);
 
 	rect.clipPolyline(line, lines);
-	printf("line segment right of box: %s\n", lines.size() == 0 ? "passes" : "fails");
+	_tfprintf(stdout, _T("line segment right of box: %s\n"), lines.size() == 0 ? _T("passes") : _T("fails"));
 	lines.clear();
 	line.clear();
 
@@ -263,12 +277,12 @@ static void testRectangle()
 	line.push_back(pt);
 
 	rect.clipPolyline(line, lines);
-	printf("penetrating horizontal line: %s\n", lines.size() == 1 ? "passes" : "fails");
+	_tfprintf(stdout, _T("penetrating horizontal line: %s\n"), lines.size() == 1 ? _T("passes") : _T("fails"));
 	std::vector<point_t> &peek = lines[0];
-	printf("segment has %d points\n", peek.size());
+	_tfprintf(stdout, _T("segment has %d points\n"), peek.size());
 	for (size_t i = 0; i < peek.size(); i++)
-		printf("(%d,%d)", peek[i].x, peek[i].y);
-	printf("\n");
+		_tfprintf(stdout, _T("(%d,%d)"), peek[i].x, peek[i].y);
+	_tfprintf(stdout, _T("\n"));
 
 	lines.clear();
 	line.clear();
@@ -297,28 +311,134 @@ static void testFlow()
 	{
 		pane.getRect(view);
 		pane.getScrollBox(box);
-		fprintf(stderr, "Pane: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n",
+		_tfprintf(stderr, _T("Pane: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n"),
 			view.x, view.y, view.wide, view.high, box.x, box.y, box.wide, box.high);
 
 		a.getRect(view);
 		a.getScrollBox(box);
-		fprintf(stderr, "A: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n",
+		_tfprintf(stderr, _T("A: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n"),
 			view.x, view.y, view.wide, view.high, box.x, box.y, box.wide, box.high);
 
 		b.getRect(view);
 		b.getScrollBox(box);
-		fprintf(stderr, "B: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n",
+		_tfprintf(stderr, _T("B: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n"),
 			view.x, view.y, view.wide, view.high, box.x, box.y, box.wide, box.high);
 
 		c.getRect(view);
 		c.getScrollBox(box);
-		fprintf(stderr, "C: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n",
+		_tfprintf(stderr, _T("C: [%d, %d, %d, %d] scroll [%d, %d, %d, %d]\n"),
 			view.x, view.y, view.wide, view.high, box.x, box.y, box.wide, box.high);
 
 		point_t pt = {0, i};
 		pane.setScrollPoint(pt);
 	}
 	pane.clear();
+}
+
+static bool testJSONControl(IControl *pControl, const TCHAR *reference)
+{
+	JSON::Writer reader;
+	JSON::Writer writer;
+	const TCHAR test[] = _T("test.json");
+	bool bOK = false;
+
+	if ( writer.Open(test) )
+	{
+		TCHAR shell[32] = {0};
+
+		pControl->save(writer);
+		writer.Close();
+
+		// read access?
+		if ( _taccess(reference, 04) != 0 ) 
+		{
+			BOOL okay = CopyFile(test, reference, FALSE);
+
+			_tfprintf(stdout, _T("Creating reference copy %s.\n"), okay ? _T("succeeds") : _T("fails"));
+		}
+
+		wsprintf(shell, _T("FC %s %s"), test, reference);
+		bOK = _tsystem(shell) == 0;
+		_tunlink(test);
+	}
+	return bOK;
+}
+
+static bool testJSONButton()
+{
+	Theme theme;
+	Theme::Font font = {Theme::eText, theme.Text};
+	Button button(0, theme, font, _T("Test"));
+	return testJSONControl(&button, _T("button.json"));
+}
+
+static bool testJSONCheck()
+{
+	bool ignore = false;
+	Theme theme;
+	Check control(0, theme, ignore);
+	return testJSONControl(&control, _T("check.json"));
+}
+
+static bool testJSONCombo()
+{
+	string_t value;
+	Reference<string_t> accessor(value);
+	std::vector<Combo::Item> list;
+	Theme theme;
+	Theme::Font font = {Theme::eText, theme.Text};
+	Combo control(0, theme, font, list, &accessor);
+	return testJSONControl(&control, _T("combo.json"));
+}
+
+static bool testJSONEdit()
+{
+	string_t value;
+	Reference<string_t> accessor(value);
+	Theme theme;
+	Theme::Font font = {Theme::eText, theme.Text};
+	Edit control(0, theme, font,&accessor);
+	return testJSONControl(&control, _T("edit.json"));
+}
+
+static bool testJSONGrid()
+{
+	Theme theme;
+	Grid control(0, theme);
+	return testJSONControl(&control, _T("grid.json"));
+}
+
+static bool testJSONList()
+{
+	Theme theme;
+	List control(0, theme);
+	return testJSONControl(&control, _T("list.json"));
+}
+
+static bool testJSONScroll()
+{
+	long value = 0;
+	Theme theme;
+	Scroll control(0, theme, eRight, value);
+	return testJSONControl(&control, _T("scroll.json"));
+}
+
+static bool testJSONToggle()
+{
+	long value = 0;
+	std::vector<Toggle::Item> list;
+	Theme theme;
+	Theme::Font font = {Theme::eText, theme.Text};
+	Toggle control(0, theme, font, list, value);
+	return testJSONControl(&control, _T("toggle.json"));
+}
+
+static bool testJSONTree()
+{
+	Theme theme;
+	Theme::Font font = {Theme::eDefault, theme.Text};
+	Tree control(0, theme, font, _T("Test"));
+	return testJSONControl(&control, _T("tree.json"));
 }
 
 /*
@@ -350,6 +470,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	argc;
 	argv;
 
+#if 0
 	testRectangle();
 	testArrow();
 	testFill();
@@ -363,7 +484,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	testTree();
 	testGrid();
 	testGlyph();
-
+#endif
+	testJSONButton();
+	testJSONCheck();
+	testJSONCombo();
+	testJSONEdit();
+	testJSONGrid();
+	testJSONList();
+	testJSONScroll();
+	testJSONToggle();
+	testJSONTree(); // tree not ready.
 	getchar();
 	return 0;
 }
