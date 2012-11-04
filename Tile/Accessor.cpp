@@ -103,11 +103,11 @@ const string_t &Integer::getValue() const
 			size = wsprintf(&_text[0], _T("%o"), _wrap.getValue());
 			break;
 		case 16:
-			size = wsprintf(&_text[0], _T("%X"), _wrap.getValue());
+			size = wsprintf(&_text[0], _T("%lX"), _wrap.getValue());
 			break;
 		case 10:
 		default:
-			size = wsprintf(&_text[0], _T("%d"), _wrap.getValue());
+			size = wsprintf(&_text[0], _T("%ld"), _wrap.getValue());
 			break;
 	}
 	_text.resize(size);
@@ -118,6 +118,40 @@ bool Integer::setValue(const string_t &value)
 {
 	TCHAR *cursor = NULL;
 	long iValue = _tcstol(value.c_str(), &cursor, _base);
+	return cursor != value.c_str() && _wrap.setValue(iValue);
+}
+
+// accessor adapter for string to long.
+UInteger::UInteger(IAccessor<unsigned long>& wrap, int base) : 
+	_wrap(wrap), _base(base)
+{
+}
+
+const string_t &UInteger::getValue() const
+{
+	int size = 0;
+	_text.resize(32, _T(' '));
+	switch (_base)
+	{
+		case 8:
+			size = wsprintf(&_text[0], _T("%o"), _wrap.getValue());
+			break;
+		case 16:
+			size = wsprintf(&_text[0], _T("%lX"), _wrap.getValue());
+			break;
+		case 10:
+		default:
+			size = wsprintf(&_text[0], _T("%ld"), _wrap.getValue());
+			break;
+	}
+	_text.resize(size);
+	return _text;
+}
+
+bool UInteger::setValue(const string_t &value)
+{
+	TCHAR *cursor = NULL;
+	unsigned long iValue = _tcstol(value.c_str(), &cursor, _base);
 	return cursor != value.c_str() && _wrap.setValue(iValue);
 }
 

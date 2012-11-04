@@ -185,6 +185,20 @@ private:
 	Integer & operator = (const Integer &never);
 };
 
+// accessor adapter for string to long.
+struct UInteger : public IAccessor<string_t>
+{
+	UInteger(IAccessor<unsigned long>& wrap, int base = 10);
+	virtual const string_t &getValue() const;
+	virtual bool setValue(const string_t &value);
+
+private:
+	IAccessor<unsigned long>& _wrap;
+	mutable string_t _text;
+	int _base;
+	UInteger & operator = (const UInteger &never);
+};
+
 // Display date/time in compact format. Short format is display only.
 struct Time : public IAccessor<string_t>
 {
