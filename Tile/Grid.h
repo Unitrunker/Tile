@@ -1,6 +1,7 @@
 #include "Pane.h"
 #include "Table.h"
 #include "Scroll.h"
+#include "Delegate.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -14,7 +15,9 @@ struct Button;
 // Grid control
 struct Grid : public Pane, public INotify
 {
-	// create a grid control.
+	// Double click delegate - notifies when cell is double clicked.
+	sophia::delegate3<void, Grid *, size_t, size_t> DoubleClick;
+	// Create a grid control.
 	Grid(identity_t id, Theme &theme);
 	// Sets the content for this grid using an interface that is oblivious to the underlying data type.
 	void setTable(ITable *p);
@@ -48,18 +51,25 @@ private:
 	// row "i" moved to row "j".
 	virtual void onMoved(size_t i, size_t j);
 
+	// These next three fields used for column width resizing.
+	// Reference for dragging column divider to adjust width.
 	meter_t _datum;
+	// True for mouse capture while drag operation is active.
 	bool _capture;
+	// The column whose width is being adjusted.
 	size_t _drag;
+
+	// The grid's content.
 	ITable* _table;
 	// TODO: scrolling
 	// Plan is to embed a vertical flow in the grid.
 	// The vertical flow will contain the data rows.
 	// An additional row at the bottom will be the horizontal scroll.
 	// The Grid flow will itself be made to a horizontal flow.
-	// It's two immediate children will be the vertical flow and a vertical scroll.
+	// Its two immediate children will be the vertical flow and a vertical scroll.
 	// The two scroll controls will be hidden as needed by setting their width to zero.
 	// TODO: there is probably need for a scroll enabled flow.
+	// The scrollbar flows will be {1, 1, 0, true}
 
 	// TODO: vertical scrolling.
 	Scroll* _scrollVert;

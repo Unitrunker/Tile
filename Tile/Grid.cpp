@@ -17,7 +17,7 @@ struct Row : public Pane
 {
 	Row(identity_t id, Theme &theme);
 	Row(identity_t id, Theme &theme, Theme::Font& desc);
-	virtual ~Row() { };
+	virtual ~Row();
 };
 
 Row::Row(identity_t id, Theme &theme) : Pane(id, theme, eRight)
@@ -28,12 +28,25 @@ Row::Row(identity_t id, Theme &theme, Theme::Font& desc) : Pane(id, theme, desc,
 {
 }
 
+Row::~Row()
+{
+	// focus?
+	if ( getFocus() )
+	{
+		// yes: one of our cells has the focus so clean that up here.
+		IControl *null = NULL;
+		_pDesktop->setFocus(null);
+	}
+	// remove cell tiles before deleting the row 'cuz the cell tiles belong to the table.
+	clear();
+}
+
 // Header - container of column heading buttons for sorting and resizing.
 struct Header : public Pane
 {
 	Header(identity_t id, Theme &theme);
 	Header(identity_t id, Theme &theme, Theme::Font& desc);
-	virtual ~Header() { };
+	//virtual ~Header() { };
 	bool getColumn(point_t pt, size_t &col, meter_t &datum) const;
 	void dragColumn(size_t col, meter_t x);
 	virtual bool contains(point_t pt) const;
@@ -142,8 +155,6 @@ void Grid::reflow()
 	{
 		// get next data row.
 		Row *pKill = reinterpret_cast<Row *>(_listTiles[--i]);
-		// remove cell tiles before deleting the row 'cuz the cell tiles belong to the table.
-		pKill->clear();
 		delete pKill;
 	}
 
@@ -406,6 +417,28 @@ bool Grid::dispatch(MouseEvent &action)
 
 	if ( Pane::dispatch(action) )
 		return true;
+
+	if (action._what == MouseEvent::eDoubleClick && !DoubleClick.empty())
+	{
+		for (size_t i = 1; i < _listControls.size(); i++)
+		{
+			Row *row = reinterpret_cast<Row *>( getControl(i) );
+			if ( row->contains(action._place) )
+			{
+				for (size_t j = 0; j < row->getControlCount(); j++)
+				{
+					IControl *control = row->getControl(j);
+					if ( control->contains(action._place) )
+					{
+						DoubleClick(this, _table->getOffset() + i - 1, j);
+						break;
+					}
+				}
+				break;
+			}
+		}
+		return true;
+	}
 
 	// clicked in the header area but not squarely on a header column.
 	size_t i = _listTiles.size();
