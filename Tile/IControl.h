@@ -15,7 +15,7 @@ struct MouseEvent
 	// place
 	point_t _place;
 	// move, down-click, up-click.
-	enum {eMove = 1, eDownClick = 2, eUpClick = 3};
+	enum {eMove = 1, eDownClick = 2, eUpClick = 3, eDoubleClick = 4};
 	int _what;
 	// left, middle, right.
 	enum {eLeft = 1, eMiddle = 2, eRight = 4};
