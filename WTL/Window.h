@@ -10,6 +10,7 @@ using namespace Tiles;
 class Window : public CWindowImpl<Window>,
 	private IRedraw, public IWindow
 {
+protected:
 	Theme& _theme;
 	// all content goes here.
 	Pane *_pPane;
@@ -66,13 +67,19 @@ class Window : public CWindowImpl<Window>,
 	// native mouse button event triggers framework event.
 	LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	// native mouse button event triggers framework event.
+	LRESULT OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	// native mouse button event triggers framework event.
 	LRESULT OnMButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	// native mouse button event triggers framework event.
 	LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	// native mouse button event triggers framework event.
+	LRESULT OnMButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	// native mouse button event triggers framework event.
 	LRESULT OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	// native mouse button event triggers framework event.
 	LRESULT OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	// native mouse button event triggers framework event.
+	LRESULT OnRButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	// native mouse move event triggers framework event.
 	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -98,6 +105,9 @@ public:
 		MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnLButtonDblClick)
+		MESSAGE_HANDLER(WM_MBUTTONDBLCLK, OnMButtonDblClick)
+		MESSAGE_HANDLER(WM_RBUTTONDBLCLK, OnRButtonDblClick)
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRButtonDown)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtonUp)
 		MESSAGE_HANDLER(WM_MBUTTONDOWN, OnMButtonDown)

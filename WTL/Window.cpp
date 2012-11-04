@@ -56,7 +56,7 @@ ATL::CWndClassInfo& Window::GetWndClassInfo()
 {
 	static ATL::CWndClassInfo wc =
 	{
-		{ sizeof(WNDCLASSEX), 0, StartWindowProc,
+		{ sizeof(WNDCLASSEX), CS_DBLCLKS, StartWindowProc,
 		  0, 0, NULL, NULL, NULL, NULL, NULL, _T("TILE"), NULL },
 		NULL, NULL, IDC_ARROW, TRUE, 0, _T("")
 	};
@@ -168,6 +168,19 @@ LRESULT Window::OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 }
 
 // native mouse button event triggers framework event.
+LRESULT Window::OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	MouseEvent mouse = {0};
+	mouse._place.x = GET_X_LPARAM(lParam);
+	mouse._place.y = GET_Y_LPARAM(lParam);
+	mouse._what = MouseEvent::eDoubleClick;
+	mouse._button = MouseEvent::eLeft;
+	if (_pCapture)
+		bHandled = _pCapture->dispatch(mouse);
+	return 0;
+}
+
+// native mouse button event triggers framework event.
 LRESULT Window::OnMButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	MouseEvent mouse = {0};
@@ -194,6 +207,19 @@ LRESULT Window::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 }
 
 // native mouse button event triggers framework event.
+LRESULT Window::OnMButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	MouseEvent mouse = {0};
+	mouse._place.x = GET_X_LPARAM(lParam);
+	mouse._place.y = GET_Y_LPARAM(lParam);
+	mouse._what = MouseEvent::eDoubleClick;
+	mouse._button = MouseEvent::eMiddle;
+	if (_pCapture)
+		bHandled = _pCapture->dispatch(mouse);
+	return 0;
+}
+
+// native mouse button event triggers framework event.
 LRESULT Window::OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	MouseEvent mouse = {0};
@@ -213,6 +239,19 @@ LRESULT Window::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 	mouse._place.x = GET_X_LPARAM(lParam);
 	mouse._place.y = GET_Y_LPARAM(lParam);
 	mouse._what = MouseEvent::eUpClick;
+	mouse._button = MouseEvent::eRight;
+	if (_pCapture)
+		bHandled = _pCapture->dispatch(mouse);
+	return 0;
+}
+
+// native mouse button event triggers framework event.
+LRESULT Window::OnRButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	MouseEvent mouse = {0};
+	mouse._place.x = GET_X_LPARAM(lParam);
+	mouse._place.y = GET_Y_LPARAM(lParam);
+	mouse._what = MouseEvent::eDoubleClick;
 	mouse._button = MouseEvent::eRight;
 	if (_pCapture)
 		bHandled = _pCapture->dispatch(mouse);
@@ -327,6 +366,7 @@ void Window::setFocus(IControl *pFocus)
 {
 	if (_pFocus != pFocus)
 	{
+		IRedraw *self = this;
 		if (_pFocus != NULL)
 			_pFocus->setFocus(false);
 		_pFocus = pFocus;
