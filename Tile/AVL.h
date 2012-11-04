@@ -916,7 +916,7 @@ struct AVL : public _Base<node_t>, public IRowSet<Vref>
    {
       node_t *cursor = node_t::find(_root, key);
       iterator here = iterator(cursor, true);
-      if ( less(here._cursor->_key, key) )
+      if ( cursor != NULL && less(here._cursor->_key, key) )
          here++;
       return here;
    }
