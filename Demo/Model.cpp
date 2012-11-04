@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Model.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 Model::Channel *Model::Site::newChannel(channel_t lcn, bool bAdd)
 {
 	Model::Channel *p = NULL;

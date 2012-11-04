@@ -6,6 +6,10 @@
 #include "../Tile/List.h"
 #include "Model.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 // accessor adapter for string to channel_t.
 struct LCN : public IAccessor<string_t>
 {

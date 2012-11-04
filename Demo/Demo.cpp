@@ -1,11 +1,9 @@
-// Demo.cpp : main source file for Calculator.exe
-//
+/*
+Copyright © 2012 Rick Parrish
+*/
 
 #include "stdafx.h"
-
 #include "Resource.h"
-
-#include "AboutDlg.h"
 #include "MainFrame.h"
 
 CAppModule _Module;

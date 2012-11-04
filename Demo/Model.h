@@ -2,6 +2,10 @@
 #include <time.h>
 #include "Types.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 namespace Model
 {
 
@@ -14,7 +18,7 @@ struct System;
 struct Folder;
 
 ///
-///
+/// Channel - repeater transmit frequency for voice and data.
 ///
 struct Channel : Follow<Channel*>
 {
@@ -36,7 +40,7 @@ struct Channel : Follow<Channel*>
 typedef AVL<channel_t, Channel *, Channel *, Channel::less, Channel::byLCN> Channels;
 
 ///
-///
+/// Repeater site - manages list of channels. Only the TX frequency of each repeater pair is tracked here.
 ///
 struct Site : Follow<Site*>
 {
@@ -59,7 +63,7 @@ struct Site : Follow<Site*>
 };
 
 ///
-///
+/// Talkgroup
 ///
 struct Group : Follow<Group*>
 {
@@ -78,7 +82,7 @@ struct Group : Follow<Group*>
 };
 
 ///
-///
+/// Radio user
 ///
 struct User : Follow<User*>
 {
@@ -101,7 +105,7 @@ typedef AVL<address_t, Group *, Group *, Group::less, Group::byAddress> Groups;
 typedef AVL<site_t, Site *, Site *, Site::less, Site::bySite> Sites;
 
 ///
-///
+/// System - manages a collection of talkgroups, radio IDs, and repeater sites.
 ///
 struct System : Follow<System*>
 {

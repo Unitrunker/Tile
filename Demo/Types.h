@@ -1,3 +1,7 @@
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 // PODs
 typedef unsigned long address_t;
 typedef unsigned long network_t;
