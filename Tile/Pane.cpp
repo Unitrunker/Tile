@@ -790,6 +790,7 @@ bool Pane::dispatch(MouseEvent &action)
 			break;
 
 		case MouseEvent::eMove:
+		case MouseEvent::eDoubleClick:
 			// search all controls: which control contains mouse click?
 			for (size_t i = 0; i < size; i++)
 			{

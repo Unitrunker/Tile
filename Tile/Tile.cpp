@@ -44,6 +44,7 @@ Tile::Tile(identity_t id, Theme &theme, const Theme::Font &font) :
 
 Tile::Tile(const Tile &copy) : 
 	_id(copy._id), 
+	_pNotify(NULL),
 	_rect(copy._rect), 
 	_scrollBox(copy._scrollBox),
 	_vert(copy._vert), 
@@ -51,8 +52,7 @@ Tile::Tile(const Tile &copy) :
 	_pSelf(this),
 	_font(copy._font),
 	_theme(copy._theme),
-	_pPane(NULL),
-	_pNotify(NULL)
+	_pPane(NULL)
 {
 }
 
