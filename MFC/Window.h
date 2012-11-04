@@ -85,13 +85,19 @@ protected:
 	// native mouse button event triggers framework event.
 	afx_msg void OnLButtonUp(UINT, CPoint);
 	// native mouse button event triggers framework event.
+	afx_msg void OnLButtonDblClick(UINT, CPoint);
+	// native mouse button event triggers framework event.
 	afx_msg void OnMButtonDown(UINT, CPoint);
 	// native mouse button event triggers framework event.
 	afx_msg void OnMButtonUp(UINT, CPoint);
 	// native mouse button event triggers framework event.
+	afx_msg void OnMButtonDblClick(UINT, CPoint);
+	// native mouse button event triggers framework event.
 	afx_msg void OnRButtonDown(UINT, CPoint);
 	// native mouse button event triggers framework event.
 	afx_msg void OnRButtonUp(UINT, CPoint);
+	// native mouse button event triggers framework event.
+	afx_msg void OnRButtonDblClick(UINT, CPoint);
 
 	DECLARE_MESSAGE_MAP()
 	// compute layout of above controls for the area given.

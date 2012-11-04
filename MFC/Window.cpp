@@ -181,6 +181,18 @@ void Window::OnLButtonUp(UINT, CPoint pt)
 }
 
 // native mouse button event triggers framework event.
+void Window::OnLButtonDblClick(UINT, CPoint pt)
+{
+	MouseEvent mouse = {0};
+	mouse._place.x = pt.x;
+	mouse._place.y = pt.y;
+	mouse._what = MouseEvent::eDoubleClick;
+	mouse._button = MouseEvent::eLeft;
+	if (_pCapture)
+		_pCapture->dispatch(mouse);
+}
+
+// native mouse button event triggers framework event.
 void Window::OnMButtonDown(UINT, CPoint pt)
 {
 	MouseEvent mouse = {0};
@@ -205,6 +217,18 @@ void Window::OnMButtonUp(UINT, CPoint pt)
 }
 
 // native mouse button event triggers framework event.
+void Window::OnMButtonDblClick(UINT, CPoint pt)
+{
+	MouseEvent mouse = {0};
+	mouse._place.x = pt.x;
+	mouse._place.y = pt.y;
+	mouse._what = MouseEvent::eDoubleClick;
+	mouse._button = MouseEvent::eMiddle;
+	if (_pCapture)
+		_pCapture->dispatch(mouse);
+}
+
+// native mouse button event triggers framework event.
 void Window::OnRButtonDown(UINT, CPoint pt)
 {
 	MouseEvent mouse = {0};
@@ -223,6 +247,18 @@ void Window::OnRButtonUp(UINT, CPoint pt)
 	mouse._place.x = pt.x;
 	mouse._place.y = pt.y;
 	mouse._what = MouseEvent::eUpClick;
+	mouse._button = MouseEvent::eRight;
+	if (_pCapture)
+		_pCapture->dispatch(mouse);
+}
+
+// native mouse button event triggers framework event.
+void Window::OnRButtonDblClick(UINT, CPoint pt)
+{
+	MouseEvent mouse = {0};
+	mouse._place.x = pt.x;
+	mouse._place.y = pt.y;
+	mouse._what = MouseEvent::eDoubleClick;
 	mouse._button = MouseEvent::eRight;
 	if (_pCapture)
 		_pCapture->dispatch(mouse);
