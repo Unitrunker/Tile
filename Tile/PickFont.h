@@ -6,6 +6,8 @@
 Copyright © 2011-2012 Rick Parrish
 */
 
+#pragma once
+
 namespace Tiles
 {
 

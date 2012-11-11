@@ -5,6 +5,8 @@
 Copyright © 2011 Rick Parrish
 */
 
+#pragma once
+
 #include <list>
 
 // Change / remove following.
