@@ -282,6 +282,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Tab.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Text.cpp"
 				>
 			</File>
@@ -465,6 +469,10 @@
 			</File>
 			<File
 				RelativePath=".\Stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tab.h"
 				>
 			</File>
 			<File
