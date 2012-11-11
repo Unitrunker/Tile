@@ -191,15 +191,31 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
+				RelativePath=".\Address.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Channel.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Demo.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\MainFrame.cpp"
+				RelativePath=".\Folder.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Group.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Model.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Site.cpp"
 				>
 			</File>
 			<File
@@ -222,13 +238,37 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\System.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Types.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\User.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
-				RelativePath=".\MainFrame.h"
+				RelativePath=".\Address.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Channel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Folder.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Group.h"
 				>
 			</File>
 			<File
@@ -240,11 +280,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Site.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File
+				RelativePath=".\System.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Types.h"
+				>
+			</File>
+			<File
+				RelativePath=".\User.h"
 				>
 			</File>
 		</Filter>

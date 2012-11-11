@@ -5,17 +5,19 @@
 Copyright © 2012 Rick Parrish
 */
 
-Model::Channel *Model::Site::newChannel(channel_t lcn, bool bAdd)
+using namespace Model;
+
+Channel *Site::newChannel(channel_t lcn, bool bAdd)
 {
-	Model::Channel *p = NULL;
-	Model::Channels::iterator it = Channels.find(lcn);
+	Channel *p = NULL;
+	Channels::iterator it = Channels.find(lcn);
 	if (!it.end() && (*it)->_LCN == lcn)
 	{
 		p = (*it);
 	}
 	else if (bAdd)
 	{
-		p = new Model::Channel(this, lcn);
+		p = new Channel(this, lcn);
 		Channels.insert(lcn, p);
 	}
 
@@ -29,17 +31,17 @@ Model::Channel *Model::Site::newChannel(channel_t lcn, bool bAdd)
 	return p;
 }
 
-Model::Group *Model::System::newGroup(address_t address, bool bAdd)
+Group *System::newGroup(address_t address, bool bAdd)
 {
-	Model::Group *p = NULL;
-	Model::Groups::iterator it = Groups.find(address);
+	Group *p = NULL;
+	Groups::iterator it = Groups.find(address);
 	if (!it.end() && (*it)->_address == address)
 	{
 		p = (*it);
 	}
 	else if (bAdd)
 	{
-		p = new Model::Group(this, address);
+		p = new Group(this, address);
 		Groups.insert(address, p);
 	}
 
@@ -53,17 +55,17 @@ Model::Group *Model::System::newGroup(address_t address, bool bAdd)
 	return p;
 }
 
-Model::User *Model::System::newUser(address_t address, bool bAdd)
+User *System::newUser(address_t address, bool bAdd)
 {
-	Model::User *p = NULL;
-	Model::Users::iterator it = Users.find(address);
+	User *p = NULL;
+	Users::iterator it = Users.find(address);
 	if (!it.end() && (*it)->_address == address)
 	{
 		p = (*it);
 	}
 	else if (bAdd)
 	{
-		p = new Model::User(this, address);
+		p = new User(this, address);
 		Users.insert(address, p);
 	}
 
@@ -77,17 +79,17 @@ Model::User *Model::System::newUser(address_t address, bool bAdd)
 	return p;
 }
 
-Model::Site *Model::System::newSite(site_t site, bool bAdd)
+Site *System::newSite(site_t site, bool bAdd)
 {
-	Model::Site *p = NULL;
-	Model::Sites::iterator it = Sites.find(site);
+	Site *p = NULL;
+	Sites::iterator it = Sites.find(site);
 	if (!it.end() && (*it)->_site == site)
 	{
 		p = (*it);
 	}
 	else if (bAdd)
 	{
-		p = new Model::Site(this, site);
+		p = new Site(this, site);
 		Sites.insert(site, p);
 	}
 
@@ -101,17 +103,17 @@ Model::Site *Model::System::newSite(site_t site, bool bAdd)
 	return p;
 }
 
-Model::System *Model::Folder::newSystem(network_t network, bool bAdd)
+System *Model::Folder::newSystem(network_t network, bool bAdd)
 {
-	Model::System *p = NULL;
-	Model::Systems::iterator it = Systems.find(network);
+	System *p = NULL;
+	Systems::iterator it = Systems.find(network);
 	if (!it.end() && (*it)->_network == network)
 	{
 		p = (*it);
 	}
 	else if (bAdd)
 	{
-		p = new Model::System(this, network);
+		p = new System(this, network);
 		Systems.insert(network, p);
 	}
 

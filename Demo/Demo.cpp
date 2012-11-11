@@ -4,7 +4,7 @@ Copyright © 2012 Rick Parrish
 
 #include "stdafx.h"
 #include "Resource.h"
-#include "MainFrame.h"
+#include "Folder.h"
 
 CAppModule _Module;
 
@@ -14,7 +14,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	_Module.AddMessageLoop(&theLoop);
 
 	Theme theme;
-	MainFrame dlgMain(theme);
+	FolderFrame dlgMain(theme);
 	RECT rect = {0, 0, 240, 380};
 
 	if(dlgMain.Create(NULL, rect, _T("Systems"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW) == NULL)

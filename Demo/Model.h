@@ -1,10 +1,13 @@
 #include "../Tile/AVL.h"
 #include <time.h>
 #include "Types.h"
+#include "../Tile/Types.h"
 
 /*
 Copyright © 2012 Rick Parrish
 */
+
+#pragma once
 
 namespace Model
 {
@@ -27,6 +30,8 @@ struct Channel : Follow<Channel*>
 	frequency_t _hz;
 	hit_t _hits;
 	time_t _first, _last;
+	Tiles::string_t _label;
+	service_t _service;
 
 	Channel(Site *site, channel_t lcn) : _site(site), _LCN(lcn), _hits(0), _first(0), _last(0) { };
 
@@ -35,6 +40,7 @@ struct Channel : Follow<Channel*>
 	static hit_t byHits(Channel * const p) { return p->_hits; }
 	static time_t byFirst(Channel * const p) { return p->_first; }
 	static time_t byLast(Channel * const p) { return p->_last; }
+	static Tiles::string_t &byLabel(Channel * const p) { return p->_label; }
 };
 
 typedef AVL<channel_t, Channel *, Channel *, Channel::less, Channel::byLCN> Channels;
@@ -49,6 +55,7 @@ struct Site : Follow<Site*>
 	Channels Channels;
 	hit_t _hits;
 	time_t _first, _last;
+	Tiles::string_t _label;
 
 	Site(System *system, site_t site) : _system(system), _site(site), _hits(0), _first(0), _last(0) { };
 
@@ -60,6 +67,7 @@ struct Site : Follow<Site*>
 	static hit_t byHits(Site * const p) { return p->_hits; }
 	static time_t byFirst(Site * const p) { return p->_first; }
 	static time_t byLast(Site * const p) { return p->_last; }
+	static Tiles::string_t &byLabel(Site * const p) { return p->_label; }
 };
 
 ///
@@ -71,6 +79,7 @@ struct Group : Follow<Group*>
 	address_t _address;
 	hit_t _hits;
 	time_t _first, _last;
+	Tiles::string_t _label;
 
 	Group(System *system, address_t address) : _system(system), _address(address), _hits(0), _first(0), _last(0) { };
 
@@ -79,6 +88,7 @@ struct Group : Follow<Group*>
 	static hit_t byHits(Group * const p) { return p->_hits; }
 	static time_t byFirst(Group * const p) { return p->_first; }
 	static time_t byLast(Group * const p) { return p->_last; }
+	static Tiles::string_t &byLabel(Group * const p) { return p->_label; }
 };
 
 ///
@@ -90,6 +100,7 @@ struct User : Follow<User*>
 	address_t _address;
 	hit_t _hits;
 	time_t _first, _last;
+	Tiles::string_t _label;
 
 	User(System *system, address_t address) : _system(system), _address(address), _hits(0), _first(0), _last(0) { };
 
@@ -98,6 +109,7 @@ struct User : Follow<User*>
 	static hit_t byHits(User * const p) { return p->_hits; }
 	static time_t byFirst(User * const p) { return p->_first; }
 	static time_t byLast(User * const p) { return p->_last; }
+	static Tiles::string_t &byLabel(User * const p) { return p->_label; }
 };
 
 typedef AVL<address_t, User *, User *, User::less, User::byAddress> Users;
@@ -110,8 +122,10 @@ typedef AVL<site_t, Site *, Site *, Site::less, Site::bySite> Sites;
 struct System : Follow<System*>
 {
 	Folder *_folder;
+	trunk_t _type;
 	network_t _network;
 	time_t _first, _last;
+	Tiles::string_t _label;
 
 	Users Users;
 	Groups Groups;
@@ -126,13 +140,13 @@ struct System : Follow<System*>
 	// factory method.
 	virtual Group *newGroup(address_t address, bool bAdd);
 
-	static bool less(const network_t &left, const network_t &right) { return left < right; }
 	static network_t byNetwork(System * const p) { return p->_network; }
 	static time_t byFirst(System * const p) { return p->_first; }
 	static time_t byLast(System * const p) { return p->_last; }
+	static Tiles::string_t &byLabel(System * const p) { return p->_label; }
 };
 
-typedef AVL<network_t, System *, System *, System::less, System::byNetwork> Systems;
+typedef AVL<network_t, System *, System *, network_t::less, System::byNetwork> Systems;
 
 ///
 ///
