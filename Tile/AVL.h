@@ -1,6 +1,4 @@
-#ifndef _AVL2_H
-#define _AVL2_H
-
+#pragma once
 /*
 Copyright © 2011 Rick Parrish
 */
@@ -1158,5 +1156,3 @@ private:
 	// the tree's watchers.
 	std::list<INotify*> _watch;
 };
-
-#endif
