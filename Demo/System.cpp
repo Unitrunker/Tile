@@ -2,6 +2,23 @@
 #include "System.h"
 #include "../Tile/Edit.h"
 
+Trunk::Trunk(IAccessor<Model::trunk_t>& wrap) : _wrap(wrap)
+{
+}
+
+const string_t &Trunk::getValue() const
+{
+	Model::trunk_t value = _wrap.getValue();
+	const TCHAR *text = Model::getTrunkType(value);
+	_text = text;
+	return _text;
+}
+
+bool Trunk::setValue(const string_t &)
+{
+	return false; // not supported.
+}
+
 SystemSet::SystemSet(Theme& theme) : 
 	SetT<Model::System>(NULL),
 #pragma warning(disable:4355)
@@ -11,7 +28,9 @@ SystemSet::SystemSet(Theme& theme) :
 	Last(_last, Time::eDate),
 	_network(NULL),
 	_identity(_network, &Model::network_t::_network),
-	Network(_identity, 16)
+	_trunk(_network, &Model::network_t::_type),
+	Network(_identity, 16),
+	Trunk(_trunk)
 #pragma warning(default:4355)
 {
 	Section *section = NULL;
@@ -19,6 +38,8 @@ SystemSet::SystemSet(Theme& theme) :
 	Theme::Font textFont = {Theme::eText, theme.Text};
 
 	section = new Section(_T("System"), _T("System"));
+	prop = new Property(_T("Type"), _T("Trunking Type"), new Edit(0, theme, textFont, &Trunk) );
+	section->Items.push_back(prop);
 	prop = new Property(_T("Network"), _T("Network identity"), new Edit(0, theme, textFont, &Network) );
 	section->Items.push_back(prop);
 	prop = new Property(_T("First"), _T("First seen"), new Edit(0, theme, textFont, &First) );

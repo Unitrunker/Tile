@@ -13,6 +13,19 @@
 Copyright © 2012 Rick Parrish
 */
 
+// accessor adapter for string to long.
+struct Trunk : public IAccessor<string_t>
+{
+	Trunk(IAccessor<Model::trunk_t>& wrap);
+	virtual const string_t &getValue() const;
+	virtual bool setValue(const string_t &value);
+
+private:
+	IAccessor<Model::trunk_t>& _wrap;
+	mutable string_t _text;
+	Trunk & operator = (const Trunk &never);
+};
+
 struct SystemSet : public SetT<Model::System>
 {
 	SystemSet(Theme&);
@@ -25,8 +38,10 @@ struct SystemSet : public SetT<Model::System>
 private:
 	Tiles::Value<Model::network_t *> _network;
 	MemberAccessPtr<Model::network_t, unsigned long> _identity;
+	MemberAccessPtr<Model::network_t, Model::trunk_t> _trunk;
 	MemberAccessPtr<Model::System, time_t> _first;
 	MemberAccessPtr<Model::System, time_t> _last;
+	Trunk Trunk;
 	UInteger Network;
 	Time First;
 	Time Last;
