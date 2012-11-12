@@ -4,26 +4,37 @@
 using namespace Model;
 
 // trunking system types
-const TCHAR *getTrunkType(trunk_t value)
+const TCHAR *Model::getTrunkType(trunk_t value)
 {
-	static const TCHAR *list[] = 
+	static const struct 
 	{
-		_T("Unknown"),
-		_T("APCOP25"),
-		_T("DMR"),
-		_T("EDACS48"),
-		_T("EDACS96"),
-		_T("Motorola"),
-		_T("MPT1327"),
-		_T("NXDN"),
-		_T("OpenSky2"),
-		_T("OpenSky4")
+		trunk_t _code;
+		TCHAR *_label;
+	}
+	list[] = 
+	{
+		{DMR, _T("DMR")},
+		{EDACS48, _T("EDACS48")},
+		{EDACS96, _T("EDACS96")},
+		{LTR, _T("LTR")},
+		{Motorola, _T("Motorola")},
+		{MPT1327, _T("MPT1327")},
+		{NXDN, _T("NXDN")},
+		{OpenSky2, _T("OpenSky2")},
+		{OpenSky4, _T("OpenSky4")},
+		{Passport, _T("Passport")},
+		{P25, _T("Project 25")}
 	};
-	return list[value];
+	for (size_t i = 0; i < _countof(list); i++)
+	{
+		if (list[i]._code == value)
+			return list[i]._label;
+	}
+	return _T("Unknown");
 }
 
 // service types for voice.
-const TCHAR *getServiceType(service_t value)
+const TCHAR *Model::getServiceType(service_t value)
 {
 	static const TCHAR *list[] = 
 	{

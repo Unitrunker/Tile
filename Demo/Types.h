@@ -27,11 +27,21 @@ typedef unsigned short service_t;
 
 extern "C" const TCHAR *getServiceType(service_t value);
 
-// trunking system types
+// Trunking system types (16 bit codes are radix-50 encoded mneumonic).
+// These are not voice types.
 enum
 {
-	APCOP25 = 1, EDACS48 = 2, EDACS96 = 3, Motorola = 4, 
-	MPT1327 = 5, OpenSky = 6, DMR = 7, NXDN = 8
+	DMR = 0x1B1A,		// DMR
+	EDACS48 = 0x24B6,	// E48
+	EDACS96 = 0x257C,	// E96
+	LTR = 0x4E32,		// LTR
+	Motorola = 0x53AC,	// MOT
+	MPT1327 = 0x53D4,	// MPT
+	NXDN = 0x5B44,		// NXD
+	OpenSky2 = 0x60D8,	// OS2
+	OpenSky4 = 0x60DA,	// OS4
+	Passport = 0x6694,	// PPT
+	P25 = 0x6923		// P25
 };
 
 typedef unsigned short trunk_t;
