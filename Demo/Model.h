@@ -33,7 +33,7 @@ struct Channel : Follow<Channel*>
 	Tiles::string_t _label;
 	service_t _service;
 
-	Channel(Site *site, channel_t lcn) : _site(site), _LCN(lcn), _hits(0), _first(0), _last(0) { };
+	Channel(Site *site, channel_t lcn) : _site(site), _LCN(lcn), _hits(0), _first(0), _last(0), _hz(0), _service(0) { };
 
 	static bool less(const channel_t &left, const channel_t &right) { return left < right; }
 	static channel_t byLCN(Channel * const p) { return p->_LCN; }
