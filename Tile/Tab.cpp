@@ -18,8 +18,14 @@ Tab::Tab(identity_t id, Theme &theme) : Pane(id, theme, eRight)
 bool Tab::Add(const TCHAR *label, sophia::delegate2<void, Button*, bool> &click)
 {
 	Theme &theme = _tile.getTheme();
-	Flow flow = {1, 1, 0, true};
 	Theme::Font font = { Theme::eText, theme.Text };
+	return Add(label, font, click);
+}
+
+bool Tab::Add(const TCHAR *label, Theme::Font &font, sophia::delegate2<void, Button*, bool> &click)
+{
+	Theme &theme = _tile.getTheme();
+	Flow flow = {1, 1, 0, true};
 	Button *button = new Button(0, theme, font, label);
 	button->setFlow(eDown, flow);
 	button->Click = click;
