@@ -30,7 +30,7 @@ FolderFrame::FolderFrame(Theme &theme) :
 	for (size_t i = 0; i < 10; i++)
 	{
 		Model::network_t network = {0};
-		network._type = Model::APCOP25;
+		network._type = Model::P25;
 		network._network = 100 - i;
 		Model::System *system = _folder.newSystem(network, true);
 		size = _folder.Systems.size();
@@ -61,12 +61,23 @@ FolderFrame::FolderFrame(Theme &theme) :
 	_top = new Pane(0, theme, eDown);
 	_tools = new Tab(0, theme);
 
-	_tools->Add(_T("+"), click);
-	_tools->Add(_T("-"), click);
-	_tools->Add(_T("1"), click);
-	_tools->Add(_T("2"), click);
-	_tools->Add(_T("3"), click);
-	_tools->Add(_T("X"), click);
+	Font webdings(_T("Webdings"), 24, 1);
+	Font segoe(_T("Segoe UI Symbol"), 24, 0);
+	Theme::Font font = { Theme::eDefault, segoe };
+
+	_tools->Add(L"\x231A", font, click); // watch
+	_tools->Add(L"\x231B", font, click); // hourglass
+	_tools->Add(L"\x2328", font, click); // keyboard
+	_tools->Add(L"\x2388", font, click); // Helm
+	_tools->Add(L"\x2622", font, click); // radioactive
+	_tools->Add(L"\x2623", font, click); // biohazard
+
+	font.font = webdings;
+	_tools->Add(L"\x22", font, click); // web
+	_tools->Add(L"\x40", font, click); // tools
+	_tools->Add(L"\x71", font, click); // refresh
+	_tools->Add(L"\x72", font, click); // X
+	_tools->Add(L"\x73", font, click); // ?
 
 	Grid *pGrid = new Grid(0, theme);
 	pGrid->setTable(&_table);
