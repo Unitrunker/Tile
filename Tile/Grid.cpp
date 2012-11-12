@@ -406,7 +406,9 @@ bool Grid::dispatch(MouseEvent &action)
 				{
 					Row *gee = reinterpret_cast<Row *>(_listControls[row]);
 					control = gee->getControl(col);
-					control->setFlow(eRight, flow);
+					// NULL implies a Fill tile for empty space.
+					if (control != NULL)
+						control->setFlow(eRight, flow);
 				}
 			}
 			Pane::reflow();
