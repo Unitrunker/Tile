@@ -337,10 +337,19 @@ void Window::Redraw(ITile *pDraw)
 }
 
 // IWindow
-void Window::setCapture(IControl *p)
+
+// mouse cursor
+void Window::setCursor(int cursor)
+{
+	HCURSOR hCursor = LoadCursor(NULL, MAKEINTRESOURCE(cursor));
+	SetCursor(hCursor);
+}
+
+void Window::setCapture(IControl *p, int cursor)
 {
 	if (p == NULL)
 	{
+		setCursor(IWindow::ARROW);
 		_pCapture = _pPane;
 		ReleaseCapture();
 	}
@@ -348,6 +357,7 @@ void Window::setCapture(IControl *p)
 	{
 		_pCapture = p;
 		SetCapture();
+		setCursor(cursor);
 	}
 }
 
