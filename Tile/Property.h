@@ -16,11 +16,13 @@ namespace Tiles
 // A property - used to populate one key/value entry in a property List or one cell in a Grid.
 struct Property
 {
-	const TCHAR *Name;
-	const TCHAR *Notes;
-	IControl *Control;
+	const TCHAR *Name;		// Short name
+	const TCHAR *Notes;		// Description
+	IControl *Control;		// control that edits/displays property value.
+	bool list;				// true to include in List control.
+	bool grid;				// true to include in Grid control.
 
-	Property(const TCHAR *name, const TCHAR *notes, IControl *);
+	Property(const TCHAR *name, const TCHAR *notes, IControl *, bool grid = true, bool list = true);
 	~Property();
 };
 

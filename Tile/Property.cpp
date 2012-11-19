@@ -22,14 +22,13 @@ Section::~Section()
 	Items.clear();
 }
 
-
 void Section::Add(Property *p)
 {
 	Items.push_back(p);
 }
 
-Property::Property(const TCHAR *name, const TCHAR *notes, IControl *control) :
-	Name(name), Notes(notes), Control(control)
+Property::Property(const TCHAR *name, const TCHAR *notes, IControl *control, bool bGrid, bool bList) :
+	Name(name), Notes(notes), Control(control), list(bList), grid(bGrid)
 {
 }
 
