@@ -22,8 +22,8 @@ struct Tab : public Pane
 	// Create a grid control.
 	Tab(identity_t id, Theme &theme);
 
-	bool Add(const TCHAR *label, sophia::delegate2<void, Button*, bool> &click);
-	bool Add(const TCHAR *label, Theme::Font &font, sophia::delegate2<void, Button*, bool> &click);
+	bool Add(const TCHAR *label, sophia::delegate2<void, Button*, bool> &click, const TCHAR *tip = NULL);
+	bool Add(const TCHAR *label, Theme::Font &font, sophia::delegate2<void, Button*, bool> &click, const TCHAR *tip = NULL);
 	bool Populate(std::vector<TabItem> &list);
 
 private:

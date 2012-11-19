@@ -15,6 +15,7 @@ namespace Tiles
 struct Button;
 
 // Grid control
+// TODO: multi-row selection
 struct Grid : public Pane, public INotify
 {
 	// Double click delegate - notifies when cell is double clicked.
@@ -22,17 +23,25 @@ struct Grid : public Pane, public INotify
 	// Create a grid control.
 	Grid(identity_t id, Theme &theme);
 	// Sets the content for this grid using an interface that is oblivious to the underlying data type.
-	void setTable(ITable *p);
-	// set bounding rectangle.
+	void setTable(ITable *p, bool multi = false);
+	// Set bounding rectangle.
 	virtual void setRect(const rect_t &rect);
+	// Clear selection.
+	void clearSelect();
 
 	// serialize
 	virtual bool save(JSON::Writer &writer);
 	// de-serialize
 	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl);
 
+protected:
+	virtual void onIndexChanged(size_t index);
 private:
 	void clickHeader(Button *control, bool value);
+
+	size_t getRowIndex() const;
+
+	void onRowIndexChanged();
 
     size_t getVisibleRowCount();
 	// called when grid resized or new table assigned.
@@ -60,6 +69,10 @@ private:
 	bool _capture;
 	// The column whose width is being adjusted.
 	size_t _drag;
+	// most recent row index
+	size_t _cursor;
+
+	bool _multi;
 
 	// The grid's content.
 	ITable* _table;

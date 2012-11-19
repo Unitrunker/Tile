@@ -3,6 +3,7 @@
 #include "Pane.h"
 #include "ICanvas.h"
 #include "JSON.h"
+#include "Text.h"
 
 /*
 Copyright © 2011 Rick Parrish
@@ -18,7 +19,8 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, const TCHAR *text
 	_textOver(text),
 	_iGlyphUp(0), // unused.
 	_iGlyphDn(0), // unused.
-	_iGlyphOver(0) // unused.
+	_iGlyphOver(0), // unused.
+	_popup(NULL)
 {
 	_colorUp[0].index = Theme::eToolFore;
 	_colorUp[0].color = RGB(0, 0, 0);
@@ -49,7 +51,8 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, const TCHAR *text
 	_textOver(textOver),
 	_iGlyphUp(0), // unused.
 	_iGlyphDn(0), // unused.
-	_iGlyphOver(0) // unused.
+	_iGlyphOver(0), // unused.
+	_popup(NULL)
 {
 	_colorUp[0].index = Theme::eToolFore;
 	_colorUp[0].color = RGB(0, 0, 0);
@@ -80,7 +83,8 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, unsigned char iUp
 	_textOver(_T("?")),
 	_iGlyphUp(iUp),
 	_iGlyphDn(iDn),
-	_iGlyphOver(iOver)
+	_iGlyphOver(iOver),
+	_popup(NULL)
 {
 	_colorUp[0].index = Theme::eToolFore;
 	_colorUp[0].color = RGB(0, 0, 0);
@@ -101,6 +105,13 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, unsigned char iUp
 	_colorFocus[0].color = RGB(0, 0, 0);
 	_colorFocus[1].index = Theme::eToolOver;
 	_colorFocus[1].color = RGB(255, 255, 255);
+}
+
+Button::~Button()
+{
+	if (_popup)
+		_popup->close();
+	_popup = NULL;
 }
 
 /// <param name="canvas">Canvas where text will appear.</param>
@@ -378,4 +389,82 @@ bool Button::load(JSON::Reader &reader, Theme &theme, const char *type, IControl
 		}
 	}
 	return bOK;
+}
+
+bool Button::getTip(string_t &tip) const
+{
+	if (_tip.size() > 0)
+	{
+		tip = _tip;
+		return true;
+	}
+	return false;
+}
+
+void Button::setTip(const TCHAR *tip)
+{
+	_tip = tip;
+}
+
+// hover
+void Button::setHover(bool hover)
+{
+	Control::setHover(hover);
+	if (hover && _tip.size())
+	{
+		size_t size = (5 * _tip.size() + 7) / 8;
+		Flow vert = {1, 1, 0, true};
+		Flow horz = { size, size, 0, true };
+		Theme::Font font = { Theme::eText, _tile.getTheme().Text };
+		Pane *pane = new Pane(0, _tile.getTheme(), eDown);
+		Text *text = new Text(0, _tile.getTheme(), font, eLeft, _tip.c_str());
+		text->setFlow(eRight, horz);
+		text->setFlow(eDown, vert);
+		rect_t rect;
+		_ASSERT(_popup == NULL);
+		pane->Add(text);
+
+		// TODO: better placement.
+		rect.wide = size * _tile.getTheme().Text._height + 2;
+		rect.high = _tile.getTheme().Text._height + 2;
+
+		pane->setBorder(1);
+
+		rect_t here;
+		_tile.getRect(here);
+
+		rect.x = here.left();
+		rect.y = here.bottom();
+
+		_popup = _pDesktop->popup(rect, pane, this);
+	}
+	else if (_popup)
+	{
+		_popup->close();
+		_popup = NULL;
+	}
+}
+
+void Button::setColorUp(const Theme::Color &fore, const Theme::Color &back)
+{
+	_colorUp[0] = fore;
+	_colorUp[1] = back;
+}
+
+void Button::setColorDn(const Theme::Color &fore, const Theme::Color &back)
+{
+	_colorDn[0] = fore;
+	_colorDn[1] = back;
+}
+
+void Button::setColorOver(const Theme::Color &fore, const Theme::Color &back)
+{
+	_colorOver[0] = fore;
+	_colorOver[1] = back;
+}
+
+void Button::setColorFocus(const Theme::Color &fore, const Theme::Color &back)
+{
+	_colorFocus[0] = fore;
+	_colorFocus[1] = back;
 }

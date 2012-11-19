@@ -15,20 +15,22 @@ Tab::Tab(identity_t id, Theme &theme) : Pane(id, theme, eRight)
 {
 }
 
-bool Tab::Add(const TCHAR *label, sophia::delegate2<void, Button*, bool> &click)
+bool Tab::Add(const TCHAR *label, sophia::delegate2<void, Button*, bool> &click, const TCHAR *tip)
 {
 	Theme &theme = _tile.getTheme();
 	Theme::Font font = { Theme::eText, theme.Text };
-	return Add(label, font, click);
+	return Add(label, font, click, tip);
 }
 
-bool Tab::Add(const TCHAR *label, Theme::Font &font, sophia::delegate2<void, Button*, bool> &click)
+bool Tab::Add(const TCHAR *label, Theme::Font &font, sophia::delegate2<void, Button*, bool> &click, const TCHAR *tip)
 {
 	Theme &theme = _tile.getTheme();
 	Flow flow = {1, 1, 0, true};
 	Button *button = new Button(0, theme, font, label);
 	button->setFlow(eDown, flow);
 	button->Click = click;
+	if (tip)
+		button->setTip(tip);
 	Pane::Add(button, 0, 4096, 1, false);
 	return true;
 }

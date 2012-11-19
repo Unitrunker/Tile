@@ -5,6 +5,7 @@
 #include "Fill.h"
 #include "IWindow.h"
 #include "JSON.h"
+#include "Check.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -122,14 +123,21 @@ bool Header::contains(point_t pt) const
 
 // The grid control. It's a Pane control with some extra logic for rows and column headings.
 Grid::Grid(identity_t id, Theme &theme) : Pane(id, theme, eDown), 
-	_table(NULL), _scrollVert(NULL), _paneVert(NULL), _scrollHorz(NULL), _capture(false), _drag(0), _datum(0)
+	_table(NULL), _scrollVert(NULL), _paneVert(NULL), _scrollHorz(NULL), 
+	_capture(false), _drag(0), _datum(0), _multi(false), _cursor(0)
 {
 }
 
 // Sets the content for this grid using an interface that is oblivious to the underlying data type.
-void Grid::setTable(ITable *p)
+void Grid::setTable(ITable *p, bool multi)
 {
+	// who knows what state this table was left in last?
+	p->setOffset(0);
+	p->clearSelect();
+
+	_cursor = 0;
 	_table = p;
+	_multi = multi;
 	p->follow(this);
 	reflow();
 }
@@ -170,29 +178,41 @@ void Grid::reflow()
 
 	if (_table)
 	{
-		_table->setVisible(0, rows);
+		size_t offset = _table->getOffset();
+		_table->setVisible(offset, rows);
+
+		Theme::Color capFore = {Theme::eCaptionFore, theme.CaptionFore};
+		Theme::Color capBack = {Theme::eCaptionBack, theme.CaptionBack};
+		Theme::Color toolOver = {Theme::eToolOver, theme.ToolOver};
 
 		// compose a header row.
 		Set *set = _table->getHeader();
-		Header *row = new Header(0, theme);
+		Header *header = new Header(0, theme);
 		for (size_t col = 0; col < set->Columns.size(); col++)
 		{
-			// tile to allow users to adjust column widths.
+			// Headings will allow users to adjust column widths.
 			Flow desc = {0};
 			// Button is our column heading.
-			Button *button = new Button(col, theme, textFont, set->Columns[col]->Name);
+			Button* button = new Button(col + 1, theme, textFont, set->Columns[col]->Name);
+			button->setTip(set->Columns[col]->Notes);
+
+			button->setColorUp(capFore, capBack);
+			button->setColorDn(capFore, capBack);
+			button->setColorOver(capFore, toolOver);
+			button->setColorFocus(capFore, toolOver);
+
 			// Cloning the controls Flow causes the header tiles 
 			// to align proportionately with the data cells.
 			IControl *pControl = set->Columns[col]->Control;
 			pControl->getFlow(eRight, desc);
 			button->setFlow(eRight, desc);
 			// add column heading to header row.
-			row->Add(button);
+			header->Add(button);
 			// column heading click will allow choice of pre-defined sort selection.
 			button->Click.bind(this, &Grid::clickHeader);
 		}
 		// add the header row.
-		Add(row);
+		Add(header);
 
 		// for each row
 		for (i = 0; i < rows; i++)
@@ -213,11 +233,15 @@ void Grid::reflow()
 					Flow flow = {0};
 					// Get flow from header. adjustments to column widths are applied to 
 					// header row. Set the data rows to match so columns align.
-					IControl *pControl = _table->getHeader()->Columns[col]->Control;
-					pControl->getFlow(eRight, flow);
-					pControl = set->Columns[col]->Control;
-					pControl->setFlow(eRight, flow);
-					row->Add(pControl);
+					// Appropriate for grid?
+					if (_table->getHeader()->Columns[col]->grid)
+					{
+						IControl *pControl = _table->getHeader()->Columns[col]->Control;
+						pControl->getFlow(eRight, flow);
+						pControl = set->Columns[col]->Control;
+						pControl->setFlow(eRight, flow);
+						row->Add(pControl);
+					}
 				}
 			}
 			// add data row.
@@ -296,6 +320,7 @@ void Grid::onMoved(size_t i, size_t j)
 // key event sink
 bool Grid::dispatch(KeyEvent &action)
 {
+	_cursor = getRowIndex();
 	if ( Pane::dispatch(action) )
 		return true;
 
@@ -304,36 +329,42 @@ bool Grid::dispatch(KeyEvent &action)
 		size_t offset = _table->getOffset();
 		size_t rows = getVisibleRowCount();
 		size_t index = getIndex();
-		// bottom most row in the grid?
-		if ( index + 1 == _listControls.size() &&
-			// down arrow key?
-			action._code == VK_DOWN)
+		// down arrow key?
+		if (action._code == VK_DOWN)
 		{
-			// yes: scroll down one row.
-			if (offset + rows < _table->size())
+			// bottom most row in the grid?
+			if ( index + 1 == _listControls.size() )
 			{
-				_pDesktop->setFocus(false);
-				_table->setVisible(offset + 1, rows);
-				_pDesktop->setFocus(true);
-				setChanged(true);
-				// copy heading flow to rows.
+				// yes: scroll down one row.
+				if (offset + rows < _table->size())
+				{
+					_pDesktop->setFocus(false);
+					_table->setVisible(offset + 1, rows);
+					onRowIndexChanged();
+					_pDesktop->setFocus(true);
+					setChanged(true);
+					// copy heading flow to rows.
+				}
+				return true;
 			}
-			return true;
 		}
-		// top most row in the grid?
-		if ( index == 1 && 
-			// yes: up arrow key?
-			action._code == VK_UP)
+		// up arrow key?
+		if (action._code == VK_UP)
 		{
-			// yes: scroll up one row.
-			if (offset > 0)
+			// top most row in the grid?
+			if ( index == 1)
 			{
-				_pDesktop->setFocus(false);
-				_table->setVisible(offset - 1, rows);
-				_pDesktop->setFocus(true);
-				setChanged(true);
+				// yes: scroll up one row.
+				if (offset > 0)
+				{
+					_pDesktop->setFocus(false);
+					_table->setVisible(offset - 1, rows);
+					onRowIndexChanged();
+					_pDesktop->setFocus(true);
+					setChanged(true);
+				}
+				return true;
 			}
-			return true;
 		}
 
 		if (action._code == VK_NEXT)
@@ -343,6 +374,7 @@ bool Grid::dispatch(KeyEvent &action)
 			{
 				_pDesktop->setFocus(false);
 				_table->setVisible(offset + rows, rows);
+				onRowIndexChanged();
 				setChanged(true);
 				_pDesktop->setFocus(true);
 			}
@@ -360,6 +392,7 @@ bool Grid::dispatch(KeyEvent &action)
 					offset = 0;
 				_pDesktop->setFocus(false);
 				_table->setVisible(offset, rows);
+				onRowIndexChanged();
 				setChanged(true);
 				_pDesktop->setFocus(true);
 			}
@@ -372,6 +405,7 @@ bool Grid::dispatch(KeyEvent &action)
 // mouse event sink
 bool Grid::dispatch(MouseEvent &action)
 {
+	_cursor = getRowIndex();
 	// captured mouse for column header width sizing?
 	if (_capture)
 	{
@@ -386,7 +420,6 @@ bool Grid::dispatch(MouseEvent &action)
 		else if ( action._what == MouseEvent::eUpClick && (action._button & MouseEvent::eLeft) )
 		{
 			Header *header = reinterpret_cast<Header *>(_listTiles[0]);
-			SetCursor( LoadCursor(NULL, IDC_ARROW) );
 			_pDesktop->setCapture(NULL);
 			_capture = false;
 
@@ -451,8 +484,7 @@ bool Grid::dispatch(MouseEvent &action)
 			Header *header = reinterpret_cast<Header *>(_listTiles[0]);
 			if ( header->getColumn(action._place, _drag, _datum) )
 			{
-				SetCursor( LoadCursor(NULL, IDC_SIZEWE) );
-				_pDesktop->setCapture(this);
+				_pDesktop->setCapture(this, IWindow::SIZEWE);
 				_capture = true;
 			}
 		}
@@ -507,4 +539,41 @@ bool Grid::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *
 		}
 	}
 	return bOK;
+}
+
+size_t Grid::getRowIndex() const
+{
+	size_t index = _table->getOffset() + getIndex();
+	if (index > 0) index--;
+	return index;
+}
+
+void Grid::onIndexChanged(size_t)
+{
+	size_t row = getRowIndex();
+	if (row != _cursor)
+	{
+		onRowIndexChanged();
+	}
+	_cursor = row;
+}
+
+void Grid::onRowIndexChanged()
+{
+	size_t row = getRowIndex();
+	if ( GetKeyState(VK_SHIFT) < 0 )
+	{
+		_table->setSelect(_cursor, row);
+	}
+	else if ( GetKeyState(VK_CONTROL) < 0 )
+	{
+		bool select = _table->getSelect(row);
+		_table->setSelect(row, !select);
+	}
+}
+
+// Clear selection.
+void Grid::clearSelect()
+{
+	_table->clearSelect();
 }

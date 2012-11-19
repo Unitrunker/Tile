@@ -2,7 +2,7 @@
 #include "Delegate.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011-2012 Rick Parrish
 */
 
 #pragma once
@@ -18,6 +18,7 @@ struct Button : public Control
 	Button(identity_t id, Theme& theme, Theme::Font &desc, const TCHAR *text);
 	Button(identity_t id, Theme& theme, Theme::Font &desc, const TCHAR *textUp, const TCHAR *textDown, const TCHAR *textOver);
 	Button(identity_t id, Theme& theme, Theme::Font &desc, unsigned char iUp, unsigned char iDn, unsigned char iOver);
+	virtual ~Button();
 
 	// ITile implementation
 	// instance type
@@ -42,7 +43,7 @@ struct Button : public Control
 	// set callback for change notification.
 	using Control::watch;
 	// hover
-	using Control::setHover;
+	virtual void setHover(bool hover);
 	// focus
 	using Control::getFocus;
 	virtual void setFocus(bool focus);
@@ -82,10 +83,21 @@ struct Button : public Control
 	using Control::getContainer;
 	using Control::setContainer;
 
+	bool getTip(string_t &tip) const;
+	void setTip(const TCHAR *tip);
+
+	void setColorUp(const Theme::Color &fore, const Theme::Color &back);
+	void setColorDn(const Theme::Color &fore, const Theme::Color &back);
+	void setColorOver(const Theme::Color &fore, const Theme::Color &back);
+	void setColorFocus(const Theme::Color &fore, const Theme::Color &back);
+
 	static const char* type();
 
 private:
 	const string_t & text(bool focus);
+
+	string_t _tip;
+	IWindow *_popup;
 
 	bool _down;
 	Theme::Color _colorUp[2];
