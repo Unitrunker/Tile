@@ -1,7 +1,7 @@
 #include "Types.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011, 2012 Rick Parrish
 */
 
 #pragma once
@@ -12,12 +12,21 @@ namespace Tiles
 struct IControl;
 struct Pane;
 
-// Soon to be renamed "IWindow"
-
+// Window interface
 struct IWindow
 {
+	enum cursor
+	{
+		ARROW = 32512, IBEAM = 32513, WAIT = 32514, CROSS = 32515,
+		UPARROW = 32516, SIZE = 32640, ICON = 32641, SIZENWSE = 32642,
+		SIZENESW = 32643, SIZEWE = 32644, SIZENS = 32645, SIZEALL = 32646, 
+		NO = 32648, HAND = 32649, APPSTARTING = 32650, HELP = 32651
+	};
+
+	// mouse cursor
+	virtual void setCursor(int cursor = ARROW) = 0;
 	// mouse capture
-	virtual void setCapture(IControl *pControl) = 0;
+	virtual void setCapture(IControl *pControl, int cursor = ARROW) = 0;
 	// alter focus.
 	virtual void setFocus(bool bFocus) = 0;
 	// set focus to control.
