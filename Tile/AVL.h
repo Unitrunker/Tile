@@ -5,6 +5,7 @@ Copyright © 2011 Rick Parrish
 
 #include <stdexcept>
 #include "Follow.h"
+#include <map>
 
 // Notification interface.
 // No type-awareness needed.
@@ -31,6 +32,9 @@ struct IRowSet
 	virtual bool ignore(INotify *) = 0;
 	virtual T operator [](size_t index) = 0;
 	virtual size_t size() const = 0;
+	virtual bool getSelect(size_t index) const = 0;
+	virtual void setSelect(size_t index, bool select) = 0;
+	virtual void clearSelect() = 0;
 };
 
 // Base class for tree.
@@ -76,12 +80,13 @@ struct node : public IFollow<Vref>
   typedef node node_t;
   // as you can see, this is a hefty node implementation - 24 bytes plus however many key bytes.
   // a node allocator would be nice.
-  K _key;
-  V _value;
   node_t *_kids[2];
   node_t *_parent;
   size_t _count;
   _Base<node> *_container;
+  K _key;
+  V _value;
+  bool _select;
 
   // Node holds a value. key explicit.
   node(_Base<node> *contain, const K &key, Vref value) : 
@@ -89,7 +94,8 @@ struct node : public IFollow<Vref>
 	 _key(key),				// hold the key.
 	 _value(value),			// hold the value.
 	 _parent(NULL),			// no parent yet.
-	 _count(1)				// lonely count of one.
+	 _count(1),				// lonely count of one.
+	 _select(false)
   {
      // no kids (yet).
      _kids[0] = _kids[1] = NULL;
@@ -102,7 +108,8 @@ struct node : public IFollow<Vref>
 	 _key(extract(value)),	// hold the key.
 	 _value(value),			// hold the value.
 	 _parent(NULL),			// no parent yet.
-	 _count(1)				// lonely count of one.
+	 _count(1),				// lonely count of one.
+	 _select(false)
   {
      // no kids (yet).
      _kids[0] = _kids[1] = NULL;
@@ -946,6 +953,53 @@ struct AVL : public _Base<node_t>, public IRowSet<Vref>
       return _root ? _root->_count : 0;
    }
 
+   // IRowSet
+   virtual bool getSelect(size_t i) const
+   {
+      const node_t *p = index(i, true);
+      if (p != NULL)
+         return p->_select;
+      return false;
+   }
+
+   // IRowSet
+   virtual void setSelect(size_t i, bool select)
+   {
+      node_t *p = index(i, true);
+	  if (p != NULL)
+	  {
+         if (!p->_select & select)
+         {
+            _mapSelected[p] = true;
+            p->_select = select;
+			onChange(p);
+         }
+         else if (p->_select & !select)
+         {
+            std::map<node_t *, bool>::iterator it = _mapSelected.find(p);
+			if (it != _mapSelected.end())
+			{
+				_mapSelected.erase(it);
+			}
+            p->_select = select;
+			onChange(p);
+         }
+	  }
+   }
+
+   // clear all selected nodes.
+   virtual void clearSelect()
+   {
+      std::map<node_t *, bool>::iterator it = _mapSelected.begin();
+	  while (it != _mapSelected.end())
+	  {
+		  it->first->_select = false;
+		  onChange(it->first);
+		  it++;
+	  }
+	  _mapSelected.clear();
+   }
+
    // How tall is this tree?
    // An empty tree has height zero.
    size_t height() const
@@ -1104,19 +1158,19 @@ protected:
 
 private:
 
-	void onAdded(node_t *child)
-	{
-		size_t iIndex = child->index(true);
-		std::list<INotify *> snap(_watch);
-		std::list<INotify *>::iterator it = snap.begin();
-		while (it != snap.end())
-		{
-			(*it++)->onAdded(iIndex);
-		}
-	}
+   void onAdded(node_t *child)
+   {
+      size_t iIndex = child->index(true);
+      std::list<INotify *> snap(_watch);
+      std::list<INotify *>::iterator it = snap.begin();
+      while (it != snap.end())
+      {
+         (*it++)->onAdded(iIndex);
+      }
+   }
 
-	virtual void onChange(node_t *node)
-	{
+   virtual void onChange(node_t *node)
+   {
 		size_t iIndex = node->index(true);
 	    std::list<INotify *> snap(_watch);
 	    std::list<INotify *>::iterator it = snap.begin();
@@ -1124,35 +1178,37 @@ private:
 		{
 			(*it++)->onChange(iIndex);
 		}
-	}
+   }
 
-	virtual void onRemove(node_t *node)
-	{
-		std::list<INotify *> snap(_watch);
-		size_t iIndex = node->index(true);
-		std::list<INotify*>::iterator it = snap.begin();
-		while (it != snap.end())
-		{
-			(*it++)->onRemove(iIndex);
-		}
-	}
+   virtual void onRemove(node_t *node)
+   {
+      std::list<INotify *> snap(_watch);
+      size_t iIndex = node->index(true);
+      std::list<INotify*>::iterator it = snap.begin();
+      while (it != snap.end())
+      {
+         (*it++)->onRemove(iIndex);
+      }
+   }
 
-	virtual void onMove(node_t *node)
-	{
-		std::list<INotify *> snap(_watch);
+   virtual void onMove(node_t *node)
+   {
+      std::list<INotify *> snap(_watch);
 
-		size_t iFrom = node->index(true);
-		node_t::removeInner(_root, node);
-		node_t::insert(_root, node);
-		size_t iTo = node->index(true);
+      size_t iFrom = node->index(true);
+      node_t::removeInner(_root, node);
+      node_t::insert(_root, node);
+      size_t iTo = node->index(true);
 
-		std::list<INotify *>::iterator it = snap.begin();
-		while (it != snap.end())
-		{
-			(*it++)->onMoved(iFrom, iTo);
-		}
-	}
+      std::list<INotify *>::iterator it = snap.begin();
+      while (it != snap.end())
+      {
+         (*it++)->onMoved(iFrom, iTo);
+      }
+   }
 
-	// the tree's watchers.
-	std::list<INotify*> _watch;
+   // the tree's watchers.
+   std::list<INotify*> _watch;
+   // map of selected nodes for multi-select.
+   std::map<node_t *, bool> _mapSelected;
 };
