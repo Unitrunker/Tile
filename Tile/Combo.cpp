@@ -91,15 +91,29 @@ bool Combo::dispatch(KeyEvent &action)
 		switch (action._code)
 		{
 			case VK_DOWN:
-				if ( (_index + 1) < _list.size() )
-					setIndex(_index + 1);
-				return true;
-
+				// Use of up/down arrow conflicts with form navigation.
+				// limit use to only when popup is visible.
+				if (_popup != NULL)
+				{
+					if ( (_index + 1) < _list.size() )
+						setIndex(_index + 1);
+					return true;
+				}
+				break;
 			case VK_UP:
-				if ( _index > 0 )
-					setIndex(_index - 1);
+				// Use of up/down arrow conflicts with form navigation.
+				// limit use to only when popup is visible.
+				if (_popup != NULL)
+				{
+					if ( _index > 0 )
+						setIndex(_index - 1);
+					return true;
+				}
+				break;
+			case VK_SPACE:
+				if ( _list.size() > 0 )
+					setIndex( (_index + 1) % _list.size() );
 				return true;
-
 			case VK_RETURN:
 				closePopup();
 				return true;
@@ -144,6 +158,8 @@ bool Combo::dispatch(MouseEvent &action)
 					pItem->setMax(eRight, rect.wide);
 					pPane->Add(pItem, 1, 1, 0, true);
 					rect.high += _theme.Text._height;
+					if (i > 0)
+						rect.high += _theme.GridThick;
 				}
 				pPane->setIndex(size);
 				if (rect.high > 0)
