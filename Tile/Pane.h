@@ -160,6 +160,7 @@ struct Pane : public IControl, public IRedraw
 protected:
 	bool onTab(bool bReverse);
 	void getInsideMin(orient_t flow, meter_t &min);
+	virtual void onIndexChanged(size_t index);
 
 	Tile _tile;
 	// inter-cell spacing.

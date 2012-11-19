@@ -868,7 +868,10 @@ void Pane::setIndex(size_t index)
 	if (getIndex() != index)
 	{
 		if (_local || isRoot() )
+		{
 			_index = index;
+			onIndexChanged(index);
+		}
 		else
 		{
 			Pane *pPane = getContainer();
@@ -876,7 +879,7 @@ void Pane::setIndex(size_t index)
 			pPane->_shared = index;
 			if (changed)
 			{
-				// TODO
+				onIndexChanged(index);
 			}
 		}
 	}
@@ -1577,4 +1580,9 @@ bool Pane::load(JSON::Reader &reader, Theme &theme, const char *type, Pane *&pPa
 		}
 	}
 	return bOK;
+}
+
+void Pane::onIndexChanged(size_t index)
+{
+	index; // nothing to do here.
 }
