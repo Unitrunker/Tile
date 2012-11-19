@@ -6,14 +6,21 @@
 Copyright 2011, 2012 Rick Parrish
 */
 
-// mouse capture
-void MockWindow::setCapture(IControl *pCapture)
+
+// mouse cursor
+void MockWindow::setCursor(int cursor)
 {
-	printf("%ld called %s\n", pCapture->identity(), __FUNCTION__);
+	printf("%s(%d)\n", __FUNCTION__, cursor);
+}
+
+// mouse capture
+void MockWindow::setCapture(IControl *pCapture, int)
+{
+	printf("%ld called %s\n", pCapture == NULL ? 0 : pCapture->identity(), __FUNCTION__);
 }
 
 // alter focus.
-void MockWindow::setFocus(bool bFocus)
+void MockWindow::setFocus(bool)
 {
 	printf("called %s\n", __FUNCTION__);
 }

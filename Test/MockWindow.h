@@ -1,7 +1,7 @@
 #include "../Tile/IWindow.h"
 
 /*
-Copyright 2011 Rick Parrish
+Copyright 2011, 2012 Rick Parrish
 */
 
 #pragma once
@@ -10,8 +10,10 @@ using namespace Tiles;
 
 struct MockWindow : public IWindow
 {
+	// mouse cursor
+	void setCursor(int cursor);
 	// mouse capture
-	virtual void setCapture(IControl *pControl);
+	virtual void setCapture(IControl *pControl, int cursor);
 	// alter focus.
 	virtual void setFocus(bool bFocus);
 	// focus
