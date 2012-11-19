@@ -2,6 +2,10 @@
 #include "System.h"
 #include "../Tile/Edit.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 Trunk::Trunk(IAccessor<Model::trunk_t>& wrap) : _wrap(wrap)
 {
 }
@@ -49,9 +53,11 @@ SystemSet::SystemSet(Theme& theme) :
 	Add(section);
 }
 
-SystemFrame::SystemFrame(Theme &theme, Model::System *system) : 
-	Window(theme), _system(system), _set(theme), _users(theme), _groups(theme), _sites(theme)
+SystemFrame::SystemFrame(Factory &factory, Model::System *system) : 
+	Window(factory._theme), _factory(factory), _system(system), _set(factory._theme), 
+	_users(factory._theme), _groups(factory._theme), _sites(factory._theme)
 {
+	Theme &theme = factory._theme;
 	for (size_t i = 0; i < _groups.getHeader()->Columns.size(); i++)
 		_groups.setContent(i, &system->Groups);
 
@@ -67,12 +73,19 @@ SystemFrame::SystemFrame(Theme &theme, Model::System *system) :
 
 	sophia::delegate2<void, Button*, bool> click;
 
-	_tools->Add(_T("+"), click);
-	_tools->Add(_T("-"), click);
-	_tools->Add(_T("1"), click);
-	_tools->Add(_T("2"), click);
-	_tools->Add(_T("3"), click);
-	_tools->Add(_T("X"), click);
+	Font webdings(_T("Webdings"), 24, 1);
+	Theme::Font font_webdings = { Theme::eDefault, webdings };
+	Font segoe(_T("Segoe UI Symbol"), 24, 0);
+	Theme::Font font_segoe = { Theme::eDefault, segoe };
+
+	click.bind(this, &SystemFrame::clickHome);
+	_tools->Add(_T("\x48"), font_webdings, click);	// home
+	click.clear();
+	_tools->Add(_T("\x270D"), font_segoe, click);	// edit
+	_tools->Add(_T("+"), font_segoe, click);		// plus
+	_tools->Add(_T("-"), font_segoe, click);		// minus
+	_tools->Add(_T("\x4C"), font_webdings, click);	// inspect
+	_tools->Add(_T("\x71"), font_webdings, click);	// refresh
 
 	click.bind(this, &SystemFrame::activateInfo);
 	_tabset->Add(_T("Info"), click);
@@ -93,6 +106,17 @@ SystemFrame::SystemFrame(Theme &theme, Model::System *system) :
 	_top->Add(_list, 0, 4096, 1, false);
 	_top->Add(_tabset, 1, 1, 0, true);
 	setPane(_top);
+}
+
+SystemFrame::~SystemFrame()
+{
+	_factory.deactivate(_system);
+}
+
+void SystemFrame::clickHome(Button *, bool up)
+{
+	if (up)
+		_factory.activate(SW_SHOW);
 }
 
 void SystemFrame::activateInfo(Button *, bool up)
@@ -152,23 +176,22 @@ void SystemFrame::activateSites(Button *, bool up)
 void SystemFrame::activateGroupPopup(Grid *, size_t row, size_t)
 {
 	Model::Group *group = _system->Groups[row];
-	RECT rect = {200, 200, 840, 680};
-	GroupFrame *frame = new GroupFrame(getTheme(), group);
-	frame->Create(m_hWnd, rect, _T("Group X"), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW);
+	_factory.activate(group);
 }
 
 void SystemFrame::activateUserPopup(Grid *, size_t row, size_t)
 {
-	Model::User *group = _system->Users[row];
-	RECT rect = {200, 200, 840, 680};
-	UserFrame *frame = new UserFrame(getTheme(), group);
-	frame->Create(m_hWnd, rect, _T("User X"), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW);
+	Model::User *user = _system->Users[row];
+	_factory.activate(user);
 }
 
 void SystemFrame::activateSitePopup(Grid *, size_t row, size_t)
 {
 	Model::Site *site = _system->Sites[row];
-	RECT rect = {200, 200, 840, 680};
-	SiteFrame* frame = new SiteFrame(getTheme(), site);
-	frame->Create(m_hWnd, rect, _T("Site X"), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW);
+	_factory.activate(site);
+}
+
+bool SystemFrame::Create(RECT rect)
+{
+	return Window::Create(NULL, rect, _system->_label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
 }

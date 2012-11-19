@@ -13,20 +13,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
-	Theme theme;
-	FolderFrame dlgMain(theme);
-	RECT rect = {0, 0, 240, 380};
+	Factory factory;
 
-	if(dlgMain.Create(NULL, rect, _T("Systems"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW) == NULL)
-	{
-		TCHAR log[64] = {0};
-		DWORD last = GetLastError();
-		wsprintf(log, _T("Main dialog creation failed, error %d!\n"), last);
-		ATLTRACE(log);
-		return 0;
-	}
-	dlgMain.CenterWindow();
-	dlgMain.ShowWindow(nCmdShow);
+	factory.activate(nCmdShow);
 
 	int nRet = theLoop.Run();
 

@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Types.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 using namespace Model;
 
 // trunking system types

@@ -203,6 +203,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Factory.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Folder.cpp"
 				>
 			</File>
@@ -215,7 +219,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Receiver.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serial.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Site.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Sound.cpp"
 				>
 			</File>
 			<File
@@ -264,6 +280,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Factory.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Folder.h"
 				>
 			</File>
@@ -276,11 +296,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Receiver.h"
+				>
+			</File>
+			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
+				RelativePath=".\Serial.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Site.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Sound.h"
 				>
 			</File>
 			<File

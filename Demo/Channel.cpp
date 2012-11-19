@@ -2,6 +2,10 @@
 #include "Channel.h"
 #include "../Tile/Edit.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 // accessor adapter for string to channel_t.
 LCN::LCN(IAccessor<Model::channel_t>& wrap, int base) : 
 	_wrap(wrap), _base(base)
@@ -65,24 +69,30 @@ ChannelSet::ChannelSet(Theme& theme) :
 	Add(section);
 }
 
-ChannelFrame::ChannelFrame(Theme &theme, Model::Channel *channel) : 
-	Window(theme), _channel(channel), _set(theme)
+ChannelFrame::ChannelFrame(Factory& factory, Model::Channel *channel) : 
+	Window(factory._theme), _factory(factory), _channel(channel), _set(factory._theme)
 {
+	Theme &theme = factory._theme;
 	_top = new Pane(0, theme, eDown);
 	_tools = new Tab(0, theme);
 	_tabset = new Tab(0, theme);
 
 	sophia::delegate2<void, Button*, bool> click;
 
-	_tools->Add(_T("+"), click);
-	_tools->Add(_T("-"), click);
-	_tools->Add(_T("1"), click);
-	_tools->Add(_T("2"), click);
-	_tools->Add(_T("3"), click);
-	_tools->Add(_T("X"), click);
+	Font webdings(_T("Webdings"), 24, 1);
+	Theme::Font font_webdings = { Theme::eDefault, webdings };
+	Font segoe(_T("Segoe UI Symbol"), 24, 0);
+	Theme::Font font_segoe = { Theme::eDefault, segoe };
 
-	click.bind(this, &ChannelFrame::activateHome);
-	_tabset->Add(_T("Home"), click);
+	click.bind(this, &ChannelFrame::clickHome);
+	_tools->Add(_T("\x48"), font_webdings, click);	// home
+	click.clear();
+	_tools->Add(_T("\x270D"), font_segoe, click);	// edit
+	_tools->Add(_T("+"), font_segoe, click);		// plus
+	_tools->Add(_T("-"), font_segoe, click);		// minus
+	_tools->Add(_T("\x4C"), font_webdings, click);	// inspect
+	_tools->Add(_T("\x71"), font_webdings, click);	// refresh
+
 	click.bind(this, &ChannelFrame::activateInfo);
 	_tabset->Add(_T("Info"), click);
 	click.bind(this, &ChannelFrame::activateHistory);
@@ -100,11 +110,16 @@ ChannelFrame::ChannelFrame(Theme &theme, Model::Channel *channel) :
 	setPane(_top);
 }
 
-void ChannelFrame::activateHome(Button *, bool up)
+ChannelFrame::~ChannelFrame()
+{
+	_factory.deactivate(_channel);
+}
+
+void ChannelFrame::clickHome(Button *, bool up)
 {
 	if (up)
 	{
-		// TODO
+		_factory.activate(_channel->_site);
 	}
 }
 
@@ -134,4 +149,9 @@ void ChannelFrame::activateHistory(Button *, bool up)
 		_top->Add(_tabset);
 		_top->reflow();
 	}
+}
+
+bool ChannelFrame::Create(RECT rect)
+{
+	return Window::Create(NULL, rect, _channel->_label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
 }

@@ -5,10 +5,13 @@
 #include "../Tile/Grid.h"
 #include "../Tile/List.h"
 #include "Model.h"
+#include "Factory.h"
 
 /*
 Copyright © 2012 Rick Parrish
 */
+
+#pragma once
 
 // accessor adapter for string to channel_t.
 struct LCN : public IAccessor<string_t>
@@ -40,7 +43,9 @@ private:
 
 struct ChannelFrame : public Window
 {
-	ChannelFrame(Theme &theme, Model::Channel *channel);
+	ChannelFrame(Factory& factory, Model::Channel *channel);
+	virtual ~ChannelFrame();
+	bool Create(RECT rect);
 private:
 	Pane *_top;
 	Tab *_tools;
@@ -49,8 +54,9 @@ private:
 	List *_list;
 	Model::Channel *_channel;
 	ChannelSet _set;
+	Factory& _factory;
 
-	void activateHome(Button *, bool up);
+	void clickHome(Button *, bool up);
 	void activateInfo(Button *, bool up);
 	void activateHistory(Button *, bool up);
 };

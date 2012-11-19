@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Address.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 // accessor adapter for string to long.
 Address::Address(IAccessor<Model::address_t>& wrap, int base) : 
 	_wrap(wrap), _base(base)

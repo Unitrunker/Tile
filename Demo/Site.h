@@ -6,10 +6,13 @@
 #include "../Tile/List.h"
 #include "Model.h"
 #include "Channel.h"
+#include "Factory.h"
 
 /*
 Copyright © 2012 Rick Parrish
 */
+
+#pragma once
 
 // accessor adapter for string to site_t.
 struct Site : public IAccessor<string_t>
@@ -39,7 +42,9 @@ private:
 
 struct SiteFrame : public Window
 {
-	SiteFrame(Theme &theme, Model::Site *site);
+	SiteFrame(Factory& factory, Model::Site *site);
+	virtual ~SiteFrame();
+	bool Create(RECT rect);
 private:
 	Pane *_top;
 	Tab *_tools;
@@ -48,8 +53,9 @@ private:
 	List *_list;
 	Model::Site *_site;
 	SiteSet _set;
+	Factory& _factory;
 
-	void activateHome(Button *, bool up);
+	void clickHome(Button *, bool up);
 	void activateInfo(Button *, bool up);
 	void activateChannels(Button *, bool up);
 

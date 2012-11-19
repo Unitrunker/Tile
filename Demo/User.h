@@ -6,10 +6,13 @@
 #include "../Tile/List.h"
 #include "Model.h"
 #include "Address.h"
+#include "Factory.h"
 
 /*
 Copyright © 2012 Rick Parrish
 */
+
+#pragma once
 
 struct UserSet : public SetT<Model::User>
 {
@@ -25,7 +28,9 @@ private:
 
 struct UserFrame : public Window
 {
-	UserFrame(Theme &theme, Model::User *user);
+	UserFrame(Factory& factory, Model::User *user);
+	virtual ~UserFrame();
+	bool Create(RECT rect);
 private:
 	Pane *_top;
 	Tab *_tools;
@@ -34,8 +39,9 @@ private:
 	List *_list;
 	Model::User *_user;
 	UserSet _set;
+	Factory& _factory;
 
-	void activateHome(Button *, bool up);
+	void clickHome(Button *, bool up);
 	void activateInfo(Button *, bool up);
 	void activateHistory(Button *, bool up);
 };

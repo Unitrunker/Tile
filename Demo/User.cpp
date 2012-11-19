@@ -2,6 +2,10 @@
 #include "User.h"
 #include "../Tile/Edit.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 UserSet::UserSet(Theme& theme) : 
 	SetT<Model::User>(NULL),
 #pragma warning(disable:4355)
@@ -27,24 +31,30 @@ UserSet::UserSet(Theme& theme) :
 	Add(section);
 }
 
-UserFrame::UserFrame(Theme &theme, Model::User *user) : 
-	Window(theme), _user(user), _set(theme)
+UserFrame::UserFrame(Factory& factory, Model::User *user) : 
+	Window(factory._theme), _factory(factory), _user(user), _set(factory._theme)
 {
+	Theme &theme = factory._theme;
 	_top = new Pane(0, theme, eDown);
 	_tools = new Tab(0, theme);
 	_tabset = new Tab(0, theme);
 
 	sophia::delegate2<void, Button*, bool> click;
 
-	_tools->Add(_T("+"), click);
-	_tools->Add(_T("-"), click);
-	_tools->Add(_T("1"), click);
-	_tools->Add(_T("2"), click);
-	_tools->Add(_T("3"), click);
-	_tools->Add(_T("X"), click);
+	Font webdings(_T("Webdings"), 24, 1);
+	Theme::Font font_webdings = { Theme::eDefault, webdings };
+	Font segoe(_T("Segoe UI Symbol"), 24, 0);
+	Theme::Font font_segoe = { Theme::eDefault, segoe };
 
-	click.bind(this, &UserFrame::activateHome);
-	_tabset->Add(_T("Home"), click);
+	click.bind(this, &UserFrame::clickHome);
+	_tools->Add(_T("\x48"), font_webdings, click);	// home
+	click.clear();
+	_tools->Add(_T("\x270D"), font_segoe, click);	// edit
+	_tools->Add(_T("+"), font_segoe, click);		// plus
+	_tools->Add(_T("-"), font_segoe, click);		// minus
+	_tools->Add(_T("\x4C"), font_webdings, click);	// inspect
+	_tools->Add(_T("\x71"), font_webdings, click);	// refresh
+
 	click.bind(this, &UserFrame::activateInfo);
 	_tabset->Add(_T("Info"), click);
 	click.bind(this, &UserFrame::activateHistory);
@@ -62,11 +72,16 @@ UserFrame::UserFrame(Theme &theme, Model::User *user) :
 	setPane(_top);
 }
 
-void UserFrame::activateHome(Button *, bool up)
+UserFrame::~UserFrame()
+{
+	_factory.deactivate(_user);
+}
+
+void UserFrame::clickHome(Button *, bool up)
 {
 	if (up)
 	{
-		// TODO
+		_factory.activate(_user->_system);
 	}
 }
 
@@ -100,4 +115,10 @@ void UserFrame::activateHistory(Button *, bool up)
 		_top->Add(_grid);
 		_top->reflow();
 	}
+}
+
+
+bool UserFrame::Create(RECT rect)
+{
+	return Window::Create(NULL, rect, _user->_label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
 }

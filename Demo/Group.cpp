@@ -2,6 +2,10 @@
 #include "Group.h"
 #include "../Tile/Edit.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 GroupSet::GroupSet(Theme& theme) : 
 	SetT<Model::Group>(NULL),
 #pragma warning(disable:4355)
@@ -27,24 +31,30 @@ GroupSet::GroupSet(Theme& theme) :
 	Add(section);
 }
 
-GroupFrame::GroupFrame(Theme &theme, Model::Group *group) : 
-	Window(theme), _group(group), _set(theme)
+GroupFrame::GroupFrame(Factory& factory, Model::Group *group) : 
+	Window(factory._theme), _factory(factory), _group(group), _set(factory._theme)
 {
+	Theme &theme = factory._theme;
 	_top = new Pane(0, theme, eDown);
 	_tools = new Tab(0, theme);
 	_tabset = new Tab(0, theme);
 
 	sophia::delegate2<void, Button*, bool> click;
 
-	_tools->Add(_T("+"), click);
-	_tools->Add(_T("-"), click);
-	_tools->Add(_T("1"), click);
-	_tools->Add(_T("2"), click);
-	_tools->Add(_T("3"), click);
-	_tools->Add(_T("X"), click);
+	Font webdings(_T("Webdings"), 24, 1);
+	Theme::Font font_webdings = { Theme::eDefault, webdings };
+	Font segoe(_T("Segoe UI Symbol"), 24, 0);
+	Theme::Font font_segoe = { Theme::eDefault, segoe };
 
-	click.bind(this, &GroupFrame::activateHome);
-	_tabset->Add(_T("Home"), click);
+	click.bind(this, &GroupFrame::clickHome);
+	_tools->Add(_T("\x48"), font_webdings, click);	// home
+	click.clear();
+	_tools->Add(_T("\x270D"), font_segoe, click);	// edit
+	_tools->Add(_T("+"), font_segoe, click);		// plus
+	_tools->Add(_T("-"), font_segoe, click);		// minus
+	_tools->Add(_T("\x4C"), font_webdings, click);	// inspect
+	_tools->Add(_T("\x71"), font_webdings, click);	// refresh
+
 	click.bind(this, &GroupFrame::activateInfo);
 	_tabset->Add(_T("Info"), click);
 	click.bind(this, &GroupFrame::activateHistory);
@@ -62,11 +72,16 @@ GroupFrame::GroupFrame(Theme &theme, Model::Group *group) :
 	setPane(_top);
 }
 
-void GroupFrame::activateHome(Button *, bool up)
+GroupFrame::~GroupFrame()
+{
+	_factory.deactivate(_group);
+}
+
+void GroupFrame::clickHome(Button *, bool up)
 {
 	if (up)
 	{
-		// TODO
+		_factory.activate(_group->_system);
 	}
 }
 
@@ -93,4 +108,9 @@ void GroupFrame::activateHistory(Button *, bool up)
 		_top->Add(_tabset);
 		_top->reflow();
 	}
+}
+
+bool GroupFrame::Create(RECT rect)
+{
+	return Window::Create(NULL, rect, _group->_label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
 }

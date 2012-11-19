@@ -8,10 +8,13 @@
 #include "Site.h"
 #include "Group.h"
 #include "User.h"
+#include "Factory.h"
 
 /*
 Copyright © 2012 Rick Parrish
 */
+
+#pragma once
 
 // accessor adapter for string to long.
 struct Trunk : public IAccessor<string_t>
@@ -49,7 +52,9 @@ private:
 
 struct SystemFrame : public Window
 {
-	SystemFrame(Theme &theme, Model::System *system);
+	SystemFrame(Factory& factory, Model::System *system);
+	virtual ~SystemFrame();
+	bool Create(RECT rect);
 private:
 	Pane *_top;
 	Tab *_tools;
@@ -58,7 +63,9 @@ private:
 	List *_list;
 	Model::System *_system;
 	SystemSet _set;
+	Factory& _factory;
 
+	void clickHome(Button *, bool up);
 	void activateInfo(Button *, bool up);
 	void activateGroups(Button *, bool up);
 	void activateUsers(Button *, bool up);

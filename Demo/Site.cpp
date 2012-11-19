@@ -2,6 +2,10 @@
 #include "Site.h"
 #include "../Tile/Edit.h"
 
+/*
+Copyright © 2012 Rick Parrish
+*/
+
 // accessor adapter for string to long.
 Site::Site(IAccessor<Model::site_t>& wrap, int base) : 
 	_wrap(wrap), _base(base)
@@ -61,9 +65,10 @@ SiteSet::SiteSet(Theme& theme) :
 	Add(section);
 }
 
-SiteFrame::SiteFrame(Theme &theme, Model::Site *site) : 
-	Window(theme), _site(site), _set(theme), _channels(theme)
+SiteFrame::SiteFrame(Factory& factory, Model::Site *site) : 
+	Window(factory._theme), _factory(factory), _site(site), _set(factory._theme), _channels(factory._theme)
 {
+	Theme &theme = factory._theme;
 	for (size_t i = 0; i < _channels.getHeader()->Columns.size(); i++)
 		_channels.setContent(i, &site->Channels);
 
@@ -73,15 +78,20 @@ SiteFrame::SiteFrame(Theme &theme, Model::Site *site) :
 
 	sophia::delegate2<void, Button*, bool> click;
 
-	_tools->Add(_T("+"), click);
-	_tools->Add(_T("-"), click);
-	_tools->Add(_T("1"), click);
-	_tools->Add(_T("2"), click);
-	_tools->Add(_T("3"), click);
-	_tools->Add(_T("X"), click);
+	Font webdings(_T("Webdings"), 24, 1);
+	Theme::Font font_webdings = { Theme::eDefault, webdings };
+	Font segoe(_T("Segoe UI Symbol"), 24, 0);
+	Theme::Font font_segoe = { Theme::eDefault, segoe };
 
-	click.bind(this, &SiteFrame::activateHome);
-	_tabset->Add(_T("Home"), click);
+	click.bind(this, &SiteFrame::clickHome);
+	_tools->Add(_T("\x48"), font_webdings, click);	// home
+	click.clear();
+	_tools->Add(_T("\x270D"), font_segoe, click);	// edit
+	_tools->Add(_T("+"), font_segoe, click);		// plus
+	_tools->Add(_T("-"), font_segoe, click);		// minus
+	_tools->Add(_T("\x4C"), font_webdings, click);	// inspect
+	_tools->Add(_T("\x71"), font_webdings, click);	// refresh
+
 	click.bind(this, &SiteFrame::activateInfo);
 	_tabset->Add(_T("Info"), click);
 	click.bind(this, &SiteFrame::activateChannels);
@@ -99,12 +109,15 @@ SiteFrame::SiteFrame(Theme &theme, Model::Site *site) :
 	setPane(_top);
 }
 
-void SiteFrame::activateHome(Button *, bool up)
+SiteFrame::~SiteFrame()
+{
+	_factory.deactivate(_site);
+}
+
+void SiteFrame::clickHome(Button *, bool up)
 {
 	if (up)
-	{
-		// TODO
-	}
+		_factory.activate(_site->_system);
 }
 
 void SiteFrame::activateInfo(Button *, bool up)
@@ -139,7 +152,10 @@ void SiteFrame::activateChannels(Button *, bool up)
 void SiteFrame::activateChannelPopup(Grid *, size_t row, size_t)
 {
 	Model::Channel *channel = _site->Channels[row];
-	RECT rect = {200, 200, 840, 680};
-	ChannelFrame *frame = new ChannelFrame(getTheme(), channel);
-	frame->Create(m_hWnd, rect, _T("Channel X"), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW);
+	_factory.activate(channel);
+}
+
+bool SiteFrame::Create(RECT rect)
+{
+	return Window::Create(NULL, rect, _site->_label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
 }

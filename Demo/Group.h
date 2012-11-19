@@ -6,10 +6,13 @@
 #include "../Tile/Tab.h"
 #include "Model.h"
 #include "Address.h"
+#include "Factory.h"
 
 /*
 Copyright © 2012 Rick Parrish
 */
+
+#pragma once 
 
 struct GroupSet : public SetT<Model::Group>
 {
@@ -25,7 +28,9 @@ private:
 
 struct GroupFrame : public Window
 {
-	GroupFrame(Theme &theme, Model::Group *group);
+	GroupFrame(Factory& factory, Model::Group *group);
+	virtual ~GroupFrame();
+	bool Create(RECT rect);
 private:
 	Pane *_top;
 	Tab *_tools;
@@ -34,8 +39,9 @@ private:
 	List *_list;
 	Model::Group *_group;
 	GroupSet _set;
+	Factory& _factory;
 
-	void activateHome(Button *, bool up);
+	void clickHome(Button *, bool up);
 	void activateInfo(Button *, bool up);
 	void activateHistory(Button *, bool up);
 };
