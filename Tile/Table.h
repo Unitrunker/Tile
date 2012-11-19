@@ -1,6 +1,7 @@
 #include "Property.h"
 #include "AVL.h"
 #include <vector>
+#include "Check.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -33,10 +34,18 @@ struct ITable
 	virtual bool setColumn(size_t) = 0;
 	virtual void setReadOnly(bool bSet) = 0;
 	virtual bool getReadOnly() const = 0;
+	// select
+	virtual bool getSelect(size_t index) const = 0;
+	// multi-row select.
+	virtual void setSelect(size_t r1, size_t r2) = 0;
+	// single-select
+	virtual void setSelect(size_t index, bool select) = 0;
+	// clear all selected rows.
+	virtual void clearSelect() = 0;
 };
 
 // S presumed to derive from SetT<T>.
-// Cautioin: content is assumed to be IRowSet<T*> (eg. pointer to T).
+// Caution: content is assumed to be IRowSet<T*> (eg. pointer to T).
 template <typename S, typename T>
 struct Table : public ITable, public INotify
 {
@@ -44,11 +53,50 @@ struct Table : public ITable, public INotify
 	typedef std::vector<tree_t *> columns_t;
 	Theme& _theme;
 
+	struct Selector : public IAccessor<bool>
+	{
+		Table<S, T> &_table;
+		size_t _offset;
+		mutable bool _result;
+
+		Selector(Table<S, T> &table, size_t offset) : _table(table), _offset(offset) { }
+
+		virtual const bool& getValue() const
+		{
+			size_t index = _table.getOffset() + _offset;
+			_result = _table._tree->getSelect(index);
+			return _result;
+		}
+
+		virtual bool setValue(const bool &value)
+		{
+			size_t index = _table.getOffset() + _offset;
+			_table._tree->setSelect(index, value);
+			return true;
+		}
+	};
+
+	// enhanced version of S that injects a checkbox for item selection.
+	struct Splus : public S
+	{
+		Splus(Table<S, T> &table, size_t offset) : S(table._theme), _selector(table, offset)
+		{
+			// inject checkbox ahead of other columns.
+			Tiles::Check *check = new Tiles::Check(0, table._theme, &_selector);
+			Tiles::Property *prop = new Tiles::Property(_T("@"), _T("Select this row"), check, true, false);
+			Columns.insert(Columns.begin(), prop);
+		}
+	private:
+		// checkbox wiring.
+		Selector _selector;
+	};
+
 	// content provider for a Grid.
 	Table(Theme &theme) : 
 		_theme(theme), _tree(NULL), _notify(NULL), _bAscending(true), _iColumn(0), _readOnly(false)
 	{
-		_header = new S(_theme);
+		// enhanced version of S that injects a checkbox for item selection.
+		_header = new Splus(*this, 0);
 		_trees.resize(_header->Columns.size(), NULL);
 	}
 
@@ -172,7 +220,8 @@ struct Table : public ITable, public INotify
 		// shortage of rows?
 		else while (_visible.size() < count)
 		{
-			S *set = new S(_theme);
+			// enhanced version of S that injects a checkbox for item selection.
+			Splus *set = new Splus(*this, _visible.size());
 			set->setReadOnly(getReadOnly());
 			// yes: add them here.
 			_visible.push_back(set);
@@ -252,6 +301,40 @@ struct Table : public ITable, public INotify
 	virtual bool getReadOnly() const
 	{
 		return _header ? _header->getReadOnly() : true;
+	}
+
+	// select
+	virtual bool getSelect(size_t index) const
+	{
+		return _tree->getSelect(index);
+	}
+
+	// multi-select
+	virtual void setSelect(size_t r1, size_t r2)
+	{
+		if (r1 > r2)
+		{
+			size_t swap = r1;
+			r1 = r2;
+			r2 = swap;
+		}
+		while (r1 <= r2)
+		{
+			_tree->setSelect(r1, true);
+			r1++;
+		}
+	}
+
+	// single-select
+	virtual void setSelect(size_t index, bool select)
+	{
+		_tree->setSelect(index, select);
+	}
+
+	// clear all selected rows.
+	virtual void clearSelect()
+	{
+		_tree->clearSelect();
 	}
 
 private:
