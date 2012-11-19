@@ -249,4 +249,28 @@ struct Reflect : public MemberAccessPtr<B, T>
 	}
 };
 
+// static_cast adapter: converting integrals of different sizes.
+template <typename O, typename I>
+struct Adapter : public IAccessor<O>
+{
+	Adapter(IAccessor<I> *inside) : _inside(inside) { }
+
+	virtual const O& getValue() const
+	{
+		const O copy = static_cast<const O>( _inside->getValue() );
+		// returns a reference so we need to make a copy.
+		_copy = static_cast<O>(copy); 
+		return _copy;
+	}
+	virtual bool setValue(const O &value)
+	{
+		// local copy
+		const I copy = static_cast<const I>(value);
+		return _inside->setValue(copy);
+	}
+private:
+	IAccessor<I> *_inside;
+	mutable O _copy;
+};
+
 };
