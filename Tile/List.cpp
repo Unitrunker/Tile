@@ -119,6 +119,11 @@ List::List(identity_t id, Theme &theme) :
 	_scroll = true;
 	_thick.local = true;
 	_thick.thick = 0;
+
+	Theme::Font textFont = {Theme::eText, theme.Text};
+	Flow text = {0, 4096, 1, false};
+	_note = new Text(0, theme, textFont, eLeft|eUp, _T("Some interesting words go here."));
+	_note->setFlow(eDown, text);
 }
 
 List::~List()
@@ -135,9 +140,9 @@ const char* List::getType() const
 void List::clear()
 {
 	size_t size = _listControls.size();
-	if (size > 1)
+	if (size > 0)
 	{
-		_listControls.erase(_listControls.begin(), _listControls.begin() + size - 1);
+		_listControls.clear();
 		_note->_text = _T("Empty");
 		_note->setChanged(true);
 	}
@@ -147,23 +152,20 @@ void List::setItems(struct Set *set)
 {
 	_set = set;
 
-	clear();
+	Pane::clear();
 
 	if (_set)
 	{
 		Theme& theme = _tile.getTheme();
 		Theme::Font textFont = {Theme::eText, theme.Text};
-		Flow text = {0, 4096, 1, false};
 		for (size_t i = 0; i < _set->Sections.size(); i++)
 		{
 			_Section *pSection = new _Section(0, theme, textFont);
 			pSection->setItems(_set->Sections[i]);
 			Add(pSection, true);
 		}
-		_note = new Text(0, theme, textFont, eLeft|eUp, _T("Some interesting words go here."));
-		_note->setFlow(eDown, text);
-		Add(_note);
 	}
+	Add(_note);
 }
 
 void List::select(Property* p)
