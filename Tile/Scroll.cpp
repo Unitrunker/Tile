@@ -176,7 +176,15 @@ bool Scroll::onMove(MouseEvent &action)
 			_pt = action._place;
 			_drag = true;
 			if (_pDesktop)
-				_pDesktop->setCapture(this);
+			{
+				int cursor = 0;
+				orient_t flow = getFlow();
+				if (flow == eDown || flow == eUp)
+					cursor = IWindow::SIZENS;
+				else
+					cursor = IWindow::SIZEWE;
+				_pDesktop->setCapture(this, cursor);
+			}
 		}
 	}
 	return true;
