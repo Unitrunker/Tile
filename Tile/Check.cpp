@@ -28,10 +28,10 @@ Check::Check(identity_t id, Theme &theme, IAccessor<bool> *pAccess, align_t alig
 	_back[0].index = Theme::eDataBack;
 	_fore[1].index = Theme::eCellFore;
 	_back[1].index = Theme::eCellBack;
-	_glyphs[0].index = Theme::eChecked;
-	_glyphs[0].glyph = theme.Checked;
-	_glyphs[1].index = Theme::eUncheck;
-	_glyphs[1].glyph = theme.Uncheck;
+	_glyphs[0].index = Theme::eUncheck;
+	_glyphs[0].glyph = theme.Uncheck;
+	_glyphs[1].index = Theme::eChecked;
+	_glyphs[1].glyph = theme.Checked;
 }
 
 Check::Check(identity_t id, Theme &theme, bool &checked, align_t align) : 
@@ -51,10 +51,10 @@ Check::Check(identity_t id, Theme &theme, bool &checked, align_t align) :
 	_back[0].index = Theme::eDataBack;
 	_fore[1].index = Theme::eCellFore;
 	_back[1].index = Theme::eCellBack;
-	_glyphs[0].index = Theme::eChecked;
-	_glyphs[0].glyph = theme.Checked;
-	_glyphs[1].index = Theme::eUncheck;
-	_glyphs[1].glyph = theme.Uncheck;
+	_glyphs[0].index = Theme::eUncheck;
+	_glyphs[0].glyph = theme.Uncheck;
+	_glyphs[1].index = Theme::eChecked;
+	_glyphs[1].glyph = theme.Checked;
 }
 
 /// <param name="canvas">canvas where this object will be drawn</param>
