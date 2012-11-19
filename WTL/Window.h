@@ -23,6 +23,7 @@ protected:
 	IControl* _pCapture;
 	IControl* _pFocus;
 	IControl* _pHover;
+	bool _bSelfDelete;
 
 	sophia::delegate1<void, const Theme*> _themeChange;
 
@@ -31,8 +32,10 @@ protected:
 	// draw notification
 	virtual void Redraw(ITile *);
 	// IWindow
+	// mouse cursor
+	virtual void setCursor(int cursor = IWindow::ARROW);
 	// capture
-	virtual void setCapture(IControl *);
+	virtual void setCapture(IControl *, int cursor = IWindow::ARROW);
 	// alter focus.
 	virtual void setFocus(bool bFocus);
 	// set focus to control.
@@ -88,8 +91,10 @@ protected:
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
+	virtual void OnFinalMessage(HWND /*hWnd*/);
+
 public:
-	Window(Theme &theme);
+	Window(Theme &theme, bool bSelfDelete = true);
 	Window(Window *pParent, const rect_t &rect, Pane *pContent, IControl *pOwner);
 	~Window();
 

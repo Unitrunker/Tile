@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#pragma once
+
 class Frame : public Window
 {
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

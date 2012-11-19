@@ -287,8 +287,14 @@ void Popup::Redraw(ITile *pDraw)
 	}
 }
 
+// mouse cursor
+void Popup::setCursor(int cursor)
+{
+	cursor;
+}
+
 // IWindow
-void Popup::setCapture(IControl *p)
+void Popup::setCapture(IControl *p, int cursor)
 {
 	p; // ignore - don't allow popups to mouse capture.
 }
@@ -372,7 +378,11 @@ IWindow* Popup::popup(const rect_t &rect, Pane *pContent, IControl *pOwner)
 void Popup::close()
 {
 	if (m_hWnd)
+	{
 		DestroyWindow();
+		m_hWnd = NULL;
+	}
+	delete this;
 }
 
 // native mouse button event triggers framework event.

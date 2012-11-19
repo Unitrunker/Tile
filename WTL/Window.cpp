@@ -4,7 +4,7 @@
 #include "../Tile/Fill.h"
 #include "Popup.h"
 
-Window::Window(Theme &theme) :
+Window::Window(Theme &theme, bool bSelfDelete) :
 	_theme(theme),
 	_pCapture(NULL),
 	_pFocus(NULL),
@@ -12,6 +12,7 @@ Window::Window(Theme &theme) :
 	_pPane(NULL),
 	_bInternal(false),
 	_bBatch(true),
+	_bSelfDelete(bSelfDelete),
 	_themeChange(this, &Window::onChange)
 {
 	Pane *pPane = new Pane(0, _theme, eDown);
@@ -34,7 +35,8 @@ Window::Window(Window *pParent, const rect_t &rect, Pane *pContent, IControl *pO
 	_pHover(NULL),
 	_pPane(pContent),
 	_bInternal(false),
-	_bBatch(false)
+	_bBatch(false),
+	_bSelfDelete(false)
 {
 	pContent->watch(this);
 	pContent->setDesktop(this);
@@ -340,10 +342,22 @@ void Window::Redraw(ITile *pDraw)
 }
 
 // IWindow
-void Window::setCapture(IControl *p)
+
+// mouse cursor
+void Window::setCursor(int cursor)
+{
+	HCURSOR hCursor = LoadCursor(NULL, MAKEINTRESOURCE(cursor));
+	SetCursor(hCursor);
+}
+
+// p=null to release mouse capture
+// p=control to accept captured mouse events
+void Window::setCapture(IControl *p, int cursor)
 {
 	if (p == NULL)
 	{
+		HCURSOR hCursor = LoadCursor(NULL, IDC_ARROW);
+		SetCursor(hCursor);
 		_pCapture = _pPane;
 		ReleaseCapture();
 	}
@@ -351,6 +365,8 @@ void Window::setCapture(IControl *p)
 	{
 		_pCapture = p;
 		SetCapture();
+		HCURSOR hCursor = LoadCursor(NULL, MAKEINTRESOURCE(cursor));
+		SetCursor(hCursor);
 	}
 }
 
@@ -366,7 +382,7 @@ void Window::setFocus(IControl *pFocus)
 {
 	if (_pFocus != pFocus)
 	{
-		IRedraw *self = this;
+		//IRedraw *self = this;
 		if (_pFocus != NULL)
 			_pFocus->setFocus(false);
 		_pFocus = pFocus;
@@ -501,4 +517,10 @@ LRESULT Window::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	if (GetStyle() & WS_CHILD)
 		m_hWnd = NULL;
 	return 0;
+}
+
+void Window::OnFinalMessage(HWND /*hWnd*/)
+{
+	if (_bSelfDelete)
+		delete this;
 }

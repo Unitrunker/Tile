@@ -23,8 +23,10 @@ class Popup : public CWindowImpl<Popup>,
 	// draw notification
 	virtual void Redraw(ITile *);
 	// IWindow
+	// mouse cursor
+	virtual void setCursor(int cursor = IWindow::ARROW);
 	// capture
-	virtual void setCapture(IControl *);
+	virtual void setCapture(IControl *, int cursor = IWindow::ARROW);
 	// alter focus.
 	void setFocus(bool bFocus);
 	// focus
