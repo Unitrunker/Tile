@@ -21,15 +21,8 @@ Edit::Edit(identity_t id, Theme &theme, const Theme::Font &font, IAccessor<strin
 {
 	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
-	// color selections
-	_fore[0].index = Theme::eDataFore;
-	_fore[0].color = RGB(0,0,0);
-	_back[0].index = Theme::eDataBack;
-	_back[0].color = RGB(192, 192, 192);
-	_fore[1].index = Theme::eCellFore;
-	_fore[1].color = RGB(0,0,0);
-	_back[1].index = Theme::eCellBack;
-	_back[1].color = RGB(255, 255, 255);
+	_foreAccess = &_foreLocal;
+	_backAccess = &_backLocal;
 }
 
 Edit::Edit(identity_t id, Theme &theme, const Theme::Font &font, string_t &text) :
@@ -37,19 +30,11 @@ Edit::Edit(identity_t id, Theme &theme, const Theme::Font &font, string_t &text)
 	_cursor(0), 
 	_access(new Reference<string_t>(text)),
 	_align(eLeft),
-	_local(true)
+	_local(true),
+	_edit(false)
 {
 	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
-	// color selections
-	_fore[0].index = Theme::eDataFore;
-	_fore[0].color = RGB(0,0,0);
-	_back[0].index = Theme::eDataBack;
-	_back[0].color = RGB(192, 192, 192);
-	_fore[1].index = Theme::eCellFore;
-	_fore[1].color = RGB(0,0,0);
-	_back[1].index = Theme::eCellBack;
-	_back[1].color = RGB(255, 255, 255);
 }
 
 // TODO: I've removing the edit control's bounding box. I'll revisit 
@@ -65,15 +50,15 @@ bool Edit::Draw(ICanvas *canvas, bool bFocus)
 
 	bool focus = bFocus && _focus;
 
-	color_t fore = theme.getColor(_fore[focus]);
-	color_t back = theme.getColor(_back[focus]);
-	if (focus || _access == NULL)
+	color_t fore = _foreAccess->getValue(theme, focus);
+	color_t back = _backAccess->getValue(theme, focus);
+	if ( getEnable() && !getReadOnly() && focus)
 	{
 		canvas->DrawEditString(rect, box, fore, back, theme.Text, _align, _text, getIndex());
 	}
 	else
 	{
-		const string_t &text = _access->getValue();
+		const string_t &text = _access == NULL ? _text : _access->getValue();
 		canvas->DrawString(rect, box, fore, back, theme.Text, _align, text);
 	}
 	setChanged(false);
@@ -144,7 +129,8 @@ bool Edit::onDelete()
 bool Edit::dispatch(KeyEvent &action)
 {
 	// key down
-	if (action._what == KeyEvent::DOWN && !_readOnly)
+	if ( getEnable() && !getReadOnly() && 
+		action._what == KeyEvent::DOWN )
 	{
 		// 
 		switch (action._code)
@@ -179,21 +165,11 @@ bool Edit::dispatch(KeyEvent &action)
 				}
 				if (getIndex() > _text.size())
 					setIndex(_text.size());
-				return true;
+				// return false so escape also processed further up hierarchy.
+				return false;
 
 			case VK_RETURN:
-				if (_access == NULL)
-				{
-					if (!Select.empty())
-						Select(this, _text);
-				}
-				else if (_access->getValue().compare(_text) != 0)
-				{
-					_access->setValue(_text);
-					if (!Select.empty())
-						Select(this, _text);
-				}
-				_edit = false;
+				apply();
 				return false;
 
 			case VK_DOWN:
@@ -215,6 +191,9 @@ bool Edit::dispatch(KeyEvent &action)
 				TCHAR ch = static_cast<TCHAR>(action._code) - VK_NUMPAD0 + '0';
 				return onChar(ch);
 			}
+
+			case VK_SPACE:
+				return onChar(' ');
 
 			case VK_OEM_PLUS:
 				return action._mask & KeyEvent::SHIFT ? 
@@ -318,13 +297,12 @@ bool Edit::dispatch(KeyEvent &action)
 					// upper/lower case?
 					TCHAR ch = static_cast<TCHAR>(action._code);
 					// ASCII
-					if (ch >= 0x30 && ch <= 127)
+					if (ch >= 'A' && ch <= 'Z')
 					{
 						bool bShift = (action._mask & KeyEvent::SHIFT) != 0;
 						bool bCaps = (action._mask & KeyEvent::CAPS) != 0;
 						if (!bShift ^ bCaps)
-							if (ch >= 'A' && ch <= 'Z')
-								ch += 32;
+							ch += 32;
 						return onChar(ch);
 					}
 				}
@@ -337,14 +315,16 @@ bool Edit::dispatch(KeyEvent &action)
 // mouse event sink
 bool Edit::dispatch(MouseEvent &action)
 {
-	bool bOK = Control::dispatch(action);
-	if (action._what == MouseEvent::eDownClick)
+	if ( Control::dispatch(action) )
+		return true;
+
+	if ( action._what == MouseEvent::eDownClick)
 	{
 		if (!_focus)
 			getContainer()->setFocus(this);
-		bOK = true;
+		return true;
 	}
-	return bOK;
+	return false;
 }
 
 /// <param name="focus">true if this control has focus</param>
@@ -365,13 +345,30 @@ void Edit::setFocus(bool focus)
 		}
 		else
 		{
-			if (_access != NULL && _edit && !_readOnly)
-				_access->setValue(_text);
-			if (!Select.empty())
-				Select(this, _text);
+			apply();
 		}
 		setChanged(change);
 	}
+}
+
+// force an update of any edits in-progress.
+void Edit::apply()
+{
+	if ( _edit && getEnable() && !getReadOnly() )
+	{
+		if (_access == NULL)
+		{
+			if (!Select.empty())
+				Select(this, _text);
+		}
+		else if ( _access->getValue().compare(_text) != 0)
+		{
+			_access->setValue(_text);
+			if (!Select.empty())
+				Select(this, _text);
+		}
+	}
+	_edit = false;
 }
 
 // instance type
@@ -461,4 +458,3 @@ bool Edit::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *
 	}
 	return bOK;
 }
-

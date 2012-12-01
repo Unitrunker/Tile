@@ -1,6 +1,7 @@
 #include "Control.h"
 #include "Accessor.h"
 #include "Delegate.h"
+#include "Colorful.h"
 
 /*
 Copyright © 2011 Rick Parrish
@@ -11,7 +12,7 @@ Copyright © 2011 Rick Parrish
 namespace Tiles
 {
 
-struct Check : public Control
+struct Check : public Control, public Colorful
 {
 	// Select delegate - notifies when selection changes.
 	sophia::delegate2<void, Check *, bool> Select;
@@ -108,7 +109,6 @@ private:
     /// <param name="orient">orientation</param>
 	align_t _align;
 
-	Theme::Color _fore[2], _back[2];
 	Theme::Glyph _glyphs[2];
 };
 

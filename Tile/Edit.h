@@ -2,6 +2,7 @@
 #include "IWindow.h"
 #include "Accessor.h"
 #include "Delegate.h"
+#include "Colorful.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -12,7 +13,7 @@ Copyright © 2011, 2012 Rick Parrish
 namespace Tiles
 {
 
-struct Edit : public Control
+struct Edit : public Control, public Colorful
 {
 	// Select delegate - notifies when input changes.
 	sophia::delegate2<void, Edit *, const string_t &> Select;
@@ -36,6 +37,12 @@ struct Edit : public Control
 	// readonly
 	using Control::getReadOnly;
 	using Control::setReadOnly;
+	// enable
+	using Control::getEnable;
+	using Control::setEnable;
+	// force an update of any edits in-progress.
+	virtual void apply();
+
 	// navigation
 	using Control::onNear;
 	using Control::onFar;
@@ -87,6 +94,9 @@ struct Edit : public Control
 	void setIndex(size_t);
 	size_t getIndex() const;
 
+	using Colorful::setForeAccess;
+	using Colorful::setBackAccess;
+
 protected:
 	bool onBackspace();
 	bool onDelete();
@@ -100,14 +110,12 @@ protected:
 	IAccessor<string_t> *_access;
 	// cursor column position
 	size_t _cursor;
-	bool _local; 
+	bool _local;
 	bool _edit;
 	/// <param name="orient">orientation</param>
 	align_t _align;
 	/// border width
 	//meter_t _border;
-	// color selections
-	Theme::Color _fore[2], _back[2];
 };
 
 };

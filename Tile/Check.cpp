@@ -24,10 +24,6 @@ Check::Check(identity_t id, Theme &theme, IAccessor<bool> *pAccess, align_t alig
 	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
 	setFlow(eRight, desc);
-	_fore[0].index = Theme::eDataFore;
-	_back[0].index = Theme::eDataBack;
-	_fore[1].index = Theme::eCellFore;
-	_back[1].index = Theme::eCellBack;
 	_glyphs[0].index = Theme::eUncheck;
 	_glyphs[0].glyph = theme.Uncheck;
 	_glyphs[1].index = Theme::eChecked;
@@ -47,10 +43,6 @@ Check::Check(identity_t id, Theme &theme, bool &checked, align_t align) :
 	Flow desc = {1, 1, 0, true};
 	_tile.setFlow(eDown, desc);
 	_tile.setFlow(eRight, desc);
-	_fore[0].index = Theme::eDataFore;
-	_back[0].index = Theme::eDataBack;
-	_fore[1].index = Theme::eCellFore;
-	_back[1].index = Theme::eCellBack;
 	_glyphs[0].index = Theme::eUncheck;
 	_glyphs[0].glyph = theme.Uncheck;
 	_glyphs[1].index = Theme::eChecked;
@@ -61,11 +53,12 @@ Check::Check(identity_t id, Theme &theme, bool &checked, align_t align) :
 bool Check::Draw(ICanvas *canvas, bool bFocus)
 {
 	_ASSERT(_access != NULL);
+	const Theme &theme = _tile.getTheme();
 	_checked = _access->getValue();
 	bool focus = bFocus && _focus;
-	color_t fore = _tile.getColor(_fore[focus]);
-	color_t back = _tile.getColor(_back[focus]);
-	const string_t &checked = this->_tile.getTheme().getGlyph(_glyphs[_checked]);
+	color_t fore = _foreAccess->getValue(theme, focus);
+	color_t back = _backAccess->getValue(theme, focus);
+	const string_t &checked = theme.getGlyph(_glyphs[_checked]);
 	const Font& font = _tile.getFont(_tile.getFont());
 	canvas->DrawString(_tile.rect(), _tile.scrollBox(), fore, back, font, _align, checked);
 	_tile.setChanged(false);
@@ -76,10 +69,11 @@ bool Check::Draw(ICanvas *canvas, bool bFocus)
 bool Check::dispatch(KeyEvent &action)
 {
 	// key down
-	if (action._what == KeyEvent::DOWN)
+	if ( getEnable() && !getReadOnly() &&
+		action._what == KeyEvent::DOWN)
 	{
 		// space bar
-		if (action._code == VK_SPACE && !_readOnly)
+		if (action._code == VK_SPACE)
 		{
 			if (_access != NULL)
 				_checked = _access->getValue();
@@ -98,11 +92,10 @@ bool Check::dispatch(KeyEvent &action)
 // mouse event sink
 bool Check::dispatch(MouseEvent &action)
 {
-	Control::dispatch(action);
 	if (action._button == MouseEvent::eLeft &&
 		action._what == action.eDownClick)
 	{
-		if (!_readOnly)
+		if ( getEnable() && !getReadOnly() )
 		{
 			if (_access != NULL)
 				_checked = _access->getValue();
@@ -116,7 +109,7 @@ bool Check::dispatch(MouseEvent &action)
 		if (!_focus)
 			getContainer()->setFocus(this);
 	}
-	return true;
+	return Control::dispatch(action);
 }
 
 // instance type
@@ -147,14 +140,14 @@ void Check::setGlyphs(const TCHAR *checked, const TCHAR *unchecked)
 
 void Check::setFore(const Theme::Color &normal, const Theme::Color &focus)
 {
-	_fore[0] = normal;
-	_fore[1] = focus;
+	_foreView = normal;
+	_foreEdit = focus;
 }
 
 void Check::setBack(const Theme::Color &normal, const Theme::Color &focus)
 {
-	_back[0] = normal;
-	_back[1] = focus;
+	_backView = normal;
+	_backEdit = focus;
 }
 
 void Check::setAlign(align_t align)
