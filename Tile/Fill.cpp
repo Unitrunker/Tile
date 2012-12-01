@@ -11,17 +11,15 @@ Copyright © 2011, 2012 Rick Parrish
 using namespace Tiles;
 
 Fill::Fill(identity_t id, Theme &theme) : 
-	Tile(id, theme)
+	Tile(id, theme),
+	_fill(Theme::eCaptionBack, 0)
 {
-	_fill.color = 0;
-	_fill.index = Theme::eCaptionBack;
 }
 
 Fill::Fill(identity_t id, Theme &theme, Theme::Font& desc) : 
-	Tile(id, theme, desc) 
+	Tile(id, theme, desc),
+	_fill(Theme::eCaptionBack, 0)
 {
-	_fill.color = 0;
-	_fill.index = Theme::eCaptionBack;
 }
 
 /// <param name="copy">.</param>
@@ -82,7 +80,7 @@ bool Fill::load(JSON::Reader &reader, Theme &theme, const char *type, ITile *&pD
 		if (bOK)
 		{
 			Fill *p = new Fill(id, theme);
-			p->_fill.color = fill; // TODO
+			p->_fill._color = fill; // TODO
 			p->setFlow(eRight, horz);
 			p->setFlow(eDown, vert);
 			pDraw = p;
