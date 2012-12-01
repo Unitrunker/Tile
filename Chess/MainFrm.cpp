@@ -280,8 +280,8 @@ void CMainFrame::createForm()
 		m_controls[6][i]->setGlyphs(pawnB, _T(" "));
 	}
 
-	Theme::Color focus = {Theme::eDefault, RGB(255, 0, 0)};
-	Theme::Color normal = {Theme::eDefault, RGB(192, 0, 0)};
+	Theme::Color focus(Theme::eDefault, RGB(255, 0, 0));
+	Theme::Color normal(Theme::eDefault, RGB(192, 0, 0));
 
 	for (size_t row = 0; row < MAG; row++)
 	{
