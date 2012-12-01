@@ -27,8 +27,9 @@ Controls
 - Combo
 - Edit
 - Toggle
+- Tab
 Generic Container
-- Flow
+- Pane
 - Scroll (scrollable flow)
 - Tree (collapsible flow)
 Type-Aware Container
