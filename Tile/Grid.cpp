@@ -19,13 +19,14 @@ struct Row : public Pane
 	Row(identity_t id, Theme &theme);
 	Row(identity_t id, Theme &theme, Theme::Font& desc);
 	virtual ~Row();
+	Set *_set;
 };
 
-Row::Row(identity_t id, Theme &theme) : Pane(id, theme, eRight)
+Row::Row(identity_t id, Theme &theme) : Pane(id, theme, eRight), _set(NULL)
 {
 }
 
-Row::Row(identity_t id, Theme &theme, Theme::Font& desc) : Pane(id, theme, desc, eRight)
+Row::Row(identity_t id, Theme &theme, Theme::Font& desc) : Pane(id, theme, desc, eRight), _set(NULL)
 {
 }
 
@@ -51,6 +52,8 @@ struct Header : public Pane
 	bool getColumn(point_t pt, size_t &col, meter_t &datum) const;
 	void dragColumn(size_t col, meter_t x);
 	virtual bool contains(point_t pt) const;
+	// enable
+	virtual bool getEnable() const;
 };
 
 Header::Header(identity_t id, Theme &theme) : Pane(id, theme, eRight)
@@ -121,24 +124,36 @@ bool Header::contains(point_t pt) const
 	return _tile.contains(pt);
 }
 
+bool Header::getEnable() const
+{
+	// ignore container's enable state.
+	// we always want to click on header buttons even when underlying data isn't editable.
+	return _enable;
+}
+
 // The grid control. It's a Pane control with some extra logic for rows and column headings.
 Grid::Grid(identity_t id, Theme &theme) : Pane(id, theme, eDown), 
 	_table(NULL), _scrollVert(NULL), _paneVert(NULL), _scrollHorz(NULL), 
-	_capture(false), _drag(0), _datum(0), _multi(false), _cursor(0)
+	_capture(false), _drag(0), _datum(0), _multi(false), _cursor(0), 
+	_auto(false)
 {
 }
 
 // Sets the content for this grid using an interface that is oblivious to the underlying data type.
 void Grid::setTable(ITable *p, bool multi)
 {
-	// who knows what state this table was left in last?
-	p->setOffset(0);
-	p->clearSelect();
+	if (p)
+	{
+		// who knows what state this table was left in last?
+		p->setOffset(0);
+		p->clearSelect();
+	}
 
 	_cursor = 0;
 	_table = p;
 	_multi = multi;
-	p->follow(this);
+	if (p)
+		p->follow(this);
 	reflow();
 }
 
@@ -181,9 +196,9 @@ void Grid::reflow()
 		size_t offset = _table->getOffset();
 		_table->setVisible(offset, rows);
 
-		Theme::Color capFore = {Theme::eCaptionFore, theme.CaptionFore};
-		Theme::Color capBack = {Theme::eCaptionBack, theme.CaptionBack};
-		Theme::Color toolOver = {Theme::eToolOver, theme.ToolOver};
+		Theme::Color capFore(Theme::eCaptionFore, theme.CaptionFore);
+		Theme::Color capBack(Theme::eCaptionBack, theme.CaptionBack);
+		Theme::Color toolOver(Theme::eToolOver, theme.ToolOver);
 
 		// compose a header row.
 		Set *set = _table->getHeader();
@@ -218,9 +233,9 @@ void Grid::reflow()
 		for (i = 0; i < rows; i++)
 		{
 			// compose data rows.
-			set = _table->getRow(i);
 			Row* row = new Row(0, theme);
-			if (set == NULL)
+			row->_set = _table->getRow(i);
+			if (row->_set == NULL)
 			{
 				Fill *pFill = new Fill(0, theme);
 				row->Add(pFill, 0, 4096, 0);
@@ -228,7 +243,7 @@ void Grid::reflow()
 			else
 			{
 				// for each column
-				for (size_t col = 0; col < set->Columns.size(); col++)
+				for (size_t col = 0; col < row->_set->Columns.size(); col++)
 				{
 					Flow flow = {0};
 					// Get flow from header. adjustments to column widths are applied to 
@@ -238,7 +253,7 @@ void Grid::reflow()
 					{
 						IControl *pControl = _table->getHeader()->Columns[col]->Control;
 						pControl->getFlow(eRight, flow);
-						pControl = set->Columns[col]->Control;
+						pControl = row->_set->Columns[col]->Control;
 						pControl->setFlow(eRight, flow);
 						row->Add(pControl);
 					}
@@ -284,29 +299,22 @@ size_t Grid::getVisibleRowCount()
 // row "i" added.
 void Grid::onAdded(size_t i)
 {
-	size_t offset = _table->getOffset();
-	size_t tail = offset + getVisibleRowCount();
-	if (i >= offset && i < tail)
-	{
-	}
+	i;
+	reflow();
 }
 
 // row "i" changed.
 void Grid::onChange(size_t i)
 {
-	size_t offset = _table->getOffset();
-	size_t tail = offset + getVisibleRowCount();
-	if (i >= offset && i < tail)
-	{
-		// refresh row
-		_listControls[i - offset + 1]->setChanged(true);
-	}
+	i;
+	// no need to do anything because the data notifies the property set directly.
 }
 
 // row "i" removed.
 void Grid::onRemove(size_t i)
 {
 	i;
+	reflow();
 }
 
 // row "i" moved to row "j".
@@ -314,6 +322,7 @@ void Grid::onMoved(size_t i, size_t j)
 {
 	i;
 	j;
+	reflow();
 }
 
 // IControl
@@ -398,6 +407,18 @@ bool Grid::dispatch(KeyEvent &action)
 			}
 			return true;
 		}
+
+		if (action._code == VK_ESCAPE)
+		{
+			setEnable(false);
+			return true;
+		}
+
+		if (action._code == VK_F2)
+		{
+			setEnable(true);
+			return true;
+		}
 	}
 	return false;
 }
@@ -465,6 +486,8 @@ bool Grid::dispatch(MouseEvent &action)
 					IControl *control = row->getControl(j);
 					if ( control->contains(action._place) )
 					{
+						// commit any pending edits before opening another window.
+						_pDesktop->apply();
 						DoubleClick(this, _table->getOffset() + i - 1, j);
 						break;
 					}
@@ -492,14 +515,11 @@ bool Grid::dispatch(MouseEvent &action)
 	return false;
 }
 
-void Grid::clickHeader(Button *control, bool value)
+void Grid::clickHeader(Button *control)
 {
-	if (value)
-	{
-		size_t iColumn = control->identity();
-		_table->setColumn(iColumn);
-		setChanged(true);
-	}
+	size_t iColumn = control->identity();
+	_table->setColumn(iColumn);
+	setChanged(true);
 }
 
 // serialize
@@ -543,8 +563,12 @@ bool Grid::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *
 
 size_t Grid::getRowIndex() const
 {
-	size_t index = _table->getOffset() + getIndex();
-	if (index > 0) index--;
+	size_t index = 0;
+	if (_table)
+	{
+		index = _table->getOffset() + getIndex();
+		if (index > 0) index--;
+	}
 	return index;
 }
 

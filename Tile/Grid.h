@@ -37,7 +37,7 @@ struct Grid : public Pane, public INotify
 protected:
 	virtual void onIndexChanged(size_t index);
 private:
-	void clickHeader(Button *control, bool value);
+	void clickHeader(Button *control);
 
 	size_t getRowIndex() const;
 
@@ -73,6 +73,8 @@ private:
 	size_t _cursor;
 
 	bool _multi;
+	// auto-scroll
+	bool _auto;
 
 	// The grid's content.
 	ITable* _table;
