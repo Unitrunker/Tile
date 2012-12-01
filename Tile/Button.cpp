@@ -22,25 +22,25 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, const TCHAR *text
 	_iGlyphOver(0), // unused.
 	_popup(NULL)
 {
-	_colorUp[0].index = Theme::eToolFore;
-	_colorUp[0].color = RGB(0, 0, 0);
-	_colorUp[1].index = Theme::eToolBack;
-	_colorUp[1].color = RGB(192, 192, 192);
+	_colorUp[0]._index = Theme::eToolFore;
+	_colorUp[0]._color = RGB(0, 0, 0);
+	_colorUp[1]._index = Theme::eToolBack;
+	_colorUp[1]._color = RGB(192, 192, 192);
 
-	_colorDn[0].index = Theme::eToolFore;
-	_colorDn[0].color = RGB(128, 128, 128);
-	_colorDn[1].index = Theme::eToolBack;
-	_colorDn[1].color = RGB(255, 255, 255);
+	_colorDn[0]._index = Theme::eToolFore;
+	_colorDn[0]._color = RGB(128, 128, 128);
+	_colorDn[1]._index = Theme::eToolBack;
+	_colorDn[1]._color = RGB(255, 255, 255);
 
-	_colorOver[0].index = Theme::eToolFore;
-	_colorOver[0].color = RGB(0, 0, 0);
-	_colorOver[1].index = Theme::eToolOver;
-	_colorOver[1].color = RGB(255, 255, 255);
+	_colorOver[0]._index = Theme::eToolFore;
+	_colorOver[0]._color = RGB(0, 0, 0);
+	_colorOver[1]._index = Theme::eToolOver;
+	_colorOver[1]._color = RGB(255, 255, 255);
 
-	_colorFocus[0].index = Theme::eToolFore;
-	_colorFocus[0].color = RGB(0, 0, 0);
-	_colorFocus[1].index = Theme::eToolOver;
-	_colorFocus[1].color = RGB(255, 255, 255);
+	_colorFocus[0]._index = Theme::eToolFore;
+	_colorFocus[0]._color = RGB(0, 0, 0);
+	_colorFocus[1]._index = Theme::eToolOver;
+	_colorFocus[1]._color = RGB(255, 255, 255);
 }
 
 Button::Button(identity_t id, Theme& theme, Theme::Font &font, const TCHAR *textUp, const TCHAR *textDown, const TCHAR *textOver) :
@@ -54,25 +54,25 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, const TCHAR *text
 	_iGlyphOver(0), // unused.
 	_popup(NULL)
 {
-	_colorUp[0].index = Theme::eToolFore;
-	_colorUp[0].color = RGB(0, 0, 0);
-	_colorUp[1].index = Theme::eToolBack;
-	_colorUp[1].color = RGB(192, 192, 192);
+	_colorUp[0]._index = Theme::eToolFore;
+	_colorUp[0]._color = RGB(0, 0, 0);
+	_colorUp[1]._index = Theme::eToolBack;
+	_colorUp[1]._color = RGB(192, 192, 192);
 
-	_colorDn[0].index = Theme::eToolFore;
-	_colorDn[0].color = RGB(128, 128, 128);
-	_colorDn[1].index = Theme::eToolBack;
-	_colorDn[1].color = RGB(255, 255, 255);
+	_colorDn[0]._index = Theme::eToolFore;
+	_colorDn[0]._color = RGB(128, 128, 128);
+	_colorDn[1]._index = Theme::eToolBack;
+	_colorDn[1]._color = RGB(255, 255, 255);
 
-	_colorOver[0].index = Theme::eToolFore;
-	_colorOver[0].color = RGB(0, 0, 0);
-	_colorOver[1].index = Theme::eToolOver;
-	_colorOver[1].color = RGB(255, 255, 255);
+	_colorOver[0]._index = Theme::eToolFore;
+	_colorOver[0]._color = RGB(0, 0, 0);
+	_colorOver[1]._index = Theme::eToolOver;
+	_colorOver[1]._color = RGB(255, 255, 255);
 
-	_colorFocus[0].index = Theme::eToolFore;
-	_colorFocus[0].color = RGB(0, 0, 0);
-	_colorFocus[1].index = Theme::eToolOver;
-	_colorFocus[1].color = RGB(255, 255, 255);
+	_colorFocus[0]._index = Theme::eToolFore;
+	_colorFocus[0]._color = RGB(0, 0, 0);
+	_colorFocus[1]._index = Theme::eToolOver;
+	_colorFocus[1]._color = RGB(255, 255, 255);
 }
 
 Button::Button(identity_t id, Theme& theme, Theme::Font &font, unsigned char iUp, unsigned char iDn, unsigned char iOver) :
@@ -86,25 +86,25 @@ Button::Button(identity_t id, Theme& theme, Theme::Font &font, unsigned char iUp
 	_iGlyphOver(iOver),
 	_popup(NULL)
 {
-	_colorUp[0].index = Theme::eToolFore;
-	_colorUp[0].color = RGB(0, 0, 0);
-	_colorUp[1].index = Theme::eToolBack;
-	_colorUp[1].color = RGB(192, 192, 192);
+	_colorUp[0]._index = Theme::eToolFore;
+	_colorUp[0]._color = RGB(0, 0, 0);
+	_colorUp[1]._index = Theme::eToolBack;
+	_colorUp[1]._color = RGB(192, 192, 192);
 
-	_colorDn[0].index = Theme::eToolFore;
-	_colorDn[0].color = RGB(128, 128, 128);
-	_colorDn[1].index = Theme::eToolBack;
-	_colorDn[1].color = RGB(255, 255, 255);
+	_colorDn[0]._index = Theme::eToolFore;
+	_colorDn[0]._color = RGB(128, 128, 128);
+	_colorDn[1]._index = Theme::eToolBack;
+	_colorDn[1]._color = RGB(255, 255, 255);
 
-	_colorOver[0].index = Theme::eToolFore;
-	_colorOver[0].color = RGB(0, 0, 0);
-	_colorOver[1].index = Theme::eToolOver;
-	_colorOver[1].color = RGB(255, 255, 255);
+	_colorOver[0]._index = Theme::eToolFore;
+	_colorOver[0]._color = RGB(0, 0, 0);
+	_colorOver[1]._index = Theme::eToolOver;
+	_colorOver[1]._color = RGB(255, 255, 255);
 
-	_colorFocus[0].index = Theme::eToolFore;
-	_colorFocus[0].color = RGB(0, 0, 0);
-	_colorFocus[1].index = Theme::eToolOver;
-	_colorFocus[1].color = RGB(255, 255, 255);
+	_colorFocus[0]._index = Theme::eToolFore;
+	_colorFocus[0]._color = RGB(0, 0, 0);
+	_colorFocus[1]._index = Theme::eToolOver;
+	_colorFocus[1]._color = RGB(255, 255, 255);
 }
 
 Button::~Button()
@@ -169,22 +169,24 @@ const char* Button::type()
 // key event sink
 bool Button::dispatch(KeyEvent &action)
 {
-	if (action._code == VK_SPACE)
+	if ( getEnable() && !getReadOnly() && action._code == VK_SPACE )
 	{
 		switch (action._what)
 		{
 			case KeyEvent::DOWN:
 				_down = true;
 				setChanged(true);
-				if (!Click.empty())
-					Click(this, _down);
+				if (!State.empty())
+					State(this, _down);
 				return true;
 
 			case KeyEvent::UP:
 				_down = false;
 				setChanged(true);
 				if (!Click.empty())
-					Click(this, _down);
+					Click(this);
+				if (!State.empty())
+					State(this, _down);
 				return true;
 
 			default:
@@ -197,30 +199,34 @@ bool Button::dispatch(KeyEvent &action)
 // mouse event sink
 bool Button::dispatch(MouseEvent &action)
 {
-	Control::dispatch(action);
 	if (action._button == MouseEvent::eLeft)
 	{
 		switch (action._what)
 		{
 			case MouseEvent::eDownClick:
-				if (!_readOnly)
+				if ( getEnable() && !getReadOnly() )
 				{
 					_down = true;
 					setChanged(true);
-					if (!Click.empty())
-						Click(this, _down);
+					if (!State.empty())
+						State(this, _down);
 				}
-				if (!_focus)
-					getContainer()->setFocus(this);
+				// Don't let tool buttons take input focus on mouse click.
+				// Allows other controls retain focus while user performs tool related action.
+				// Key navigation focus still possible.
+				//if (!_focus)
+				//	getContainer()->setFocus(this);
 				return true;
 
 			case MouseEvent::eUpClick:
-				if (!_readOnly)
+				if ( getEnable() && !getReadOnly() )
 				{
 					_down = false;
 					setChanged(true);
 					if (!Click.empty())
-						Click(this, _down);
+						Click(this);
+					if (!State.empty())
+						State(this, _down);
 				}
 				return true;
 
@@ -228,7 +234,7 @@ bool Button::dispatch(MouseEvent &action)
 				break;
 		}
 	}
-	return false;
+	return Control::dispatch(action);
 }
 
 /// <param name="focus">true if this control has focus</param>
@@ -410,7 +416,7 @@ void Button::setTip(const TCHAR *tip)
 void Button::setHover(bool hover)
 {
 	Control::setHover(hover);
-	if (hover && _tip.size())
+	if (hover && _tile.getTheme().Tips && _tip.size())
 	{
 		size_t size = (5 * _tip.size() + 7) / 8;
 		Flow vert = {1, 1, 0, true};

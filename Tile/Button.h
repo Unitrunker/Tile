@@ -12,8 +12,10 @@ namespace Tiles
 
 struct Button : public Control
 {
+	// Click delegate - notifies when button clicked.
+	sophia::delegate1<void, Button *> Click;
 	// Click delegate - notifies when button is up or down.
-	sophia::delegate2<void, Button *, bool> Click;
+	sophia::delegate2<void, Button *, bool> State;
 
 	Button(identity_t id, Theme& theme, Theme::Font &desc, const TCHAR *text);
 	Button(identity_t id, Theme& theme, Theme::Font &desc, const TCHAR *textUp, const TCHAR *textDown, const TCHAR *textOver);
