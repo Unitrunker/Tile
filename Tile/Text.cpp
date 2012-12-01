@@ -13,23 +13,19 @@ using namespace Tiles;
 /// <param name="font">.</param>
 Text::Text(identity_t id, Theme &theme) : 
 	Tile(id, theme),
-	_align(eLeft)
+	_align(eLeft),
+	_fore(Theme::eCaptionFore, 0),
+	_back(Theme::eCaptionBack, 0)
 {
-	_fore.index = Theme::eCaptionFore;
-	_fore.color = 0;
-	_back.index = Theme::eCaptionBack;
-	_back.color = 0;
 }
 
 /// <param name="font">.</param>
 Text::Text(identity_t id, Theme &theme, const Theme::Font &font) : 
 	Tile(id, theme, font),
-	_align(eLeft)
+	_align(eLeft),
+	_fore(Theme::eCaptionFore, 0),
+	_back(Theme::eCaptionBack, 0)
 {
-	_fore.index = Theme::eCaptionFore;
-	_fore.color = 0;
-	_back.index = Theme::eCaptionBack;
-	_back.color = 0;
 }
 /// <param name="theme">.</param>
 /// <param name="align">text alignment</param>
@@ -37,28 +33,24 @@ Text::Text(identity_t id, Theme &theme, const Theme::Font &font) :
 Text::Text(identity_t id, Theme &theme, const Theme::Font& font, align_t align, const TCHAR *text) :
 	Tile(id, theme, font),
 	_align(align), 
-	_text(text)
+	_text(text),
+	_fore(Theme::eCaptionFore, 0),
+	_back(Theme::eCaptionBack, 0)
 {
 	// default to one line.
 	//meter_t height = _theme.Text._height;
 	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
-	_fore.index = Theme::eCaptionFore;
-	_fore.color = 0;
-	_back.index = Theme::eCaptionBack;
-	_back.color = 0;
 }
 
 /// <param name="copy">.</param>
 Text::Text(const Text &copy) : 
 	Tile(copy), 
 	_align(copy._align), 
-	_text(copy._text)
+	_text(copy._text),
+	_fore(Theme::eCaptionFore, 0),
+	_back(Theme::eCaptionBack, 0)
 {
-	_fore.index = Theme::eCaptionFore;
-	_fore.color = 0;
-	_back.index = Theme::eCaptionBack;
-	_back.color = 0;
 }
 
 // instance type
