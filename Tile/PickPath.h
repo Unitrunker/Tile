@@ -21,10 +21,13 @@ struct PickPath : public Pane
 
 	// readonly
 	using Pane::getReadOnly;
-	virtual void setReadOnly(bool);
+	using Pane::setReadOnly;
+	// enable
+	using Pane::getEnable;
+	using Pane::setEnable;
 
 private:
-	void click(Button*, bool down);
+	void click(Button*);
 
 	IAccessor<string_t>* _access;
 	const TCHAR* _prompt;
