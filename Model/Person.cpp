@@ -31,7 +31,6 @@ void Person::broadcast(const char *)
 }
 
 PersonSet::PersonSet(Theme &theme) : 
-	SetT<Person>(NULL),
 #pragma warning(disable:4355)
 	First(*this, &Person::_first),
 	Last(*this, &Person::_last),
