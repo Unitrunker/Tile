@@ -129,7 +129,7 @@ void CMainFrame::createForm()
 
 	size_t columns = _table.getHeader()->Columns.size();
 
-	_table.setReadOnly(true);
+	_table.setEnable(true);
 
 	for (size_t i = 0; i < columns; i++)
 	{
