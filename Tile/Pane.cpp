@@ -19,23 +19,22 @@ Pane::Pane(identity_t id, Theme &theme, orient_t flow) :
 	_index(0),
 	_shared(0),
 	_readOnly(false),
+	_enable(true),
 	_local(true),
 	_scroll(false),
-	_hover(0)
+	_hover(0),
+	_border(Theme::eDefault, 0),
+	_lines(Theme::eGridLines, 0)
 {
 	_space.local = false;
 	_space.thick = theme.GridThick;
 	_thick.local = true;
 	_thick.thick = 0;
-	_border.index = Theme::eDefault;
-	_border.color = 0;
 	_tile._pSelf = this;
 	_tile.setMin(eRight, 0);
 	_tile.setMax(eRight, 4096);
 	_tile.setMin(eDown, 0);
 	_tile.setMax(eDown, 4096);
-	_lines.index = Theme::eGridLines;
-	_lines.color = RGB(0,0,0);
 }
 
 Pane::Pane(identity_t id, Theme &theme, Theme::Font& desc, orient_t flow) : 
@@ -46,23 +45,22 @@ Pane::Pane(identity_t id, Theme &theme, Theme::Font& desc, orient_t flow) :
 	_index(0),
 	_shared(0),
 	_readOnly(false),
+	_enable(true),
 	_local(true),
 	_scroll(false),
-	_hover(0)
+	_hover(0),
+	_border(Theme::eDefault, 0),
+	_lines(Theme::eGridLines, 0)
 {
 	_space.local = false;
 	_space.thick = theme.GridThick;
 	_thick.local = true;
 	_thick.thick = 0;
-	_border.index = Theme::eDefault;
-	_border.color = 0;
 	_tile._pSelf = this;
 	_tile.setMin(eRight, 0);
 	_tile.setMax(eRight, 4096);
 	_tile.setMin(eDown, 0);
 	_tile.setMax(eDown, 4096);
-	_lines.index = Theme::eGridLines;
-	_lines.color = RGB(0,0,0);
 }
 
 Pane::~Pane()
@@ -763,6 +761,7 @@ bool Pane::dispatch(MouseEvent &action)
 {
 	bool bFocus = false;
 	size_t size = _listControls.size();
+	//size_t was = getIndex();
 	switch (action._what)
 	{
 		case MouseEvent::eDownClick:
@@ -783,8 +782,13 @@ bool Pane::dispatch(MouseEvent &action)
 				// does this control contain the mouse click?
 				if ( pControl->contains(action._place) )
 				{
-					setIndex(i);
-					return pControl->dispatch(action);
+					if ( pControl->dispatch(action) )
+					{
+						if (pControl->getFocus())
+							setIndex(i);
+						return true;
+					}
+					return false;
 				}
 			}
 			break;
@@ -843,6 +847,20 @@ bool Pane::getReadOnly() const
 void Pane::setReadOnly(bool readOnly)
 {
 	_readOnly = readOnly;
+}
+
+// enable
+bool Pane::getEnable() const
+{
+	return _enable && (isRoot() || getContainer()->getEnable());
+}
+
+void Pane::setEnable(bool enable)
+{
+	bool change = _enable ^ enable;
+	_enable = enable;
+	if (change)
+		setChanged(true);
 }
 
 void Pane::setHover(bool)
@@ -1585,4 +1603,22 @@ bool Pane::load(JSON::Reader &reader, Theme &theme, const char *type, Pane *&pPa
 void Pane::onIndexChanged(size_t index)
 {
 	index; // nothing to do here.
+}
+
+// force an update of any edits in-progress.
+void Pane::apply()
+{
+	//
+}
+
+// color for lines separating child tiles.
+void Pane::setLineColor(const Theme::Color &color)
+{
+	_lines = color;
+}
+
+// color for lines separating child tiles.
+void Pane::setLineThick(const Theme::Thick &thick)
+{
+	_thick = thick;
 }

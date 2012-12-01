@@ -32,6 +32,11 @@ struct Control : public IControl
 	// readonly
 	virtual bool getReadOnly() const;
 	virtual void setReadOnly(bool);
+	// enable
+	virtual bool getEnable() const;
+	virtual void setEnable(bool);
+	// force an update of any edits in-progress.
+	virtual void apply();
 	// navigation
 	virtual bool onNear(orient_t);
 	virtual bool onFar(orient_t);
@@ -86,6 +91,8 @@ protected:
 	bool _hover;
 	/// true if this control is display-only
 	bool _readOnly;
+	/// true if this control enabled for editing.
+	bool _enable;
 };
 
 };

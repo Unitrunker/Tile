@@ -85,6 +85,11 @@ struct Pane : public IControl, public IRedraw
 	// readonly
 	virtual bool getReadOnly() const;
 	virtual void setReadOnly(bool);
+	// enable
+	virtual bool getEnable() const;
+	virtual void setEnable(bool);
+	// force an update of any edits in-progress.
+	virtual void apply();
 	// hover
 	virtual void setHover(bool);
 	// navigation
@@ -156,6 +161,8 @@ struct Pane : public IControl, public IRedraw
 
 	const Theme::Font &getFont() const;
 	void setFont(const Theme::Font &font);
+	void setLineColor(const Theme::Color &color);
+	void setLineThick(const Theme::Thick &thick);
 
 protected:
 	bool onTab(bool bReverse);
@@ -187,6 +194,8 @@ protected:
 	size_t _hover;
 	// read only
 	bool _readOnly;
+	// enable
+	bool _enable;
 	// true if this flow uses own _index instead of parent's _shared index.
 	// sibling flows may use a shared index to allow cursor navigation
 	// across rows and columns. Moving across columns stay in same row. 

@@ -13,6 +13,7 @@ Control::Control(identity_t id, Theme &theme, const Theme::Font &desc) :
 	_focus(false),
 	_hover(false),
 	_readOnly(false),
+	_enable(true),
 	_pDesktop(NULL)
 {
 	Flow flow = {1, 1, 0, true};
@@ -25,6 +26,7 @@ Control::Control(identity_t id, Theme &theme) :
 	_focus(false),
 	_hover(false),
 	_readOnly(false),
+	_enable(true),
 	_pDesktop(NULL)
 {
 	Flow flow = {1, 1, 0, true};
@@ -81,12 +83,31 @@ void Control::setFocus(bool focus)
 // readOnly
 bool Control::getReadOnly() const
 {
-	return _readOnly;
+	return _readOnly || getContainer()->getReadOnly();
 }
 
 void Control::setReadOnly(bool readOnly)
 {
 	_readOnly = readOnly;
+}
+
+// enable
+bool Control::getEnable() const
+{
+	return _enable && getContainer()->getEnable();
+}
+
+void Control::setEnable(bool enable)
+{
+	bool change = _enable ^ enable;
+	_enable = enable;
+	if (change)
+		setChanged(true);
+}
+
+// force an update of any edits in-progress.
+void Control::apply()
+{
 }
 
 identity_t Control::identity() const
@@ -102,11 +123,6 @@ void Control::getRect(rect_t &rect) const
 
 void Control::setRect(const rect_t &rect)
 {
-//	std::string log;
-//	log.resize(128, _T(' '));
-//	int size = sprintf(&log[0], "%s [%d,%d,%d,%d]\n", getType(), rect.x, rect.y, rect.wide, rect.high);
-//	log.resize(size);
-//	OutputDebugStringA(log.c_str());
 	_tile.setRect(rect);
 }
 
