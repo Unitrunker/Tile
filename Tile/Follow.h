@@ -59,7 +59,8 @@ protected:
       followers_t::iterator it = snap.begin();
       while (it != snap.end())
       {
-   	     (*it++)->onChange(self);
+		  IFollow<T> *follow = *it++;
+		  follow->onChange(self);
       }
    }
 
@@ -69,9 +70,10 @@ protected:
       // Seems expensive. Is there a cheaper way?
       followers_t snap(_followers);
       followers_t::iterator it = snap.begin();
-      while (it != _followers.end())
+      while (it != snap.end())
       {
-   	     (*it++)->onRemove(self);
+		  IFollow<T> *follow = *it++;
+		  follow->onRemove(self);
       }
    }
 
