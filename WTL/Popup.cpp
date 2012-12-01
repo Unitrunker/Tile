@@ -297,6 +297,7 @@ void Popup::setCursor(int cursor)
 void Popup::setCapture(IControl *p, int cursor)
 {
 	p; // ignore - don't allow popups to mouse capture.
+	cursor;
 }
 
 // alter focus.
@@ -317,6 +318,13 @@ void Popup::setFocus(IControl *pFocus)
 		if (_pFocus != NULL)
 			_pFocus->setFocus(true);
 	}
+}
+
+// commit focus control edits.
+void Popup::apply()
+{
+	if (_pFocus != NULL)
+		_pFocus->apply();
 }
 
 // hover

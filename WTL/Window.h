@@ -38,6 +38,8 @@ protected:
 	virtual void setCapture(IControl *, int cursor = IWindow::ARROW);
 	// alter focus.
 	virtual void setFocus(bool bFocus);
+	// commit focus control edits.
+	virtual void apply();
 	// set focus to control.
 	virtual void setFocus(IControl *pFocus);
 	// hover

@@ -33,6 +33,8 @@ class Popup : public CWindowImpl<Popup>,
 	virtual void setFocus(IControl *pFocus);
 	// hover
 	virtual void setHover(IControl *pHover);
+	// commit focus control edits.
+	virtual void apply();
 	// popup window
 	virtual IWindow* popup(const rect_t &rect, Pane *pContent, IControl *pOwner);
 	// close and destroy the window

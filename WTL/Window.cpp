@@ -391,6 +391,14 @@ void Window::setFocus(IControl *pFocus)
 	}
 }
 
+void Window::apply()
+{
+	if (_pFocus != NULL)
+	{
+		_pFocus->apply();
+	}
+}
+
 // hover
 void Window::setHover(IControl *pHover)
 {
