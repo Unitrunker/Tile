@@ -117,79 +117,73 @@ MainFrame::MainFrame(Theme &theme) :
 };
 
 // user clicked the theme editor button
-void MainFrame::clickTheme(Button *, bool bDown)
+void MainFrame::clickTheme(Button*)
 {
-	if (!bDown)
+	if (m_editor.IsWindow())
 	{
-		if (m_editor.IsWindow())
-		{
-			m_editor.CenterWindow(m_hWnd);
-			m_editor.ShowWindow(SW_SHOW);
-		}
-		else
-		{
-			RECT rect = {0, 0, 320, 480};
-			List *pList = new List(0, getTheme());
-			pList->setItems(&m_set);
-			m_editor.setPane(pList);
-			m_editor.Create(m_hWnd, rect, _T("Theme Editor"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW);
-			m_editor.CenterWindow(m_hWnd);
-			m_editor.ShowWindow(SW_SHOW);
-		}
+		m_editor.CenterWindow(m_hWnd);
+		m_editor.ShowWindow(SW_SHOW);
+	}
+	else
+	{
+		RECT rect = {0, 0, 320, 480};
+		List *pList = new List(0, getTheme());
+		pList->setItems(&m_set);
+		m_editor.setPane(pList);
+		m_editor.Create(m_hWnd, rect, _T("Theme Editor"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW);
+		m_editor.CenterWindow(m_hWnd);
+		m_editor.ShowWindow(SW_SHOW);
 	}
 }
 
 // user clicked the About botton.
-void MainFrame::clickAbout(Button *, bool bDown)
+void MainFrame::clickAbout(Button*)
 {
-	if (!bDown)
+	if (m_about.IsWindow())
 	{
-		if (m_about.IsWindow())
-		{
-			m_about.CenterWindow(m_hWnd);
-			m_about.ShowWindow(SW_SHOW);
-		}
-		else
-		{
-			Theme& theme = getTheme();
-			Theme::Font textFont = {Theme::eText, theme.Text};
-			Theme::Font dingFont = {Theme::eDefault, Font(_T("Wing dings"), theme.Text._height, 0)};
-			RECT rect = {0, 0, theme.Text._height*24, theme.Text._height * 3};
-			Fill* pFill = NULL;
-			Pane *pPane = new Pane(0, theme, eDown);
-			Pane *pLine = new Pane(0, theme, eRight);
-			pLine->setSpace(0);
-			static const TCHAR frill1[] = {0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0};
-			static const TCHAR frill2[] = {0x97, 0x97, 0x97, 0x97, 0x97, 0x97, 0};
-			Text *pLeft = new Text(0, theme, dingFont, eLeft, frill1);
-			Text *pText = new Text(0, theme, textFont, eLeft|eRight, _T("Copyright 2011"));
-			Text *pRight = new Text(0, theme, dingFont, eRight, frill2);
-			pLine->Add(pLeft, 0, 4096, 2);
-			pLine->Add(pText, 0, 4096, 3);
-			pLine->Add(pRight, 0, 4096, 2);
-			Button *pOK = new Button(0, theme, textFont, _T("OK"));
-			pOK->Click.bind(this, &MainFrame::clickOK);
+		m_about.CenterWindow(m_hWnd);
+		m_about.ShowWindow(SW_SHOW);
+	}
+	else
+	{
+		Theme& theme = getTheme();
+		Theme::Font textFont = {Theme::eText, theme.Text};
+		Theme::Font dingFont = {Theme::eDefault, Font(_T("Wing dings"), theme.Text._height, 0)};
+		RECT rect = {0, 0, theme.Text._height*24, theme.Text._height * 3};
+		Fill* pFill = NULL;
+		Pane *pPane = new Pane(0, theme, eDown);
+		Pane *pLine = new Pane(0, theme, eRight);
+		pLine->setSpace(0);
+		static const TCHAR frill1[] = {0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0};
+		static const TCHAR frill2[] = {0x97, 0x97, 0x97, 0x97, 0x97, 0x97, 0};
+		Text *pLeft = new Text(0, theme, dingFont, eLeft, frill1);
+		Text *pText = new Text(0, theme, textFont, eLeft|eRight, _T("Copyright 2011"));
+		Text *pRight = new Text(0, theme, dingFont, eRight, frill2);
+		pLine->Add(pLeft, 0, 4096, 2);
+		pLine->Add(pText, 0, 4096, 3);
+		pLine->Add(pRight, 0, 4096, 2);
+		Button *pOK = new Button(0, theme, textFont, _T("OK"));
+		pOK->Click.bind(this, &MainFrame::clickOK);
 
-			pFill = new Fill(0, theme);
-			pPane->Add(pFill, 0, 4096, 1, false);
-			pPane->Add(pLine, 1, 1, 0, true);
-			pPane->Add(pOK, 1, 1, 0, true);
-			pFill = new Fill(0, theme);
-			pPane->Add(pFill, 0, 4096, 1, false);
-			m_about.setPane(pPane);
-			m_about.Create(m_hWnd, rect, _T("About this sample app"), WS_POPUP|WS_BORDER);
-			m_about.CenterWindow(m_hWnd);
-			m_about.ShowWindow(SW_SHOW);
-		}
+		pFill = new Fill(0, theme);
+		pPane->Add(pFill, 0, 4096, 1, false);
+		pPane->Add(pLine, 1, 1, 0, true);
+		pPane->Add(pOK, 1, 1, 0, true);
+		pFill = new Fill(0, theme);
+		pPane->Add(pFill, 0, 4096, 1, false);
+		m_about.setPane(pPane);
+		m_about.Create(m_hWnd, rect, _T("About this sample app"), WS_POPUP|WS_BORDER);
+		m_about.CenterWindow(m_hWnd);
+		m_about.ShowWindow(SW_SHOW);
 	}
 }
 
-void MainFrame::clickOK(Button *, bool)
+void MainFrame::clickOK(Button*)
 {
 	m_about.PostMessage(WM_CLOSE);
 }
 
-void MainFrame::clickSnapshot(Button *, bool)
+void MainFrame::clickSnapshot(Button*)
 {
 	Snapshot camera(m_hWnd);
 	getPane()->Draw(&camera, true);
