@@ -6,6 +6,7 @@ Copyright © 2011 Rick Parrish
 #include <stdexcept>
 #include "Follow.h"
 #include <map>
+#include <vector>
 
 // Notification interface.
 // No type-awareness needed.
@@ -289,6 +290,12 @@ struct node : public IFollow<Vref>
             bool bKid = tidy->_kids[true] == child;
             tidy->_kids[bKid] = NULL;
          }
+         // handle case where parent is the root node.
+		 else
+		 {
+			 _ASSERT(child == root);
+			 root = NULL;
+		 }
       }
       // leaf node once removed.
       else if (child->_count == 2)
@@ -297,14 +304,23 @@ struct node : public IFollow<Vref>
          if (!peel)
             peel = child->_kids[false];
          tidy = child->_parent;
-         bool bKid = tidy->_kids[true] == child;
-         if (peel)
-         {
-			link(tidy, peel, bKid);
-            peel->_count = 1;
-         }
+		 if (tidy)
+		 {
+            bool bKid = tidy->_kids[true] == child;
+            if (peel)
+            {
+			   link(tidy, peel, bKid);
+               peel->_count = 1;
+            }
+		    else
+			   tidy->_kids[bKid] = peel;
+		 }
+		 // handle case where child is the root node.
 		 else
-			tidy->_kids[bKid] = peel;
+		 {
+			 _ASSERT(child == root);
+            root = peel;
+		 }
       }
       // interior node
       else
@@ -1115,6 +1131,17 @@ struct AVL : public _Base<node_t>, public IRowSet<Vref>
       return false;
    }
 
+   size_t getSelected(std::vector<V> &list) const
+   {
+	   list.reserve(_mapSelected.size());
+	   for (std::map<node_t *, bool>::const_iterator it = _mapSelected.begin(); it != _mapSelected.end(); it++)
+	   {
+		   node_t *node = it->first;
+		   list.push_back(node->_value);
+	   }
+	   return list.size();
+   }
+
 protected:
 
    // Retrieve indexed node, relative to left-most(true) or right-most(false) node.
@@ -1184,6 +1211,7 @@ private:
    {
       std::list<INotify *> snap(_watch);
       size_t iIndex = node->index(true);
+      node_t::removeInner(node, _root);
       std::list<INotify*>::iterator it = snap.begin();
       while (it != snap.end())
       {
@@ -1196,7 +1224,7 @@ private:
       std::list<INotify *> snap(_watch);
 
       size_t iFrom = node->index(true);
-      node_t::removeInner(_root, node);
+      node_t::removeInner(node, _root);
       node_t::insert(_root, node);
       size_t iTo = node->index(true);
 
