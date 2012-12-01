@@ -27,31 +27,47 @@ struct Factory
 	// Present UI for this channel. If one already 
 	// exists, show it. Do not create another.
 	bool activate(Model::Channel *);
+	bool activate(std::vector<Model::Channel *> &);
+	// Activate a new, blank channel that has no known identity.
+	bool activateChannel(Model::Site *site);
 	bool deactivate(Model::Channel *);
 
 	// Present UI for this user. If one already 
 	// exists, show it. Do not create another.
 	bool activate(Model::User *);
+	bool activate(std::vector<Model::User *> &);
+	// Activate a new, blank user that has no known identity.
+	bool activateUser(Model::System *system);
 	bool deactivate(Model::User *);
 
 	// Present UI for this group. If one already 
 	// exists, show it. Do not create another.
 	bool activate(Model::Group *);
+	bool activate(std::vector<Model::Group *> &);
+	// Activate a new, blank group that has no known identity.
+	bool activateGroup(Model::System *system);
 	bool deactivate(Model::Group *);
 
 	// Present UI for this site. If one already 
 	// exists, show it. Do not create another.
 	bool activate(Model::Site *);
+	bool activate(std::vector<Model::Site *> &);
+	// Activate a new, blank site that has no known identity.
+	bool activateSite(Model::System *system);
 	bool deactivate(Model::Site *);
 
 	// Present UI for this system. If one already 
 	// exists, show it. Do not create another.
 	bool activate(Model::System *);
+	bool activate(std::vector<Model::System *> &);
+	// Activate a new, blank system that has no known identity.
+	bool activateSystem();
 	bool deactivate(Model::System *);
 
 	// Present UI for this receiver. If one already 
 	// exists, show it. Do not create another.
 	bool activate(Receiver *);
+	bool activate(std::vector<Receiver *> &list);
 	bool deactivate(Receiver *);
 
 	// Singleton for the main program window.

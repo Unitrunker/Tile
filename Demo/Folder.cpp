@@ -14,32 +14,14 @@ Copyright © 2012 Rick Parrish
 FolderFrame::FolderFrame(Factory &factory) : 
 	Frame(factory._theme), _factory(factory), 
 	_tableSystems(factory._theme), _tableReceivers(factory._theme), 
-	_serialSet(factory._theme), _soundSet(factory._theme),
 	_themeSet(factory._theme)
 {
 	Theme &theme = factory._theme;
 	theme.setHeight(14);
 
-	_serial._data = 8;
-	_serial._parity = 0;
-	_serial._port = 1;
-	_serial._rate = 115200;
-	_serial._stop = 1;
-
-	_serialSet.setValue(&_serial);
-
-
-	_sound._bits = 16;
-	_sound._channel = 0;
-	_sound._channels = 1;
-	_sound._port = 1;
-	_sound._rate = 96000;
-
-	_soundSet.setValue(&_sound);
-
 	size_t columns = _tableSystems.getHeader()->Columns.size();
 
-	_tableSystems.setReadOnly(false);
+	_tableSystems.setEnable(true);
 
 	for (size_t i = 0; i < columns; i++)
 	{
@@ -48,7 +30,7 @@ FolderFrame::FolderFrame(Factory &factory) :
 
 	columns = _tableReceivers.getHeader()->Columns.size();
 
-	_tableReceivers.setReadOnly(true);
+	_tableReceivers.setEnable(true);
 
 	VCO *vco = new SignalVCO(0, false);
 
@@ -79,55 +61,155 @@ FolderFrame::FolderFrame(Factory &factory) :
 		_tableReceivers.setContent(i, &_receivers);
 	}
 
-	sophia::delegate2<void, Button*, bool> click;
+	Tab* tab = NULL;
+	Button* button = NULL;
 
 	_top = new Pane(0, theme, eDown);
-	_tabset = new Tab(0, theme);
-	_tools = new Tab(0, theme);
+	_tabset = new Pane(0, theme, eRight);
+	_toolInfo = new Pane(0, theme, eRight);
+	_toolSystem = new Pane(0, theme, eRight);
+	_toolReceiver = new Pane(0, theme, eRight);
 	_list = new List(0, theme);
+	_list->setItems(&_themeSet);
 
-	click.bind(this, &FolderFrame::clickTheme);
-	_tabset->Add(_T("Theme"), click);
-	click.bind(this, &FolderFrame::serial);
-	_tabset->Add(_T("Serial"), click);
-	click.bind(this, &FolderFrame::sound);
-	_tabset->Add(_T("Sound"), click);
-	click.bind(this, &FolderFrame::clickSystems);
-	_tabset->Add(_T("Systems"), click);
-	click.bind(this, &FolderFrame::clickReceivers);
-	_tabset->Add(_T("Receivers"), click);
+	Theme::Color color(Theme::eToolOver, theme.ToolOver);
+	_tabset->setLineColor(color);
+	_toolInfo->setLineColor(color);
+	_toolSystem->setLineColor(color);
+	_toolReceiver->setLineColor(color);
 
-	click.clear();
+	Theme::Font text = {Theme::eText, theme.Text};
 
 	Font webdings(_T("Webdings"), 24, 1);
 	Theme::Font font_webdings = { Theme::eDefault, webdings };
+	Font wingdings(_T("Wingdings"), 24, 1);
+	Theme::Font font_wingdings = { Theme::eDefault, wingdings };
 	Font segoe(_T("Segoe UI Symbol"), 24, 0);
 	Theme::Font font_segoe = { Theme::eDefault, segoe };
 
-	_tools->Add(L"\x231A", font_segoe, click, _T("Wrist watch")); // watch
-	_tools->Add(L"\x231B", font_segoe, click, _T("Hourglass")); // hourglass
-	_tools->Add(L"\x2328", font_segoe, click, _T("Keyboard")); // keyboard
-	_tools->Add(L"\x2388", font_segoe, click, _T("Helm")); // Helm
-	_tools->Add(L"\x2622", font_segoe, click, _T("Radioactive")); // radioactive
-	_tools->Add(L"\x2623", font_segoe, click, _T("Biohazard")); // biohazard
+	tab = new Tab(0, theme, text, _T("Theme"));
+	tab->Click.bind(this, &FolderFrame::clickTheme);
+	_tabset->Add(tab);
 
-	click.bind(this, &FolderFrame::clickHome);
-	_tools->Add(L"\x48", font_webdings, click, _T("Home")); // house
+	tab = new Tab(0, theme, text, _T("Systems"));
+	tab->Click.bind(this, &FolderFrame::clickSystems);
+	_tabset->Add(tab);
+	_tabset->setIndex(1);
+
+	tab = new Tab(0, theme, text, _T("Receivers"));
+	tab->Click.bind(this, &FolderFrame::clickReceivers);
+	_tabset->Add(tab);
+
+	//_tools->Add(L"\x231A", font_segoe, click, _T("Wrist watch")); // watch
+	//_tools->Add(L"\x231B", font_segoe, click, _T("Hourglass")); // hourglass
+	//_tools->Add(L"\x2328", font_segoe, click, _T("Keyboard")); // keyboard
+	//_tools->Add(L"\x2388", font_segoe, click, _T("Helm")); // Helm
+	//_tools->Add(L"\x2622", font_segoe, click, _T("Radioactive")); // radioactive
+	//_tools->Add(L"\x2623", font_segoe, click, _T("Biohazard")); // biohazard
+
+	button = new Button(0, theme, font_webdings, _T("\x48"));
+	button->Click.bind(this, &FolderFrame::clickHome);
+	button->setTip(_T("Home"));
+	_toolInfo->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x48"));
+	button->Click.bind(this, &FolderFrame::clickHome);
+	button->setTip(_T("Home"));
+	_toolSystem->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x48"));
+	button->Click.bind(this, &FolderFrame::clickHome);
+	button->setTip(_T("Home"));
+	_toolReceiver->Add(button);
+
+	button = new Button(0, theme, font_wingdings, _T("\x3F"));
+	button->Click.bind(this, &FolderFrame::clickEdit);
+	button->setTip(_T("Edit"));
+	_toolInfo->Add(button);
+	button = new Button(0, theme, font_wingdings, _T("\x3F"));
+	button->Click.bind(this, &FolderFrame::clickEdit);
+	button->setTip(_T("Edit"));
+	_toolSystem->Add(button);
+	button = new Button(0, theme, font_wingdings, _T("\x3F"));
+	button->Click.bind(this, &FolderFrame::clickEdit);
+	button->setTip(_T("Edit"));
+	_toolReceiver->Add(button);
+
+	button = new Button(0, theme, font_segoe, _T("+"));
+	button->Click.bind(this, &FolderFrame::clickSystemPlus);
+	button->setTip(_T("Add"));
+	_toolSystem->Add(button);
+	button = new Button(0, theme, font_segoe, _T("+"));
+	button->Click.bind(this, &FolderFrame::clickReceiverPlus);
+	button->setTip(_T("Add"));
+	_toolReceiver->Add(button);
+
+	button = new Button(0, theme, font_segoe, _T("-"));
+	button->Click.bind(this, &FolderFrame::clickSystemMinus);
+	button->setTip(_T("Remove"));
+	_toolSystem->Add(button);
+	button = new Button(0, theme, font_segoe, _T("-"));
+	button->Click.bind(this, &FolderFrame::clickReceiverMinus);
+	button->setTip(_T("Remove"));
+	_toolReceiver->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x4C"));
+	button->Click.bind(this, &FolderFrame::clickSystemInspect);
+	button->setTip(_T("Inspect"));
+	_toolSystem->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x4C"));
+	button->Click.bind(this, &FolderFrame::clickReceiverInspect);
+	button->setTip(_T("Inspect"));
+	_toolReceiver->Add(button);
+
 	//_tools->Add(L"\x22", font_webdings, click); // web
 	//_tools->Add(L"\x40", font_webdings, click); // tools
-	click.bind(this, &FolderFrame::clickRefresh);
-	_tools->Add(L"\x71", font_webdings, click, _T("Refresh")); // refresh
-	click.bind(this, &FolderFrame::clickClear);
-	_tools->Add(L"\x78", font_webdings, click, _T("Clear")); // X
-	click.bind(this, &FolderFrame::clickAbout);
-	_tools->Add(L"\x73", font_webdings, click, _T("About")); // ?
+
+	button = new Button(0, theme, font_webdings, _T("\x71"));
+	button->Click.bind(this, &FolderFrame::clickRefresh);
+	button->setTip(_T("Refresh"));
+	_toolInfo->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x71"));
+	button->Click.bind(this, &FolderFrame::clickRefresh);
+	button->setTip(_T("Refresh"));
+	_toolSystem->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x71"));
+	button->Click.bind(this, &FolderFrame::clickRefresh);
+	button->setTip(_T("Refresh"));
+	_toolReceiver->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x78"));
+	button->Click.bind(this, &FolderFrame::clickClear);
+	button->setTip(_T("Clear"));
+	_toolInfo->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x78"));
+	button->Click.bind(this, &FolderFrame::clickClear);
+	button->setTip(_T("Clear"));
+	_toolSystem->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x78"));
+	button->Click.bind(this, &FolderFrame::clickClear);
+	button->setTip(_T("Clear"));
+	_toolReceiver->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x73"));
+	button->Click.bind(this, &FolderFrame::clickAbout);
+	button->setTip(_T("About"));
+	_toolInfo->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x73"));
+	button->Click.bind(this, &FolderFrame::clickAbout);
+	button->setTip(_T("About"));
+	_toolSystem->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x73"));
+	button->Click.bind(this, &FolderFrame::clickAbout);
+	button->setTip(_T("About"));
+	_toolReceiver->Add(button);
 
 	_grid = new Grid(0, theme);
 	_grid->setTable(&_tableSystems);
 
 	_grid->DoubleClick.bind(this, &FolderFrame::clickSystem);
 
-	_top->Add(_tools, 1, 1, 0, true);
+	_top->Add(_toolSystem, 1, 1, 0, true);
 	_top->Add(_grid, 0, 4096, 1, false);
 	_top->Add(_tabset, 1, 1, 0, true);
 	// connect the form to the frame window.
@@ -136,109 +218,123 @@ FolderFrame::FolderFrame(Factory &factory) :
 
 void FolderFrame::clickSystem(Grid *, size_t row, size_t)
 {
+	// TODO: is this a hack?
+	row = _tableSystems.getAscendingIndex(row);
 	Model::System *system = _factory._folder.Systems[row];
 	_factory.activate(system);
 }
 
 void FolderFrame::clickReceiver(Grid *, size_t row, size_t)
 {
+	// TODO: is this a hack?
+	row = _tableReceivers.getAscendingIndex(row);
 	Receiver *receiver = _receivers[row];
 	_factory.activate(receiver);
 }
 
-void FolderFrame::serial(Button*, bool up)
+void FolderFrame::clickTheme(Tab*)
 {
-	if (up)
+	_top->clear();
+	_top->Add(_toolInfo, 1, 1, 0, true);
+	_top->Add(_list, 0, 4096, 1, false);
+	_top->Add(_tabset, 1, 1, 0, true);
+	_top->reflow();
+}
+
+void FolderFrame::clickSystems(Tab*)
+{
+	_top->clear();
+	_grid->DoubleClick.bind(this, &FolderFrame::clickSystem);
+	_grid->setTable(&_tableSystems);
+	_top->Add(_toolSystem, 1, 1, 0, true);
+	_top->Add(_grid, 0, 4096, 1, false);
+	_top->Add(_tabset, 1, 1, 0, true);
+	_top->reflow();
+}
+
+void FolderFrame::clickReceivers(Tab*)
+{
+	_top->clear();
+	_grid->DoubleClick.bind(this, &FolderFrame::clickReceiver);
+	_grid->setTable(&_tableReceivers);
+	_top->Add(_toolReceiver, 1, 1, 0, true);
+	_top->Add(_grid, 0, 4096, 1, false);
+	_top->Add(_tabset, 1, 1, 0, true);
+	_top->reflow();
+}
+
+void FolderFrame::clickHome(Button*)
+{
+	MessageBox(_T("Go Home!"), _T("Home"), MB_ICONINFORMATION|MB_OK);
+}
+
+void FolderFrame::clickSystemMinus(Button*)
+{
+	std::vector<Model::System*> list;
+	_factory._folder.Systems.getSelected(list);
+	_factory._folder.Systems.clearSelect();
+	for (size_t i = 0; i < list.size(); i++)
 	{
-		_top->clear();
-		_list->clear();
-		_list->setItems(&_serialSet);
-		_top->Add(_tools, 1, 1, 0, true);
-		_top->Add(_list, 0, 4096, 1, false);
-		_top->Add(_tabset, 1, 1, 0, true);
-		_top->reflow();
+		delete list[i];
 	}
 }
 
-void FolderFrame::sound(Button*, bool up)
+void FolderFrame::clickSystemPlus(Button*)
 {
-	if (up)
+	_factory.activateSystem();
+}
+
+void FolderFrame::clickSystemInspect(Button*)
+{
+	std::vector<Model::System*> list;
+	_factory._folder.Systems.getSelected(list);
+	_factory.activate(list);
+}
+
+void FolderFrame::clickReceiverMinus(Button*)
+{
+	std::vector<Receiver*> list;
+	_receivers.getSelected(list);
+	_receivers.clearSelect();
+	for (size_t i = 0; i < list.size(); i++)
 	{
-		_top->clear();
-		_list->setItems(&_soundSet);
-		_top->Add(_tools, 1, 1, 0, true);
-		_top->Add(_list, 0, 4096, 1, false);
-		_top->Add(_tabset, 1, 1, 0, true);
-		_top->reflow();
+		delete list[i];
 	}
 }
 
-void FolderFrame::clickSystems(Button*, bool up)
+void FolderFrame::clickReceiverPlus(Button*)
 {
-	if (up)
-	{
-		_top->clear();
-		_grid->DoubleClick.bind(this, &FolderFrame::clickSystem);
-		_grid->setTable(&_tableSystems);
-		_top->Add(_tools, 1, 1, 0, true);
-		_top->Add(_grid, 0, 4096, 1, false);
-		_top->Add(_tabset, 1, 1, 0, true);
-		_top->reflow();
-	}
 }
 
-void FolderFrame::clickReceivers(Button*, bool up)
+void FolderFrame::clickReceiverInspect(Button*)
 {
-	if (up)
-	{
-		_top->clear();
-		_grid->DoubleClick.bind(this, &FolderFrame::clickReceiver);
-		_grid->setTable(&_tableReceivers);
-		_top->Add(_tools, 1, 1, 0, true);
-		_top->Add(_grid, 0, 4096, 1, false);
-		_top->Add(_tabset, 1, 1, 0, true);
-		_top->reflow();
-	}
+	std::vector<Receiver*> list;
+	//_set.at(0)->Receivers.getSelected(list);
+	//_factory.activate(list);
 }
 
-void FolderFrame::clickHome(Button*, bool up)
+void FolderFrame::clickAbout(Button*)
 {
-	if (up)
-		MessageBox(_T("Go Home!"), _T("Home"), MB_ICONINFORMATION|MB_OK);
+	MessageBox(_T("Copyright 2012"), _T("About Demo"), MB_ICONQUESTION|MB_OK);
 }
 
-void FolderFrame::clickAbout(Button*, bool up)
+void FolderFrame::clickRefresh(Button*)
 {
-	if (up)
-		MessageBox(_T("Copyright 2012"), _T("About Demo"), MB_ICONQUESTION|MB_OK);
+	Invalidate(FALSE);
 }
 
-void FolderFrame::clickRefresh(Button*, bool up)
+void FolderFrame::clickClear(Button*)
 {
-	if (up)
-		Invalidate(FALSE);
+	_grid->clearSelect();
 }
 
-void FolderFrame::clickClear(Button*, bool up)
+void FolderFrame::clickEdit(Button*)
 {
-	if (up)
-		_grid->clearSelect();
-}
-
-void FolderFrame::clickTheme(Button*, bool up)
-{
-	if (up)
-	{
-		_top->clear();
-		_list->setItems(&_themeSet);
-		_top->Add(_tools, 1, 1, 0, true);
-		_top->Add(_list, 0, 4096, 1, false);
-		_top->Add(_tabset, 1, 1, 0, true);
-		_top->reflow();
-	}
+	bool toggle = _grid->getEnable();
+	_grid->setEnable(!toggle);
 }
 
 bool FolderFrame::Create(RECT rect)
 {
-	return Window::Create(NULL, rect, _T("Demo"), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
+	return Window::Create(NULL, rect, _T("Demo"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW) != NULL;
 }

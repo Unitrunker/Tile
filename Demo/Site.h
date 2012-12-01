@@ -1,6 +1,7 @@
 #include "../Tile/Theme.h"
 #include "../Tile/ThemeSet.h"
 #include "../Tile/Tab.h"
+#include "../Tile/Button.h"
 #include "../WTL/Frame.h"
 #include "../Tile/Grid.h"
 #include "../Tile/List.h"
@@ -28,13 +29,19 @@ private:
 	Site& operator = (const Site &never);
 };
 
-struct SiteSet : public SetT<Model::Site>
+struct SiteSet : public SetFollowT<Model::Site>
 {
 	SiteSet(Theme&);
+	bool getCaption(string_t &label) const;
+	void setAdd(bool);
+	bool getAdd() const;
 private:
-	MemberAccessPtr<Model::Site, Model::site_t> _site;
-	MemberAccessPtr<Model::Site, time_t> _first;
-	MemberAccessPtr<Model::Site, time_t> _last;
+	Reflect<Model::Site, Model::site_t> _site;
+	Reflect<Model::Site, time_t> _first;
+	Reflect<Model::Site, time_t> _last;
+	Reflect<Model::Site, string_t> Label;
+	IControl* _primary;
+	bool _add;
 	Site Site;
 	Time First;
 	Time Last;
@@ -42,22 +49,34 @@ private:
 
 struct SiteFrame : public Window
 {
+	SiteFrame(Factory& factory, Model::System *system);
 	SiteFrame(Factory& factory, Model::Site *site);
+	SiteFrame(Factory& factory, std::vector<Model::Site *> &list);
 	virtual ~SiteFrame();
 	bool Create(RECT rect);
+
+	SiteSet _set;
 private:
 	Pane *_top;
-	Tab *_tools;
-	Tab *_tabset;
+	Pane *_tools;
+	Pane *_tabset;
 	Grid *_grid;
 	List *_list;
-	Model::Site *_site;
-	SiteSet _set;
 	Factory& _factory;
 
-	void clickHome(Button *, bool up);
-	void activateInfo(Button *, bool up);
-	void activateChannels(Button *, bool up);
+	void inside();
+	void remove();
+	void clickHome(Button *);
+	void clickEdit(Button *);
+	void clickPlus(Button *);
+	void clickMinus(Button *);
+	void clickInspect(Button *);
+	void clickRefresh(Button *);
+	void clickClear(Button *);
+	void clickCommit(Button *);
+	void activateInfo(Tab*);
+	void activateChannels(Tab*);
+	void activateHistory(Tab*);
 
 	void activateChannelPopup(Grid *, size_t row, size_t col);
 

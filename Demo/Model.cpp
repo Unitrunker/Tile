@@ -119,3 +119,28 @@ System *Model::Folder::newSystem(network_t network, bool bAdd)
 
 	return p;
 }
+
+Model::Channel::~Channel()
+{
+	onRemove(this);
+}
+
+Model::Group::~Group()
+{
+	onRemove(this);
+}
+
+Model::User::~User()
+{
+	onRemove(this);
+}
+
+Model::Site::~Site()
+{
+	onRemove(this);
+}
+
+Model::System::~System()
+{
+	onRemove(this);
+}

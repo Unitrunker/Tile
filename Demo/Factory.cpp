@@ -7,6 +7,21 @@
 #include "Folder.h"
 #include "Receiver.h"
 
+static void Center(RECT &rect)
+{
+	RECT desktop = {0};
+	HWND hDT = GetDesktopWindow();
+	GetWindowRect(hDT, &desktop);
+	rect.bottom -= rect.top;
+	rect.right -= rect.left;
+	rect.left = 0;
+	rect.top = 0;
+	rect.top = (desktop.bottom - rect.bottom) / 2;
+	rect.left = (desktop.right - rect.right) / 2;
+	rect.bottom += rect.top;
+	rect.right += rect.left;
+}
+
 Factory::Factory() : _frame(NULL)
 {
 	time_t now = 0;
@@ -77,6 +92,7 @@ bool Factory::activate(Model::Channel *channel)
 	else
 	{
 		RECT rect = {200, 200, 840, 680};
+		Center(rect);
 		ChannelFrame *frame = new ChannelFrame(*this, channel);
 		if ( frame->Create(rect) )
 			_mapChannels[channel] = frame;
@@ -84,6 +100,23 @@ bool Factory::activate(Model::Channel *channel)
 			delete frame;
 	}
 	return true;
+}
+
+bool Factory::activate(std::vector<Model::Channel *> &list)
+{
+	if (list.size() == 0)
+		return false;
+
+	if (list.size() == 1)
+		return activate(list[0]);
+
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	ChannelFrame *frame = new ChannelFrame(*this, list);
+	bool bOK = frame->Create(rect);
+	if (!bOK)
+		delete frame;
+	return bOK;
 }
 
 bool Factory::deactivate(Model::Channel *channel)
@@ -109,6 +142,7 @@ bool Factory::activate(Model::User *user)
 	else
 	{
 		RECT rect = {200, 200, 840, 680};
+		Center(rect);
 		UserFrame *frame = new UserFrame(*this, user);
 		if ( frame->Create(rect) )
 			_mapUsers[user] = frame;
@@ -116,6 +150,23 @@ bool Factory::activate(Model::User *user)
 			delete frame;
 	}
 	return true;
+}
+
+bool Factory::activate(std::vector<Model::User *> &list)
+{
+	if (list.size() == 0)
+		return false;
+
+	if (list.size() == 1)
+		return activate(list[0]);
+
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	UserFrame *frame = new UserFrame(*this, list);
+	bool bOK = frame->Create(rect);
+	if (!bOK)
+		delete frame;
+	return bOK;
 }
 
 bool Factory::deactivate(Model::User *user)
@@ -141,6 +192,7 @@ bool Factory::activate(Model::Group *group)
 	else
 	{
 		RECT rect = {200, 200, 840, 680};
+		Center(rect);
 		GroupFrame *frame = new GroupFrame(*this, group);
 		if ( frame->Create(rect) )
 			_mapGroups[group] = frame;
@@ -148,6 +200,23 @@ bool Factory::activate(Model::Group *group)
 			delete frame;
 	}
 	return true;
+}
+
+bool Factory::activate(std::vector<Model::Group *> &list)
+{
+	if (list.size() == 0)
+		return false;
+
+	if (list.size() == 1)
+		return activate(list[0]);
+
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	GroupFrame *frame = new GroupFrame(*this, list);
+	bool bOK = frame->Create(rect);
+	if (!bOK)
+		delete frame;
+	return bOK;
 }
 
 bool Factory::deactivate(Model::Group *group)
@@ -173,6 +242,7 @@ bool Factory::activate(Model::Site *site)
 	else
 	{
 		RECT rect = {200, 200, 840, 680};
+		Center(rect);
 		SiteFrame *frame = new SiteFrame(*this, site);
 		if ( frame->Create(rect) )
 			_mapSites[site] = frame;
@@ -180,6 +250,23 @@ bool Factory::activate(Model::Site *site)
 			delete frame;
 	}
 	return true;
+}
+
+bool Factory::activate(std::vector<Model::Site *> &list)
+{
+	if (list.size() == 0)
+		return false;
+
+	if (list.size() == 1)
+		return activate(list[0]);
+
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	SiteFrame *frame = new SiteFrame(*this, list);
+	bool bOK = frame->Create(rect);
+	if (!bOK)
+		delete frame;
+	return bOK;
 }
 
 bool Factory::deactivate(Model::Site *site)
@@ -205,6 +292,7 @@ bool Factory::activate(Model::System *system)
 	else
 	{
 		RECT rect = {200, 200, 840, 680};
+		Center(rect);
 		SystemFrame *frame = new SystemFrame(*this, system);
 		if ( frame->Create(rect) )
 			_mapSystems[system] = frame;
@@ -212,6 +300,103 @@ bool Factory::activate(Model::System *system)
 			delete frame;
 	}
 	return true;
+}
+
+bool Factory::activate(std::vector<Model::System *> &list)
+{
+	if (list.size() == 0)
+		return false;
+
+	if (list.size() == 1)
+		return activate(list[0]);
+
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	SystemFrame *frame = new SystemFrame(*this, list);
+	bool bOK = frame->Create(rect);
+	if (!bOK)
+		delete frame;
+	return bOK;
+}
+
+// Activate a new, blank group that has no known identity.
+bool Factory::activateChannel(Model::Site *site)
+{
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	ChannelFrame *frame = new ChannelFrame(*this, site);
+	if ( frame->Create(rect) )
+	{
+		Model::Channel *channel = frame->_set.at(0);
+		_mapChannels[channel] = frame;
+		return true;
+	}
+	delete frame;
+	return false;
+}
+
+// Activate a new, blank group that has no known identity.
+bool Factory::activateGroup(Model::System *system)
+{
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	GroupFrame *frame = new GroupFrame(*this, system);
+	if ( frame->Create(rect) )
+	{
+		Model::Group *group = frame->_set.at(0);
+		_mapGroups[group] = frame;
+		return true;
+	}
+	delete frame;
+	return false;
+}
+
+// Activate a new, blank user that has no known identity.
+bool Factory::activateUser(Model::System *system)
+{
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	UserFrame *frame = new UserFrame(*this, system);
+	if ( frame->Create(rect) )
+	{
+		Model::User *user = frame->_set.at(0);
+		_mapUsers[user] = frame;
+		return true;
+	}
+	delete frame;
+	return false;
+}
+
+// Activate a new, blank site that has no known identity.
+bool Factory::activateSite(Model::System *system)
+{
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	SiteFrame *frame = new SiteFrame(*this, system);
+	if ( frame->Create(rect) )
+	{
+		Model::Site *site = frame->_set.at(0);
+		_mapSites[site] = frame;
+		return true;
+	}
+	delete frame;
+	return false;
+}
+
+// Activate a new, blank system that has no known identity.
+bool Factory::activateSystem()
+{
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	SystemFrame *frame = new SystemFrame(*this);
+	if ( frame->Create(rect) )
+	{
+		Model::System *system = frame->_set.at(0);
+		_mapSystems[system] = frame;
+		return true;
+	}
+	delete frame;
+	return false;
 }
 
 bool Factory::deactivate(Model::System *system)
@@ -236,7 +421,8 @@ bool Factory::activate(Receiver *receiver)
 	}
 	else
 	{
-		RECT rect = {200, 200, 840, 680};
+		RECT rect = {0, 0, 480, 320};
+		Center(rect);
 		ReceiverFrame *frame = new ReceiverFrame(*this, receiver);
 		if ( frame->Create(rect) )
 			_mapReceivers[receiver] = frame;
@@ -244,6 +430,23 @@ bool Factory::activate(Receiver *receiver)
 			delete frame;
 	}
 	return true;
+}
+
+bool Factory::activate(std::vector<Receiver *> &list)
+{
+	if (list.size() == 0)
+		return false;
+
+	if (list.size() == 1)
+		return activate(list[0]);
+
+	RECT rect = {0, 0, 480, 320};
+	Center(rect);
+	ReceiverFrame *frame = new ReceiverFrame(*this, list);
+	bool bOK = frame->Create(rect);
+	if (!bOK)
+		delete frame;
+	return bOK;
 }
 
 bool Factory::deactivate(Receiver *receiver)
@@ -262,15 +465,10 @@ bool Factory::activate(int nCmdShow)
 	if (_frame == NULL)
 	{
 		RECT rect = {0, 0, 480, 400};
+		Center(rect);
 		_frame = new FolderFrame(*this);
 		bool bOK = _frame->Create(rect);
-		if (bOK)
-		{
-			_frame->CenterWindow();
-			_frame->ShowWindow(nCmdShow);
-			return true;
-		}
-		else
+		if (!bOK)
 		{
 			// something bad happened.
 			TCHAR log[64] = {0};
@@ -280,7 +478,7 @@ bool Factory::activate(int nCmdShow)
 			return false;
 		}
 	}
-	_frame->ShowWindow(SW_SHOW);
+	_frame->ShowWindow(nCmdShow);
 	_frame->SetActiveWindow();
 	return true;
 }

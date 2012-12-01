@@ -13,17 +13,21 @@ struct Sound
 	unsigned char _channels;	// number of channels eg. 1 = monom 2 = stereo.
 	unsigned char _channel;		// selected audio channel (0=left)
 	unsigned char _bits;		// bits per sample eg. 8/16/32
+
+	Sound(const Sound &copy);
+	Sound(unsigned long rate, unsigned char channels, unsigned char bits);
+	Sound();
 };
 
 struct SoundSet : public Tiles::SetT<Sound>
 {
 	SoundSet(Tiles::Theme&);
 private:
-	Tiles::MemberAccessPtr<Sound, unsigned short> _port;
-	Tiles::MemberAccessPtr<Sound, unsigned long> _rate;
-	Tiles::MemberAccessPtr<Sound, unsigned char> _channels;
-	Tiles::MemberAccessPtr<Sound, unsigned char> _channel;
-	Tiles::MemberAccessPtr<Sound, unsigned char> _bits;
+	Tiles::MemberVectorAccess<Sound, unsigned short> _port;
+	Tiles::MemberVectorAccess<Sound, unsigned long> _rate;
+	Tiles::MemberVectorAccess<Sound, unsigned char> _channels;
+	Tiles::MemberVectorAccess<Sound, unsigned char> _channel;
+	Tiles::MemberVectorAccess<Sound, unsigned char> _bits;
 
 	Tiles::Adapter<long, unsigned long> Rate;
 	Tiles::Adapter<long, unsigned char> Channels;

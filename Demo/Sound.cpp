@@ -8,9 +8,22 @@ Copyright © 2012 Rick Parrish
 
 using namespace Tiles;
 
+Sound::Sound(const Sound &copy) : 
+	_port(copy._port), _rate(copy._rate), _channels(copy._channels), _channel(copy._channel), _bits(copy._bits)
+{
+}
+
+Sound::Sound(unsigned long rate, unsigned char channels, unsigned char bits) :
+	_port((unsigned short)-1), _rate(rate), _channels(channels), _channel(0), _bits(bits)
+{
+}
+
+Sound::Sound() : _port((unsigned short)-1), _rate(96000), _channels(1), _channel(0), _bits(16)
+{
+}
+
 // Audio recording device
 SoundSet::SoundSet(Theme &theme) : 
-	SetT<Sound>(NULL),
 	_port(*this, &Sound::_port),
 	_rate(*this, &Sound::_rate),
 	_channels(*this, &Sound::_channels),

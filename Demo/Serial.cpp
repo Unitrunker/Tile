@@ -8,14 +8,28 @@ Copyright © 2012 Rick Parrish
 
 using namespace Tiles;
 
+Serial::Serial(const Serial &copy) : 
+	_port(copy._port), _rate(copy._rate), _data(copy._data), _stop(copy._stop), _parity(copy._parity)
+{
+}
+
+Serial::Serial(unsigned long rate, unsigned char data, unsigned char stop, unsigned char parity) : 
+	_port(0), _rate(rate), _data(data), _stop(stop), _parity(parity)
+{
+}
+
+Serial::Serial() : _port(0), _rate(115200), _data(8), _stop(1), _parity(0)
+{
+}
+
 // Serial RS232 or RS485 communication device
 SerialSet::SerialSet(Theme &theme) :
-	SetT<Serial>(NULL),
 	_port(*this, &Serial::_port),
 	_rate(*this, &Serial::_rate),
 	_data(*this, &Serial::_data),
 	_stop(*this, &Serial::_stop),
 	_parity(*this, &Serial::_parity),
+	Port(&_port),
 	Rate(&_rate),
 	Data(&_data),
 	Stop(&_stop),
@@ -25,6 +39,14 @@ SerialSet::SerialSet(Theme &theme) :
 	Property *prop = NULL;
 	Theme::Font textFont = {Theme::eText, theme.Text};
 	std::vector<Combo::Item> list;
+
+	// TODO: replace this with real list of actual serial ports.
+	static Combo::Item listPorts[] = 
+	{
+		{_T("COM1"), 1},
+		{_T("COM2"), 2},
+		{_T("COM4"), 4}
+	};
 
 	static Combo::Item listRates[] = 
 	{
@@ -57,27 +79,23 @@ SerialSet::SerialSet(Theme &theme) :
 
 	section = new Section(_T("Serial Port"), _T("Serial Communications Port"));
 
-	for (size_t i = 0; i < _countof(listRates); i++)
-		list.push_back(listRates[i]);
-	prop = new Property(_T("Rate"), _T("Bit rate"), new Combo(0, theme, textFont, list, &Rate) );
+	prop = new Property(_T("Port"), _T("Communication port"), new Combo(0, theme, textFont, listPorts, _countof(listPorts), &Port) );
 	section->Items.push_back(prop);
 	list.clear();
 
-	for (size_t i = 0; i < _countof(listData); i++)
-		list.push_back(listData[i]);
-	prop = new Property(_T("Data"), _T("Data bits per character"), new Combo(0, theme, textFont, list, &Data) );
+	prop = new Property(_T("Rate"), _T("Bit rate"), new Combo(0, theme, textFont, listRates, _countof(listRates), &Rate) );
 	section->Items.push_back(prop);
 	list.clear();
 
-	for (size_t i = 0; i < _countof(listStop); i++)
-		list.push_back(listStop[i]);
-	prop = new Property(_T("Stop"), _T("Stop bits"), new Combo(0, theme, textFont, list, &Stop) );
+	prop = new Property(_T("Data"), _T("Data bits per character"), new Combo(0, theme, textFont, listData, _countof(listData), &Data) );
 	section->Items.push_back(prop);
 	list.clear();
 
-	for (size_t i = 0; i < _countof(listParity); i++)
-		list.push_back(listParity[i]);
-	prop = new Property(_T("Parity"), _T("Parity bit"), new Combo(0, theme, textFont, list, &Parity) );
+	prop = new Property(_T("Stop"), _T("Stop bits"), new Combo(0, theme, textFont, listStop, _countof(listStop), &Stop) );
+	section->Items.push_back(prop);
+	list.clear();
+
+	prop = new Property(_T("Parity"), _T("Parity bit"), new Combo(0, theme, textFont, listParity, _countof(listParity), &Parity) );
 	section->Items.push_back(prop);
 	list.clear();
 

@@ -11,8 +11,37 @@
 Copyright © 2012 Rick Parrish
 */
 
+Receiver::~Receiver()
+{
+	onRemove(this);
+}
+
+void Receiver::broadcast(const char *)
+{
+	onChange(this);
+}
+
+Tiles::Set *::Control::getUI(Theme &theme)
+{
+	if (_set == NULL)
+	{
+		_set = new SerialSet(theme);
+		_set->setObject(&_serial);
+	}
+	return _set;
+}
+
+Tiles::Set *SignalVCO::getUI(Theme &theme)
+{
+	if (_set == NULL)
+	{
+		_set = new SoundSet(theme);
+		_set->setObject(&_sound);
+	}
+	return _set;
+}
+
 ReceiverSet::ReceiverSet(Theme& theme) : 
-	SetT<Receiver>(NULL),
 #pragma warning(disable:4355)
 	Label(*this, &Receiver::_label),
 	Active(*this, &Receiver::_active)
@@ -31,81 +60,128 @@ ReceiverSet::ReceiverSet(Theme& theme) :
 	Add(section);
 }
 
-ReceiverFrame::ReceiverFrame(Factory &factory, Receiver *receiver) : 
-	Window(factory._theme), _factory(factory), _receiver(receiver), _serialSet(factory._theme), _soundSet(factory._theme)
+bool ReceiverSet::getCaption(string_t &label) const
 {
-	Theme &theme = factory._theme;
+	if (size() == 1)
+	{
+		Receiver *receiver = at(0);
+		label = receiver->_label;
+	}
+	else
+	{
+		TCHAR caption[32] = {0};
+		wsprintf(caption, _T("%d Receivers"), size());
+		label = caption;
+	}
+	return true;
+}
+
+ReceiverFrame::ReceiverFrame(Factory &factory, Receiver *receiver) : 
+	Window(factory._theme), _factory(factory), _set(factory._theme)
+{
+	_set.setObject(receiver);
+	inside();
+}
+
+ReceiverFrame::ReceiverFrame(Factory &factory, std::vector<Receiver *> &list) : 
+	Window(factory._theme), _factory(factory), _set(factory._theme)
+{
+	_set.setObjects(list);
+	inside();
+}
+
+void ReceiverFrame::inside()
+{
+	Theme &theme = _factory._theme;
 	theme.setHeight(14);
+	Font webdings(_T("Webdings"), 24, 1);
+	Theme::Font font_webdings = { Theme::eDefault, webdings };
+	Theme::Font text = {Theme::eText, theme.Text};
+	Button* button = NULL;
+	Tab* tab = NULL;
 
-	_serial._data = 8;
-	_serial._parity = 0;
-	_serial._port = 1;
-	_serial._rate = 115200;
-	_serial._stop = 1;
-
-	_sound._channel = 0;
-	_sound._bits = 16;
-	_sound._channels = 1;
-	_sound._port = 0;
-	_sound._rate = 96000;
-
-	_serialSet.setValue(&_serial);
-	_soundSet.setValue(&_sound);
-
-	sophia::delegate2<void, Button*, bool> click;
+	_set.Remove.bind(this, &ReceiverFrame::remove);
 
 	_top = new Pane(0, theme, eDown);
-	_tabset = new Tab(0, theme);
-	_tools = new Tab(0, theme);
+	_tabset = new Pane(0, theme, eRight);
+	_tools = new Pane(0, theme, eRight);
 	_list = new List(0, theme);
 
-	// receiver accepts some form of control?
-	if (_receiver->_control)
-	{
-		// assume connection is via serial port.
-		click.bind(this, &ReceiverFrame::serial);
-		_tabset->Add(_T("Serial"), click);
-	}
+	Theme::Color color(Theme::eToolOver, theme.ToolOver);
+	_tabset->setLineColor(color);
+	_tools->setLineColor(color);
 
-	for (size_t i = 0; i < _receiver->_VCOs.size(); i++)
+	tab = new Tab(0, theme, text, _T("Info"));
+	tab->Click.bind(this, &ReceiverFrame::clickInfo);
+	_tabset->Add(tab);
+
+	// receiver accepts some form of control?
+	if (_set.size() == 1)
 	{
-		static const TCHAR * labels[] = {_T("VCO A"), _T("VCO B")};
-		VCO *vco = _receiver->_VCOs[i];
-		if (vco->_signal)
+		Receiver *receiver = _set.at(0);
+		if (receiver->_control)
 		{
-			click.bind(this, &ReceiverFrame::sound);
-			_tabset->Add(labels[i], click);
+			tab = new Tab(0, theme, text, _T("Serial"));
+			tab->Click.bind(this, &ReceiverFrame::clickControl);
+			_tabset->Add(tab);
+		}
+
+		for (size_t i = 0; i < receiver->_VCOs.size(); i++)
+		{
+			static const TCHAR * labels[] = {_T("VCO A"), _T("VCO B")};
+			VCO *vco = receiver->_VCOs[i];
+			if (vco->_signal)
+			{
+				// get index to last control
+				size_t last = _tabset->getControlCount();
+				tab = new Tab(0, theme, text, labels[i]);
+				tab->Click.bind(this, &ReceiverFrame::clickVCO);
+				_tabset->Add(tab);
+
+				// get last control (just added).
+				IControl *control = _tabset->getControl(last);
+				// map control to vco. See clickVCO() below.
+				_map[control] = vco;
+			}
 		}
 	}
 
-	click.clear();
+	//Font segoe(_T("Segoe UI Symbol"), 24, 0);
+	//Theme::Font font_segoe = { Theme::eDefault, segoe };
 
-	Font webdings(_T("Webdings"), 24, 1);
-	Theme::Font font_webdings = { Theme::eDefault, webdings };
-	Font segoe(_T("Segoe UI Symbol"), 24, 0);
-	Theme::Font font_segoe = { Theme::eDefault, segoe };
+	//_tools->Add(L"\x231A", font_segoe, click);	// watch
+	//_tools->Add(L"\x231B", font_segoe, click);	// hourglass
+	//_tools->Add(L"\x2328", font_segoe, click);	// keyboard
+	//_tools->Add(L"\x2388", font_segoe, click);	// Helm
+	//_tools->Add(L"\x2622", font_segoe, click);	// radioactive
+	//_tools->Add(L"\x2623", font_segoe, click);	// biohazard
 
-	_tools->Add(L"\x231A", font_segoe, click); // watch
-	_tools->Add(L"\x231B", font_segoe, click); // hourglass
-	_tools->Add(L"\x2328", font_segoe, click); // keyboard
-	_tools->Add(L"\x2388", font_segoe, click); // Helm
-	_tools->Add(L"\x2622", font_segoe, click); // radioactive
-	_tools->Add(L"\x2623", font_segoe, click); // biohazard
+	button = new Button(0, theme, font_webdings, _T("\x48"));
+	button->Click.bind(this, &ReceiverFrame::clickHome);
+	button->setTip(_T("Home"));
+	_tools->Add(button);
 
-	click.bind(this, &ReceiverFrame::clickHome);
-	_tools->Add(L"\x48", font_webdings, click); // house
-	click.clear();
-	_tools->Add(L"\x22", font_webdings, click); // web
-	_tools->Add(L"\x40", font_webdings, click); // tools
-	click.bind(this, &ReceiverFrame::clickRefresh);
-	_tools->Add(L"\x71", font_webdings, click); // refresh
-	click.clear();
-	_tools->Add(L"\x72", font_webdings, click); // X
-	click.bind(this, &ReceiverFrame::clickAbout);
-	_tools->Add(L"\x73", font_webdings, click); // ?
-	click.clear();
+	button = new Button(0, theme, font_webdings, _T("\x34"));
+	button->Click.bind(this, &ReceiverFrame::clickStart);
+	button->setTip(_T("Start"));
+	_tools->Add(button);
 
-	_list->setItems(&_serialSet);
+	button = new Button(0, theme, font_webdings, _T("\x3C"));
+	button->Click.bind(this, &ReceiverFrame::clickStop);
+	button->setTip(_T("Stop"));
+	_tools->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x71"));
+	button->Click.bind(this, &ReceiverFrame::clickRefresh);
+	button->setTip(_T("Start"));
+	_tools->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x72"));
+	button->Click.bind(this, &ReceiverFrame::clickDelete);
+	button->setTip(_T("Stop"));
+	_tools->Add(button);
+
+	_list->setItems(&_set);
 	_top->Add(_tools, 1, 1, 0, true);
 	_top->Add(_list, 0, 4096, 1, false);
 	_top->Add(_tabset, 1, 1, 0, true);
@@ -115,16 +191,41 @@ ReceiverFrame::ReceiverFrame(Factory &factory, Receiver *receiver) :
 
 ReceiverFrame::~ReceiverFrame()
 {
-	_factory.deactivate(_receiver);
+	if (_set.size() == 1)
+		_factory.deactivate(_set.at(0));
 }
 
-void ReceiverFrame::serial(Button*, bool bDown)
+void ReceiverFrame::clickInfo(Tab*)
 {
-	if (!bDown)
+	_top->clear();
+	_list->clear();
+	_list->setItems(&_set);
+	_top->Add(_tools, 1, 1, 0, true);
+	_top->Add(_list, 0, 4096, 1, false);
+	_top->Add(_tabset, 1, 1, 0, true);
+	_top->reflow();
+}
+
+void ReceiverFrame::clickControl(Tab*)
+{
+	_top->clear();
+	_list->clear();
+	Set *set = _set.at(0)->getUI(_factory._theme);
+	_list->setItems(set);
+	_top->Add(_tools, 1, 1, 0, true);
+	_top->Add(_list, 0, 4096, 1, false);
+	_top->Add(_tabset, 1, 1, 0, true);
+	_top->reflow();
+}
+
+void ReceiverFrame::clickVCO(Tab* button)
+{
+	_top->clear();
+	std::map<IControl*, VCO*>::iterator it = _map.find(button);
+	if (it != _map.end())
 	{
-		_top->clear();
-		_list->clear();
-		_list->setItems(&_serialSet);
+		Set *set = it->second->getUI(_factory._theme);
+		_list->setItems(set);
 		_top->Add(_tools, 1, 1, 0, true);
 		_top->Add(_list, 0, 4096, 1, false);
 		_top->Add(_tabset, 1, 1, 0, true);
@@ -132,37 +233,48 @@ void ReceiverFrame::serial(Button*, bool bDown)
 	}
 }
 
-void ReceiverFrame::sound(Button*, bool bDown)
+void ReceiverFrame::clickHome(Button*)
 {
-	if (!bDown)
+	_factory.activate(SW_SHOW);
+}
+
+void ReceiverFrame::clickRefresh(Button*)
+{
+	Invalidate(FALSE);
+}
+
+void ReceiverFrame::clickDelete(Button*)
+{
+	if (_set.size() == 1)
 	{
-		_top->clear();
-		_list->setItems(&_soundSet);
-		_top->Add(_tools, 1, 1, 0, true);
-		_top->Add(_list, 0, 4096, 1, false);
-		_top->Add(_tabset, 1, 1, 0, true);
-		_top->reflow();
+		int id = MessageBox(_T("Do you want to delete this receiver?"), 
+			_T("Confirm Delete Receiver"), MB_ICONEXCLAMATION|MB_YESNO);
+		if (id == IDYES)
+		{
+			Receiver *kill = _set.at(0);
+			delete kill;
+		}
 	}
 }
 
-void ReceiverFrame::clickHome(Button*, bool up)
+void ReceiverFrame::clickStart(Button*)
 {
-	if (up)
-		_factory.activate(SW_SHOW);
+	_set.Active.setValue(true);
 }
 
-void ReceiverFrame::clickRefresh(Button*, bool up)
+void ReceiverFrame::clickStop(Button*)
 {
-	if (up)
-		Invalidate(FALSE);
+	_set.Active.setValue(false);
 }
 
-void ReceiverFrame::clickAbout(Button*, bool)
+void ReceiverFrame::remove()
 {
-	// TODO
+	DestroyWindow();
 }
 
 bool ReceiverFrame::Create(RECT &rect)
 {
-	return Window::Create(NULL, rect, _receiver->_label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
+	string_t label;
+	_set.getCaption(label);
+	return Window::Create(NULL, rect, label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
 }

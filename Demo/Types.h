@@ -13,8 +13,16 @@ typedef unsigned short channel_t;
 typedef unsigned short site_t;
 typedef unsigned long frequency_t;
 typedef unsigned long hit_t;
+typedef unsigned char rank_t;
 
 enum {Unknown = 0};
+
+enum 
+{
+	None = 0, Blink = 1, Warble = 2, Whoop = 3
+};
+
+typedef unsigned char alarm_t;
 
 // service types for voice.
 enum

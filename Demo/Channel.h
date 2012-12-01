@@ -1,9 +1,10 @@
 #include "../Tile/Theme.h"
 #include "../Tile/ThemeSet.h"
-#include "../Tile/Tab.h"
 #include "../WTL/Frame.h"
 #include "../Tile/Grid.h"
 #include "../Tile/List.h"
+#include "../Tile/Button.h"
+#include "../Tile/Tab.h"
 #include "Model.h"
 #include "Factory.h"
 
@@ -27,37 +28,48 @@ private:
 	LCN& operator = (const LCN &never);
 };
 
-struct ChannelSet : public SetT<Model::Channel>
+struct ChannelSet : public SetFollowT<Model::Channel>
 {
 	ChannelSet(Theme&);
+	bool getCaption(string_t &label) const;
+	void setAdd(bool);
+	bool getAdd() const;
 private:
-	MemberAccessPtr<Model::Channel, Model::channel_t> _lcn;
-	MemberAccessPtr<Model::Channel, Model::frequency_t> _frequency;
-	MemberAccessPtr<Model::Channel, time_t> _first;
-	MemberAccessPtr<Model::Channel, time_t> _last;
+	Reflect<Model::Channel, Model::channel_t> _lcn;
+	Reflect<Model::Channel, Model::frequency_t> _frequency;
+	Reflect<Model::Channel, time_t> _first;
+	Reflect<Model::Channel, time_t> _last;
+	Reflect<Model::Channel, string_t> Label;
+	Reflect<Model::Channel, bool> Control;
 	LCN LCN;
 	UInteger Frequency;
 	Time First;
 	Time Last;
+	IControl* _primary;
+	bool _add;
 };
 
 struct ChannelFrame : public Window
 {
+	ChannelFrame(Factory& factory, Model::Site *site);
 	ChannelFrame(Factory& factory, Model::Channel *channel);
+	ChannelFrame(Factory& factory, std::vector<Model::Channel *> &list);
 	virtual ~ChannelFrame();
 	bool Create(RECT rect);
-private:
-	Pane *_top;
-	Tab *_tools;
-	Tab *_tabset;
-	Grid *_grid;
-	List *_list;
-	Model::Channel *_channel;
 	ChannelSet _set;
+private:
+	Tiles::Pane *_top;
+	Tiles::Pane *_tools;
+	Tiles::Pane *_tabset;
+	Tiles::Grid *_grid;
+	Tiles::List *_list;
 	Factory& _factory;
 
-	void clickHome(Button *, bool up);
-	void activateInfo(Button *, bool up);
-	void activateHistory(Button *, bool up);
+	void inside();
+	void remove();
+	void clickHome(Tiles::Button *);
+	void clickRefresh(Tiles::Button *);
+	void clickCommit(Tiles::Button *);
+	void activateInfo(Tiles::Tab *);
+	void activateHistory(Tiles::Tab *);
 };
-

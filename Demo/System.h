@@ -4,6 +4,7 @@
 #include "../Tile/Grid.h"
 #include "../Tile/List.h"
 #include "../Tile/Tab.h"
+#include "../Tile/Button.h"
 #include "Model.h"
 #include "Site.h"
 #include "Group.h"
@@ -29,47 +30,67 @@ private:
 	Trunk & operator = (const Trunk &never);
 };
 
-struct SystemSet : public SetT<Model::System>
+struct SystemSet : public SetFollowT<Model::System>
 {
 	SystemSet(Theme&);
-
-	virtual bool setValue(Model::System* const &value)
-	{
-		_network.setValue(&value->_network);
-		return SetT<Model::System>::setValue(value);
-	}
+	bool getCaption(string_t &label) const;
+	void setAdd(bool);
+	bool getAdd() const;
 private:
-	Tiles::Value<Model::network_t *> _network;
-	MemberAccessPtr<Model::network_t, unsigned long> _identity;
-	MemberAccessPtr<Model::network_t, Model::trunk_t> _trunk;
-	MemberAccessPtr<Model::System, time_t> _first;
-	MemberAccessPtr<Model::System, time_t> _last;
+	ReflectSubtype<Model::System, Model::network_t, unsigned long> _identity;
+	ReflectSubtype<Model::System, Model::network_t, Model::trunk_t> _trunk;
+	Reflect<Model::System, time_t> _first;
+	Reflect<Model::System, time_t> _last;
+	Reflect<Model::System, string_t> Label;
 	Trunk Trunk;
 	UInteger Network;
 	Time First;
 	Time Last;
+	bool _add;
+	IControl* _primary[2];
 };
 
 struct SystemFrame : public Window
 {
+	SystemFrame(Factory& factory);
 	SystemFrame(Factory& factory, Model::System *system);
+	SystemFrame(Factory& factory, std::vector<Model::System *> &list);
 	virtual ~SystemFrame();
 	bool Create(RECT rect);
+	SystemSet _set;
 private:
 	Pane *_top;
-	Tab *_tools;
-	Tab *_tabset;
+	Pane *_toolInfo;
+	Pane *_toolSite;
+	Pane *_toolGroup;
+	Pane *_toolUser;
+	Pane *_tabset;
 	Grid *_grid;
 	List *_list;
-	Model::System *_system;
-	SystemSet _set;
 	Factory& _factory;
 
-	void clickHome(Button *, bool up);
-	void activateInfo(Button *, bool up);
-	void activateGroups(Button *, bool up);
-	void activateUsers(Button *, bool up);
-	void activateSites(Button *, bool up);
+	void inside();
+	void remove();
+	void clickEdit(Button *);
+
+	void clickSitePlus(Button *);
+	void clickSiteMinus(Button *);
+	void clickSiteInspect(Button *);
+
+	void clickGroupPlus(Button *);
+	void clickGroupMinus(Button *);
+	void clickGroupInspect(Button *);
+
+	void clickUserPlus(Button *);
+	void clickUserMinus(Button *);
+	void clickUserInspect(Button *);
+
+	void clickRefresh(Button *);
+	void clickHome(Button *);
+	void activateInfo(Tab *);
+	void activateGroups(Tab *);
+	void activateUsers(Tab *);
+	void activateSites(Tab *);
 
 	void activateGroupPopup(Grid *, size_t row, size_t col);
 	void activateUserPopup(Grid *, size_t row, size_t col);

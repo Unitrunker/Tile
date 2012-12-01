@@ -32,8 +32,13 @@ struct Channel : Follow<Channel*>
 	time_t _first, _last;
 	Tiles::string_t _label;
 	service_t _service;
+	bool _control;
 
-	Channel(Site *site, channel_t lcn) : _site(site), _LCN(lcn), _hits(0), _first(0), _last(0), _hz(0), _service(0) { };
+	Channel(Site *site, channel_t lcn) : 
+		_site(site), _LCN(lcn), _hits(0), _first(0), _last(0), _hz(0), _service(0), _control(false) { };
+	~Channel();
+
+	void broadcast(const char *) { };
 
 	static bool less(const channel_t &left, const channel_t &right) { return left < right; }
 	static channel_t byLCN(Channel * const p) { return p->_LCN; }
@@ -58,6 +63,9 @@ struct Site : Follow<Site*>
 	Tiles::string_t _label;
 
 	Site(System *system, site_t site) : _system(system), _site(site), _hits(0), _first(0), _last(0) { };
+	~Site();
+
+	void broadcast(const char *) { };
 
 	// factory method.
 	virtual Channel *newChannel(channel_t lcn, bool bAdd);
@@ -80,8 +88,14 @@ struct Group : Follow<Group*>
 	hit_t _hits;
 	time_t _first, _last;
 	Tiles::string_t _label;
+	Tiles::color_t _color;
+	rank_t _rank;
+	alarm_t _alarm;
 
-	Group(System *system, address_t address) : _system(system), _address(address), _hits(0), _first(0), _last(0) { };
+	Group(System *system, address_t address) : _system(system), _address(address), _hits(0), _first(0), _last(0), _color(0x808080), _rank(50), _alarm(0) { };
+	~Group();
+
+	void broadcast(const char *) { };
 
 	static bool less(const address_t &left, const address_t &right) { return left < right; }
 	static address_t byAddress(Group * const p) { return p->_address; }
@@ -101,8 +115,15 @@ struct User : Follow<User*>
 	hit_t _hits;
 	time_t _first, _last;
 	Tiles::string_t _label;
+	Tiles::color_t _color;
+	rank_t _rank;
+	alarm_t _alarm;
+	//Group* _group;
 
-	User(System *system, address_t address) : _system(system), _address(address), _hits(0), _first(0), _last(0) { };
+	User(System *system, address_t address) : _system(system), _address(address), _hits(0), _first(0), _last(0), _color(0x808080), _rank(50), _alarm(0) { };
+	~User();
+
+	void broadcast(const char *) { };
 
 	static bool less(const address_t &left, const address_t &right) { return left < right; }
 	static address_t byAddress(User * const p) { return p->_address; }
@@ -132,6 +153,9 @@ struct System : Follow<System*>
 	Sites Sites;
 
 	System(Folder *folder, network_t network) : _folder(folder), _network(network), _first(0), _last(0) { };
+	~System();
+
+	void broadcast(const char *) { };
 
 	// factory method.
 	virtual Site *newSite(site_t site, bool bAdd);
@@ -149,7 +173,7 @@ struct System : Follow<System*>
 typedef AVL<network_t, System *, System *, network_t::less, System::byNetwork> Systems;
 
 ///
-///
+/// Folder of systems.
 ///
 struct Folder : Follow<Folder*>
 {

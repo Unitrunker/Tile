@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Channel.h"
 #include "../Tile/Edit.h"
+#include "../Tile/Button.h"
+#include "../Tile/Tab.h"
 
 /*
 Copyright © 2012 Rick Parrish
@@ -41,64 +43,141 @@ bool LCN::setValue(const string_t &value)
 }
 
 ChannelSet::ChannelSet(Theme& theme) : 
-	SetT<Model::Channel>(NULL),
 #pragma warning(disable:4355)
 	_first(*this, &Model::Channel::_first),
-	First(_first, Time::eDate),
 	_last(*this, &Model::Channel::_last),
-	Last(_last, Time::eDate),
 	_lcn(*this, &Model::Channel::_LCN),
-	LCN(_lcn, 10),
 	_frequency(*this, &Model::Channel::_hz),
-	Frequency(_frequency, 10)
+	Label(*this, &Model::Channel::_label),
+	Control(*this, &Model::Channel::_control),
 #pragma warning(default:4355)
+	First(_first, Time::eDate),
+	Last(_last, Time::eDate),
+	LCN(_lcn, 10),
+	Frequency(_frequency, 10),
+	_add(false)
 {
 	Section *section = NULL;
 	Property *prop = NULL;
+	Edit *edit = NULL;
 	Theme::Font textFont = {Theme::eText, theme.Text};
 
 	section = new Section(_T("Channel"), _T("Channel"));
-	prop = new Property(_T("LCN"), _T("Channel number"), new Edit(0, theme, textFont, &LCN) );
+
+	edit = new Edit(0, theme, textFont, &LCN);
+	edit->setReadOnly(true);
+	_primary = edit;
+	prop = new Property(_T("LCN"), _T("Channel number"), edit);
 	section->Items.push_back(prop);
-	prop = new Property(_T("Frequency"), _T("Frequency"), new Edit(0, theme, textFont, &Frequency) );
+
+	edit = new Edit(0, theme, textFont, &Frequency);
+	prop = new Property(_T("Frequency"), _T("Frequency"), edit);
 	section->Items.push_back(prop);
-	prop = new Property(_T("First"), _T("First seen"), new Edit(0, theme, textFont, &First) );
+
+	edit = new Edit(0, theme, textFont, &First);
+	edit->setReadOnly(true);
+	prop = new Property(_T("First"), _T("First seen"), edit);
 	section->Items.push_back(prop);
-	prop = new Property(_T("Last"), _T("Last seen"), new Edit(0, theme, textFont, &Last) );
+
+	edit = new Edit(0, theme, textFont, &Last);
+	edit->setReadOnly(true);
+	prop = new Property(_T("Last"), _T("Last seen"), edit);
 	section->Items.push_back(prop);
+
 	Add(section);
 }
 
-ChannelFrame::ChannelFrame(Factory& factory, Model::Channel *channel) : 
-	Window(factory._theme), _factory(factory), _channel(channel), _set(factory._theme)
+bool ChannelSet::getCaption(string_t &label) const
 {
-	Theme &theme = factory._theme;
-	_top = new Pane(0, theme, eDown);
-	_tools = new Tab(0, theme);
-	_tabset = new Tab(0, theme);
+	TCHAR caption[32] = {0};
+	Model::Channel *channel = at(0);
+	wsprintf(caption, _T("Channel %0X"), channel->_LCN);
+	label = caption;
+	return true;
+}
 
-	sophia::delegate2<void, Button*, bool> click;
+// allow or disallow editing of the primary key.
+void ChannelSet::setAdd(bool add)
+{
+	_add = add;
+	_primary->setReadOnly(!add);
+}
+
+// allow or disallow editing of the primary key.
+bool ChannelSet::getAdd() const
+{
+	return _add;
+}
+
+ChannelFrame::ChannelFrame(Factory& factory, Model::Site *site) : 
+	Window(factory._theme), _factory(factory), _set(factory._theme)
+{
+	Model::Channel *channel = new Model::Channel(site, 0);
+	_set.setObject(channel);
+	_set.setAdd(true);
+	inside();
+}
+
+ChannelFrame::ChannelFrame(Factory& factory, Model::Channel *channel) : 
+	Window(factory._theme), _factory(factory), _set(factory._theme)
+{
+	_set.setObject(channel);
+	inside();
+}
+
+ChannelFrame::ChannelFrame(Factory& factory, std::vector<Model::Channel *> &list) : 
+	Window(factory._theme), _factory(factory), _set(factory._theme)
+{
+	_set.setObjects(list);
+	inside();
+}
+
+void ChannelFrame::inside()
+{
+	Theme &theme = _factory._theme;
+	_top = new Pane(0, theme, eDown);
+	_tools = new Pane(0, theme, eRight);
+	_tabset = new Pane(0, theme, eRight);
+	Tab* tab = NULL;
+	Button* button = NULL;
+
+	_set.Remove.bind(this, &ChannelFrame::remove);
+	Theme::Color color(Theme::eToolOver, theme.ToolOver);
+	_tabset->setLineColor(color);
+	_tools->setLineColor(color);
 
 	Font webdings(_T("Webdings"), 24, 1);
 	Theme::Font font_webdings = { Theme::eDefault, webdings };
 	Font segoe(_T("Segoe UI Symbol"), 24, 0);
 	Theme::Font font_segoe = { Theme::eDefault, segoe };
 
-	click.bind(this, &ChannelFrame::clickHome);
-	_tools->Add(_T("\x48"), font_webdings, click);	// home
-	click.clear();
-	_tools->Add(_T("\x270D"), font_segoe, click);	// edit
-	_tools->Add(_T("+"), font_segoe, click);		// plus
-	_tools->Add(_T("-"), font_segoe, click);		// minus
-	_tools->Add(_T("\x4C"), font_webdings, click);	// inspect
-	_tools->Add(_T("\x71"), font_webdings, click);	// refresh
+	button = new Button(0, theme, font_webdings, _T("\x48"));
+	button->Click.bind(this, &ChannelFrame::clickHome);
+	button->setTip(_T("Home"));
+	_tools->Add(tab);
 
-	click.bind(this, &ChannelFrame::activateInfo);
-	_tabset->Add(_T("Info"), click);
-	click.bind(this, &ChannelFrame::activateHistory);
-	_tabset->Add(_T("History"), click);
+	button = new Button(0, theme, font_webdings, _T("\x71"));
+	button->Click.bind(this, &ChannelFrame::clickRefresh);
+	button->setTip(_T("Refresh"));
+	_tools->Add(button);
 
-	_set.setValue(channel);
+	if ( _set.getAdd() )
+	{
+		button = new Button(0, theme, font_segoe, _T("Commit"));
+		button->Click.bind(this, &ChannelFrame::clickCommit);
+		_tools->Add(button);
+	}
+
+	tab = new Tab(0, theme, font_segoe, _T("Info") );
+	tab->Click.bind(this, &ChannelFrame::activateInfo);
+	_tabset->Add(tab);
+
+	if (_set.size() == 1 && !_set.getAdd() )
+	{
+		tab = new Tab(0, theme, font_segoe, _T("History") );
+		tab->Click.bind(this, &ChannelFrame::activateHistory);
+		_tabset->Add(tab);
+	}
 
 	_grid = new Grid(0, theme);
 	_list = new List(0, theme);
@@ -112,46 +191,93 @@ ChannelFrame::ChannelFrame(Factory& factory, Model::Channel *channel) :
 
 ChannelFrame::~ChannelFrame()
 {
-	_factory.deactivate(_channel);
+	if (_set.size() == 1)
+		_factory.deactivate(_set.at(0));
 }
 
-void ChannelFrame::clickHome(Button *, bool up)
+void ChannelFrame::clickHome(Button *)
 {
-	if (up)
+	_factory.activate(_set.at(0)->_site);
+}
+
+void ChannelFrame::clickRefresh(Button *)
+{
+	Invalidate(FALSE);
+}
+
+void ChannelFrame::clickCommit(Button *)
+{
+	if ( _set.getAdd() )
 	{
-		_factory.activate(_channel->_site);
+		apply();
+
+		Model::Channel *channel = _set.at(0);
+		// check for duplicate.
+		Model::Channel *origin = channel->_site->newChannel(channel->_LCN, false);
+		if (origin == NULL)
+		{
+			_set.setAdd(false);
+			channel->_site->Channels.insert(channel->_LCN, channel);
+		}
+		else
+		{
+			int res = MessageBox(_T("Click YES to merge and edit\nclick NO to discard and edit\nor click CANCEL"), 
+				_T("Group ID Exists!"), MB_ICONEXCLAMATION|MB_YESNOCANCEL);
+			switch (res)
+			{
+				case IDYES:
+					if (channel->_label.size() > 0)
+						origin->_label = channel->_label;
+					// this will implicitly destroy this window.
+					delete channel;
+					_factory.deactivate(channel);
+					_factory.activate(origin);
+					break;
+
+				case IDNO:
+					// this will implicitly destroy this window.
+					delete channel;
+					_factory.deactivate(channel);
+					_factory.activate(origin);
+					break;
+
+				case IDCANCEL:
+					break;
+			}
+		}
 	}
 }
 
-void ChannelFrame::activateInfo(Button *, bool up)
+void ChannelFrame::activateInfo(Tiles::Tab *)
 {
-	if (up)
-	{
-		_top->clear();
-		_tabset->watch(NULL);
-		_grid->watch(NULL);
-		_list->watch(NULL);
-		_top->Add(_tools);
-		_top->Add(_list);
-		_top->Add(_tabset);
-		_top->reflow();
-	}
+	_top->clear();
+	_tabset->watch(NULL);
+	_grid->watch(NULL);
+	_list->watch(NULL);
+	_top->Add(_tools);
+	_top->Add(_list);
+	_top->Add(_tabset);
+	_top->reflow();
 }
 
-void ChannelFrame::activateHistory(Button *, bool up)
+void ChannelFrame::activateHistory(Tiles::Tab *)
 {
-	if (up)
-	{
-		_top->clear();
-		_grid->DoubleClick.clear();
-		_top->Add(_tools);
-		_top->Add(_grid);
-		_top->Add(_tabset);
-		_top->reflow();
-	}
+	_top->clear();
+	_grid->DoubleClick.clear();
+	_top->Add(_tools);
+	_top->Add(_grid);
+	_top->Add(_tabset);
+	_top->reflow();
+}
+
+void ChannelFrame::remove()
+{
+	DestroyWindow();
 }
 
 bool ChannelFrame::Create(RECT rect)
 {
-	return Window::Create(NULL, rect, _channel->_label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
+	string_t label;
+	_set.getCaption(label);
+	return Window::Create(NULL, rect, label.c_str(), WS_OVERLAPPEDWINDOW|WS_VISIBLE, WS_EX_OVERLAPPEDWINDOW) != NULL;
 }
