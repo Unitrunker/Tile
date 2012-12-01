@@ -18,6 +18,8 @@ struct MockWindow : public IWindow
 	virtual void setFocus(bool bFocus);
 	// focus
 	virtual void setFocus(IControl *pFocus);
+	// commit focus control edits.
+	virtual void apply();
 	// hover
 	virtual void setHover(IControl *pFocus);
 	// popup window
