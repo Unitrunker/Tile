@@ -21,10 +21,13 @@ struct PickFont : public Pane, private IAccessor<string_t>
 
 	// readonly
 	using Pane::getReadOnly;
-	virtual void setReadOnly(bool);
+	using Pane::setReadOnly;
+	// enable
+	using Pane::getEnable;
+	using Pane::setEnable;
 
 private:
-	void click(Button*, bool down);
+	void click(Button*);
 	const string_t &getValue() const;
 	bool setValue(const string_t &value);
 

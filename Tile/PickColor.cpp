@@ -42,20 +42,14 @@ PickColor::PickColor(identity_t id, Theme &theme, IAccessor<color_t> &access) :
 {
 	Theme::Font textFont = {Theme::eText, theme.Text};
 
-	color_t color = _access.getValue();
 	color_t black = 0;
 	color_t white = RGB(255,255,255);
 	_edit = new Edit(0, theme, textFont, &_local);
-	_edit->setReadOnly(_readOnly);
 	_arrow = new Arrow(0, theme, eDown);
-	_arrow->_back.index = Theme::eDefault;
-	_arrow->_back.color = color;
-	_arrow->_fore.index = Theme::eDefault;
-	if ( distance(color, black) > distance(color, white) )
-		_arrow->_fore.color = black;
-	else
-		_arrow->_fore.color = white;
-
+	_arrow->_back._index = Theme::eDefault;
+	_arrow->_back._color = white;
+	_arrow->_fore._index = Theme::eDefault;
+	_arrow->_fore._color = black;
 	Add(_edit, 0, 4096, 1, false);
 	Add(_arrow, 1, 1, 0, true);
 	Flow flow = {1, 1, 0, true};
@@ -75,7 +69,7 @@ bool PickColor::dispatch(MouseEvent &action)
 	// Both mean this code really belongs in the WTL Tile library, not the generic Tile library.
 	if (action._what == MouseEvent::eDownClick && 
 		action._button == MouseEvent::eLeft && 
-		!_readOnly)
+		!_readOnly && _enable)
 	{
 		// clicked arrow?
 		if ( _arrow->contains(action._place) )
@@ -108,20 +102,29 @@ bool PickColor::dispatch(MouseEvent &action)
 
 const color_t& PickColor::getValue() const
 {
-	return _access.getValue();
+	const color_t &value = _access.getValue();
+	if (value != _arrow->_back._color)
+		adjust(value);
+	return value;
 }
 
 bool PickColor::setValue(const color_t &value)
 {
+	adjust(value);
+	return _access.setValue(value);
+}
+
+// adjust arrow colors for contrast.
+void PickColor::adjust(const color_t value) const
+{
 	color_t black = 0;
 	color_t white = RGB(255,255,255);
-	_arrow->_back.color = value;
+	_arrow->_back._color = value;
 	if ( distance(value, black) > distance(value, white) )
-		_arrow->_fore.color = black;
+		_arrow->_fore._color = black;
 	else
-		_arrow->_fore.color = white;
+		_arrow->_fore._color = white;
 	_arrow->setChanged(true);
-	return _access.setValue(value);
 }
 
 // pre-empt normal Flow logic for calculating horizontal flow
@@ -166,10 +169,4 @@ void PickColor::setRect(const rect_t &rect)
 	text.wide -= _tile.getThick(_space);
 	_edit->setRect(text);
 	_arrow->setRect(arrow);
-}
-
-void PickColor::setReadOnly(bool bSet)
-{
-	Pane::setReadOnly(bSet);
-	_edit->setReadOnly(bSet);
 }

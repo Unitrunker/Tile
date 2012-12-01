@@ -22,6 +22,8 @@ PickFont::PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<F
 	Flow desc = {1, 1, 0, true};
 
 	_edit = new Edit(0, theme, textFont, this);
+	// don't allow free-style editing of font label.
+	_edit->setReadOnly(true);
 
 	_button = new Button(0, theme, arrowFont, Theme::eDn, Theme::eDn, Theme::eDn);
 
@@ -32,46 +34,43 @@ PickFont::PickFont(identity_t id, Theme &theme, const TCHAR *prompt, IAccessor<F
 	Add(_button, 1, 1, 0, true);
 	_edit->setFlow(eDown, desc);
 	_button->setFlow(eDown, desc);
-	_edit->setReadOnly(_readOnly);
-	_button->setReadOnly(_readOnly);
 	setFlow(eDown, desc);
 	_thick.local = true;
 	_thick.thick = 0;
 }
 
-void PickFont::click(Button*, bool down)
+void PickFont::click(Button*)
 {
 	// 1. uses the WTL wrappers to the Windows Color Dialog.
 	// 2. uses WTL to grab the window handle of the current message to use as the parent window.
 	// Both mean this code really belongs in the WTL Tile library, not the generic Tile library.
-	if (!down)
+	HWND hwnd = static_cast<HWND>( _pDesktop->getHandle() );
+	LOGFONT logFont = {0};
+	Font font = _access->getValue();
+	_tcsncpy_s(logFont.lfFaceName, _countof(logFont.lfFaceName), font._face.c_str(), font._face.size());
+	logFont.lfWeight = FW_NORMAL;
+	logFont.lfCharSet = (font._style & 1) ? SYMBOL_CHARSET : DEFAULT_CHARSET;
+	logFont.lfHeight = font._height;
+
+	CFontDialog dlg(&logFont);
+	if ( dlg.DoModal(hwnd) == IDOK)
 	{
-		HWND hwnd = static_cast<HWND>( _pDesktop->getHandle() );
-		LOGFONT logFont = {0};
-		Font font = _access->getValue();
-		_tcsncpy_s(logFont.lfFaceName, _countof(logFont.lfFaceName), font._face.c_str(), font._face.size());
-		logFont.lfWeight = FW_NORMAL;
-		logFont.lfCharSet = (font._style & 1) ? SYMBOL_CHARSET : DEFAULT_CHARSET;
-		logFont.lfHeight = font._height;
-
-		CFontDialog dlg(&logFont);
-		if ( dlg.DoModal(hwnd) == IDOK)
+		if (dlg.m_cf.lpLogFont)
 		{
-			if (dlg.m_cf.lpLogFont)
-			{
-				logFont = *dlg.m_cf.lpLogFont;
-				font._face = logFont.lfFaceName;
-				font._height = logFont.lfHeight;
+			logFont = *dlg.m_cf.lpLogFont;
+			font._face = logFont.lfFaceName;
+			font._height = logFont.lfHeight;
 
-				if (font._height < 0)
-					font._height = 0 - font._height;
+			if (font._height < 0)
+				font._height = 0 - font._height;
 
-				font._style = logFont.lfCharSet == SYMBOL_CHARSET ? 1 : 0;
-				_access->setValue(font);
-				_tile.getTheme().setHeight(font._height);
-			}
+			font._style = logFont.lfCharSet == SYMBOL_CHARSET ? 1 : 0;
+			_access->setValue(font);
+			_tile.getTheme().setHeight(font._height);
 		}
 	}
+	// leave focus at the edit control.
+	_pDesktop->setFocus(_edit);
 }
 
 const string_t &PickFont::getValue() const
@@ -87,7 +86,7 @@ const string_t &PickFont::getValue() const
 bool PickFont::setValue(const string_t &value)
 {
 	value;
-	// TODO!
+	// Edit control is read-only so no need to implement this.
 	return false;
 }
 
@@ -104,11 +103,4 @@ void PickFont::setRect(const rect_t &rect)
 	text.wide -= _tile.getThick(_space);
 	_edit->setRect(text);
 	_button->setRect(arrow);
-}
-
-void PickFont::setReadOnly(bool bSet)
-{
-	Pane::setReadOnly(bSet);
-	_edit->setReadOnly(_readOnly);
-	_button->setReadOnly(_readOnly);
 }

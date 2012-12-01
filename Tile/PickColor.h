@@ -28,16 +28,20 @@ struct PickColor : public Pane, private IAccessor<color_t>
 
 	// readonly
 	using Pane::getReadOnly;
-	virtual void setReadOnly(bool);
+	using Pane::setReadOnly;
+	// enable
+	using Pane::getEnable;
+	using Pane::setEnable;
 
 private:
+    void adjust(const color_t value) const;
 	//void click(Button*, bool down);
 	virtual const color_t& getValue() const;
 	virtual bool setValue(const color_t &value);
 
 	ColorReference _local;
 	IAccessor<color_t> &_access;
-	Arrow *_arrow;
+	mutable Arrow *_arrow;
 	Edit *_edit;
 };
 
