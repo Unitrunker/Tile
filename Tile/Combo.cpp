@@ -11,6 +11,33 @@ using namespace Tiles;
 
 static align_t zero = {0};
 
+Combo::Combo(identity_t id, Theme &theme, Theme::Font &font, Item list[], size_t size, IAccessor<long>* access) :
+	Pane(id, theme, font, eRight), 
+	_drop(0, theme, eDown), 
+	_text(0, theme, font, eLeft, _T("null")),
+	_index(size),
+	_theme(theme),
+	_popup(NULL),
+	_popPane(NULL),
+	_focus(false),
+	_accessInt(access),
+	_accessText(NULL)
+{
+	for (size_t i = 0; i < size; i++)
+	{
+		_list.push_back(list[i]);
+	}
+	meter_t height = theme.Text._height;
+	Add(&_text, height, 2048, 1);
+	Add(&_drop, 1, 1, 0, 1);
+	Flow desc = {1, 1, 0, true};
+	setFlow(eDown, desc);
+	_text._fore = _foreView;
+	_text._back = _backView;
+	_thick.local = true;
+	_thick.thick = 0;
+}
+
 Combo::Combo(identity_t id, Theme &theme, Theme::Font &font, std::vector<Item> &list, IAccessor<long>* access) :
 	Pane(id, theme, font, eRight), 
 	_list(list), 
@@ -29,12 +56,8 @@ Combo::Combo(identity_t id, Theme &theme, Theme::Font &font, std::vector<Item> &
 	Add(&_drop, 1, 1, 0, 1);
 	Flow desc = {1, 1, 0, true};
 	setFlow(eDown, desc);
-	_fore[0].index = Theme::eDataFore;
-	_back[0].index = Theme::eDataBack;
-	_fore[1].index = Theme::eCellFore;
-	_back[1].index = Theme::eCellBack;
-	_text._fore = _fore[_focus];
-	_text._back = _back[_focus];
+	_text._fore = _foreView;
+	_text._back = _backView;
 	_thick.local = true;
 	_thick.thick = 0;
 }
@@ -55,12 +78,8 @@ Combo::Combo(identity_t id, Theme &theme, Theme::Font& font, std::vector<Item> &
 	meter_t height = theme.Text._height;
 	Add(&_text, height, 2048, 1);
 	Add(&_drop, 1, 1, 0, 1);
-	_fore[0].index = Theme::eDataFore;
-	_back[0].index = Theme::eDataBack;
-	_fore[1].index = Theme::eCellFore;
-	_back[1].index = Theme::eCellBack;
-	_text._fore = _fore[_focus];
-	_text._back = _back[_focus];
+	_text._fore = _foreView;
+	_text._back = _backView;
 	_thick.local = true;
 	_thick.thick = 0;
 }
@@ -86,7 +105,8 @@ const char* Combo::type()
 // key event sink
 bool Combo::dispatch(KeyEvent &action)
 {
-	if (action._what == KeyEvent::DOWN && !_readOnly)
+	if ( getEnable() && !getReadOnly() &&
+		action._what == KeyEvent::DOWN )
 	{
 		switch (action._code)
 		{
@@ -136,7 +156,7 @@ bool Combo::dispatch(MouseEvent &action)
 		action._button == MouseEvent::eLeft)
 	{
 		// don't show pop-up if we're read-only.
-		if ( !_readOnly && _drop.contains(action._place) )
+		if ( getEnable() && !getReadOnly() && _drop.contains(action._place) )
 		{
 			if (_popup != NULL)
 			{
@@ -175,7 +195,7 @@ bool Combo::dispatch(MouseEvent &action)
 			getContainer()->setFocus(this);
 		return true;
 	}
-	return false;
+	return Pane::dispatch(action);
 }
 
 // focus
@@ -190,8 +210,8 @@ void Combo::setFocus(bool focus)
 	if (change)
 	{
 		_focus = focus;
-		_text._fore = _fore[focus];
-		_text._back = _back[focus];
+		_text._fore = focus ? _foreEdit : _foreView;
+		_text._back = focus ? _backEdit : _backView;
 		if (focus)
 			getContainer()->Shown(this);
 		setChanged(true);

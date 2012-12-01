@@ -4,6 +4,7 @@
 #include "Theme.h"
 #include "IWindow.h"
 #include "Accessor.h"
+#include "Colorful.h"
 
 /*
 Copyright © 2011 Rick Parrish
@@ -14,7 +15,7 @@ Copyright © 2011 Rick Parrish
 namespace Tiles
 {
 
-struct Combo : public Pane
+struct Combo : public Pane, public Colorful
 {
 	struct Item
 	{
@@ -23,6 +24,7 @@ struct Combo : public Pane
 	};
 
 	Combo(identity_t id, Theme &theme, Theme::Font& font, std::vector<Combo::Item> &list, IAccessor<long>* access);
+	Combo(identity_t id, Theme &theme, Theme::Font& font, Combo::Item list[], size_t size, IAccessor<long>* access);
 	Combo(identity_t id, Theme &theme, Theme::Font& font, std::vector<Combo::Item> &list, IAccessor<string_t>* access);
 	virtual ~Combo();
 
@@ -100,7 +102,7 @@ private:
 	Theme _theme;
 	IWindow* _popup;
 	Pane *_popPane;
-	Theme::Color _fore[2], _back[2];
+
 	bool _reflow;
 };
 
