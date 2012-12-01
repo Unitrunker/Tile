@@ -32,8 +32,8 @@ struct ITable
 	virtual void follow(INotify *) = 0;
 	virtual size_t size() const = 0;
 	virtual bool setColumn(size_t) = 0;
-	virtual void setReadOnly(bool bSet) = 0;
-	virtual bool getReadOnly() const = 0;
+	virtual void setEnable(bool bSet) = 0;
+	virtual bool getEnable() const = 0;
 	// select
 	virtual bool getSelect(size_t index) const = 0;
 	// multi-row select.
@@ -42,6 +42,8 @@ struct ITable
 	virtual void setSelect(size_t index, bool select) = 0;
 	// clear all selected rows.
 	virtual void clearSelect() = 0;
+	// index adjusted for sort order.
+	virtual size_t getAscendingIndex(size_t index) const = 0;
 };
 
 // S presumed to derive from SetT<T>.
@@ -64,6 +66,7 @@ struct Table : public ITable, public INotify
 		virtual const bool& getValue() const
 		{
 			size_t index = _table.getOffset() + _offset;
+			index = _table.getAscendingIndex(index);
 			_result = _table._tree->getSelect(index);
 			return _result;
 		}
@@ -71,8 +74,29 @@ struct Table : public ITable, public INotify
 		virtual bool setValue(const bool &value)
 		{
 			size_t index = _table.getOffset() + _offset;
+			index = _table.getAscendingIndex(index);
 			_table._tree->setSelect(index, value);
 			return true;
+		}
+	};
+
+	struct CheckGrid : public Tiles::Check
+	{
+		CheckGrid(identity_t id, Theme &theme, IAccessor<bool> *access, align_t align = eLeft) :
+			Check(id, theme, access, align)
+		{
+		}
+
+		CheckGrid(identity_t id, Theme &theme, bool &value, align_t align = eLeft) : 
+			Check(id, theme, value, align)
+		{
+		}
+
+		virtual bool getEnable() const
+		{
+			// ignore container's enable state.
+			// we always want to click on row select checkbox.
+			return _enable;
 		}
 	};
 
@@ -82,7 +106,7 @@ struct Table : public ITable, public INotify
 		Splus(Table<S, T> &table, size_t offset) : S(table._theme), _selector(table, offset)
 		{
 			// inject checkbox ahead of other columns.
-			Tiles::Check *check = new Tiles::Check(0, table._theme, &_selector);
+			Tiles::Check *check = new CheckGrid(0, table._theme, &_selector);
 			Tiles::Property *prop = new Tiles::Property(_T("@"), _T("Select this row"), check, true, false);
 			Columns.insert(Columns.begin(), prop);
 		}
@@ -222,7 +246,7 @@ struct Table : public ITable, public INotify
 		{
 			// enhanced version of S that injects a checkbox for item selection.
 			Splus *set = new Splus(*this, _visible.size());
-			set->setReadOnly(getReadOnly());
+			set->setEnable(getEnable());
 			// yes: add them here.
 			_visible.push_back(set);
 		}
@@ -246,13 +270,11 @@ struct Table : public ITable, public INotify
 		size_t size = _tree->size();
 		for (size_t i = 0; i < rows; i++)
 		{
-			size_t index = i + _offset;
-			if (!_bAscending)
-				index = size - index - 1;
+			size_t index = getAscendingIndex(i + _offset);
 			if (index < size)
 			{
 				tree_t &tree = *_tree;
-				_visible[i]->setValue(tree[index]);
+				_visible[i]->setObject(tree[index]);
 			}
 		}
 	}
@@ -288,19 +310,19 @@ struct Table : public ITable, public INotify
 		_notify = notify;
 	}
 
-	// Make the table read-only. Store setting in the header and also set all visible rows.
-	virtual void setReadOnly(bool bSet)
+	// Enable the table for editing. Store setting in the header and also set all visible rows.
+	virtual void setEnable(bool bSet)
 	{
 		if (_header)
-			_header->setReadOnly(bSet);
+			_header->setEnable(bSet);
 		for (size_t i = 0; i < _visible.size(); i++)
-			_visible[i]->setReadOnly(bSet);
+			_visible[i]->setEnable(bSet);
 	}
 
 	// Default to true if somehow we have no header.
-	virtual bool getReadOnly() const
+	virtual bool getEnable() const
 	{
-		return _header ? _header->getReadOnly() : true;
+		return _header ? _header->getEnable() : true;
 	}
 
 	// select
@@ -335,6 +357,13 @@ struct Table : public ITable, public INotify
 	virtual void clearSelect()
 	{
 		_tree->clearSelect();
+	}
+
+	virtual size_t getAscendingIndex(size_t index) const
+	{
+		if (!_bAscending)
+			index = size() - index - 1;
+		return index;
 	}
 
 private:
