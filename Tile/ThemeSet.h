@@ -19,19 +19,19 @@ private:
 
 	struct ReflectFont : public Reflect<Theme, Font>
 	{
-		ReflectFont(IAccessor<Theme*> &base, Font Theme::*member) : Reflect<Theme, Font>(base, member) { };
+		ReflectFont(std::vector<Theme*> &base, Font Theme::*member) : Reflect<Theme, Font>(base, member) { };
 
 		using Reflect<Theme, Font>::getValue;
 
 		virtual bool setValue(const Font &value)
 		{
-			bool bOK = MemberAccessPtr<Theme, Font>::setValue(value);
-			if (bOK)
+			bool bOK = Reflect<Theme, Font>::setValue(value);
+			if (bOK && _access.size())
 			{
 				// side effect - other fonts share height.
-				_access.getValue()->Arrow._height = value._height;
-				_access.getValue()->Stock._height = value._height;
-				_access.getValue()->broadcast("Reflect");
+				_access[0]->Arrow._height = value._height;
+				_access[0]->Stock._height = value._height;
+				_access[0]->broadcast("Reflect");
 			}
 			return true;
 		}
@@ -70,6 +70,7 @@ private:
 	Reflect<Theme, color_t> _toolOver;
 	Reflect<Theme, color_t> _gridLines;
 	Reflect<Theme, meter_t> _gridThick;
+	Reflect<Theme, bool> _tip;
 	ArrowShape _arrowShape;
 	CheckShape _checkShape;
 	//Reflect<Theme, string_t> _arrowShape;

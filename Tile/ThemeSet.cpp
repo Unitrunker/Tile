@@ -4,6 +4,7 @@
 #include "PickColor.h"
 #include "PickFont.h"
 #include "Combo.h"
+#include "Check.h"
 
 /*
 Copyright © 2011 Rick Parrish
@@ -77,7 +78,7 @@ ThemeSet::ArrowShape::ArrowShape(ThemeSet &base) : _base(base)
 const long &ThemeSet::ArrowShape::getValue() const
 {
 	_value = _countof(listArrows);
-	const Theme *theme =_base.getValue();
+	const Theme *theme = _base[0];
 	for (size_t i = 0; i < _countof(listArrows); i++)
 	{
 		const TCHAR *glyph = listArrows[i][1];
@@ -93,7 +94,7 @@ const long &ThemeSet::ArrowShape::getValue() const
 bool ThemeSet::ArrowShape::setValue(const long &value)
 {
 	_value = value;
-	Theme *theme =_base.getValue();
+	Theme *theme = _base[0];
 	if (value >= 0 && value < _countof(listArrows) )
 	{
 		theme->ArrowUp = listArrows[value][0];
@@ -161,7 +162,7 @@ ThemeSet::CheckShape::CheckShape(ThemeSet &base) : _base(base)
 const long &ThemeSet::CheckShape::getValue() const
 {
 	_value = _countof(listChecks);
-	const Theme *theme =_base.getValue();
+	const Theme *theme = _base[0];
 	for (size_t i = 0; i < _countof(listChecks); i++)
 	{
 		const TCHAR *glyph = listChecks[i][0];
@@ -177,7 +178,7 @@ const long &ThemeSet::CheckShape::getValue() const
 bool ThemeSet::CheckShape::setValue(const long &value)
 {
 	_value = value;
-	Theme *theme =_base.getValue();
+	Theme *theme = _base[0];
 	if (value >= 0 && value < _countof(listChecks) )
 	{
 		theme->Checked = listChecks[value][0];
@@ -201,11 +202,12 @@ ThemeSet::ThemeSet(Theme &theme) :
 	_toolOver(*this, &Theme::ToolOver),
 	_gridLines(*this, &Theme::GridLines),
 	_gridThick(*this, &Theme::GridThick),
-	_gridThickText(_gridThick),
 	_fontText(*this, &Theme::Text),
 	_fontArrow(*this, &Theme::Arrow),
 	_arrowShape(*this),
-	_checkShape(*this)
+	_checkShape(*this),
+	_tip(*this, &Theme::Tips),
+	_gridThickText(_gridThick)
 {
 	Section *section = NULL;
 	Property *prop = NULL;
@@ -246,6 +248,9 @@ ThemeSet::ThemeSet(Theme &theme) :
 	prop = new Property( _T("Back"), _T("Tool's background color"), new PickColor(0, theme, _toolBack) );
 	section->Items.push_back(prop);
 	prop = new Property( _T("Over"), _T("Color when mouse passes over"), new PickColor(0, theme, _toolOver) );
+	section->Items.push_back(prop);
+	Check *check = new Check(0, theme, &_tip);
+	prop = new Property( _T("Tips"), _T("Display informative tip text balloons"), check);
 	section->Items.push_back(prop);
 	Sections.push_back(section);
 

@@ -3,7 +3,7 @@
 #include "Multicast.h"
 
 /*
-Copyright © 2011 Rick Parrish
+Copyright © 2011-2012 Rick Parrish
 */
 
 #pragma once
@@ -60,8 +60,12 @@ struct Theme
 	// color selector
 	struct Color
 	{
-		unsigned char index;
-		color_t color;
+		unsigned char _index;
+		color_t _color;
+
+		Color() : _index(0), _color(0) { }
+		Color(const Color &copy) : _index(copy._index), _color(copy._color) { }
+		Color(unsigned char index, color_t color) : _index(index), _color(color) { }
 	};
 
 	// thickness selector
@@ -126,6 +130,8 @@ struct Theme
 	string_t Collapse;
 
 	Tiles::Font Stock;
+
+	bool Tips;
 
 	Theme();
 	Theme(const Theme &copy);
