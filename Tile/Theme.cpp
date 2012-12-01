@@ -61,7 +61,8 @@ Theme::Theme() :
 	Uncheck(uncheck),
 	Expand(expand),
 	Collapse(collapse),
-	Stock(_T("Lucinda Sans Unicode"), 18, 0)
+	Stock(_T("Lucinda Sans Unicode"), 18, 0),
+	Tips(false)
 {
 }
 
@@ -89,7 +90,8 @@ Theme::Theme(const Theme &copy) :
 	Checked(copy.Checked),
 	Uncheck(copy.Uncheck),
 	Expand(copy.Expand),
-	Collapse(copy.Collapse)
+	Collapse(copy.Collapse),
+	Tips(copy.Tips)
 {
 }
 
@@ -255,8 +257,8 @@ bool Theme::load(const TCHAR *path)
 // retrieve theme color.
 color_t Theme::getColor(const Color &color) const
 {
-	color_t rgb = color.color;
-	switch(color.index)
+	color_t rgb = color._color;
+	switch(color._index)
 	{
 		case eCaptionFore:
 			rgb = CaptionFore;
