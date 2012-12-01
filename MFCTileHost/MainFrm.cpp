@@ -99,7 +99,7 @@ CMainFrame::CMainFrame() :
 	// add list control to form
 	pPane->Add(pList, 0, 4096, 1);
 	// connect adapter to the data.
-	m_adapter.setValue(&m_person);
+	m_adapter.push_back(&m_person);
 	// populate list control.
 	pList->setItems(&m_adapter);
 	// connect the form to the frame window.
