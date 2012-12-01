@@ -60,12 +60,12 @@ bool loadColor(JSON::Reader &reader, const char *name, Tiles::Theme::Color &colo
 		if ( reader.namedValue("index", iValue) )
 		{
 			bOK = true;
-			color.index = (unsigned char)iValue;
+			color._index = (unsigned char)iValue;
 		}
 		else if (reader.namedValue("color", iValue) )
 		{
 			bOK = true;
-			color.color = (color_t)iValue;
+			color._color = (color_t)iValue;
 		}
 		if (bOK)
 			bOK = reader.endObject();
@@ -136,10 +136,10 @@ bool loadForm(const TCHAR *path, Theme &theme, Pane* &pPane)
 bool saveColor(JSON::Writer &writer, const char *label, const Theme::Color &color, bool eol)
 {
 	writer.writeStartNamedObject(label);
-	if (color.index == Theme::eDefault)
-		writer.writeNamedValue("color", color.color, 16);
+	if (color._index == Theme::eDefault)
+		writer.writeNamedValue("color", color._color, 16);
 	else
-		writer.writeNamedValue("index", color.index, 10);
+		writer.writeNamedValue("index", color._index, 10);
 	writer.writeEndObject(eol);
 	return true;
 }
