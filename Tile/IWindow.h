@@ -31,6 +31,9 @@ struct IWindow
 	virtual void setFocus(bool bFocus) = 0;
 	// set focus to control.
 	virtual void setFocus(IControl *pFocus) = 0;
+	// commit focus control edits.
+	virtual void apply() = 0;
+
 	// hover
 	virtual void setHover(IControl *pFocus) = 0;
 	// popup window associated with this window
