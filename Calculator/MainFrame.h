@@ -6,11 +6,12 @@
 struct MainFrame : public Frame
 {
 	MainFrame(Theme &theme);
-	void clickTheme(Button *, bool bDown);
-	void clickAbout(Button *, bool bDown);
-	void clickOK(Button *, bool);
-	void clickSnapshot(Button *, bool);
 private:
+	void clickTheme(Button *);
+	void clickAbout(Button *);
+	void clickOK(Button *);
+	void clickSnapshot(Button *);
+
 	Window m_editor;
 	Window m_about;
 	ThemeSet m_set;
