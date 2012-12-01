@@ -141,9 +141,8 @@ struct MemberVectorAccess : public IAccessor<T>
 
 	virtual const T &getValue() const
 	{
-		if ( _access.size() )
-			return _access[0]->*_member;
-		_ASSERT(false);
+		_ASSERT( _access.size() > 0 );
+		return _access[0]->*_member;
 	}
 
 	virtual bool setValue(const T &value)
@@ -156,6 +155,67 @@ struct MemberVectorAccess : public IAccessor<T>
 protected:
 	std::vector<B *>& _access;
 	T B::*_member;
+};
+
+// Injecting change notification when setValue called.
+template <typename B, typename T>
+struct Reflect : public IAccessor<T>
+{
+	Reflect(std::vector<B*>& access, T B::*member) : 
+		_access(access), _member(member)
+	{
+	}
+
+	virtual const T &getValue() const
+	{
+		_ASSERT(_access.size() > 0);
+		return _access[0]->*_member;
+	}
+
+	virtual bool setValue(const T &value)
+	{
+		for (size_t i = 0; i < _access.size(); i++)
+		{
+			_access[i]->*_member = value;
+			_access[i]->broadcast("Reflect");
+		}
+		return true;
+	}
+
+protected:
+	std::vector<B *>& _access;
+	T B::*_member;
+};
+
+// Injecting change notification when setValue called.
+template <typename B, typename M, typename T>
+struct ReflectSubtype : public IAccessor<T>
+{
+	ReflectSubtype(std::vector<B*>& access, M B::*middle, T M::*member) : 
+		_access(access), _middle(middle), _member(member)
+	{
+	}
+
+	virtual const T &getValue() const
+	{
+		_ASSERT(_access.size() > 0);
+		return _access[0]->*_middle.*_member;
+	}
+
+	virtual bool setValue(const T &value)
+	{
+		for (size_t i = 0; i < _access.size(); i++)
+		{
+			_access[i]->*_middle.*_member = value;
+			_access[i]->broadcast("Reflect");
+		}
+		return true;
+	}
+
+protected:
+	std::vector<B *>& _access;
+	T M::*_member;
+	M B::*_middle;
 };
 
 // accessor adapter for string to color_t.
@@ -230,23 +290,6 @@ private:
 	IAccessor<long>& _wrap;
 	mutable string_t _text;
 	IPv4 & operator = (const IPv4 &never);
-};
-
-// This template modifies MemberAccessPtr behavior by 
-// injecting change notification when setValue called.
-template <typename B, typename T>
-struct Reflect : public MemberAccessPtr<B, T>
-{
-	Reflect(IAccessor<B*> &base, T B::*member) : MemberAccessPtr<B, T>(base, member) { };
-
-	using MemberAccessPtr<B, T>::getValue;
-
-	virtual bool setValue(const T &value)
-	{
-		bool bOK = MemberAccessPtr<B, T>::setValue(value);
-		_access.getValue()->broadcast("Reflect");
-		return bOK;
-	}
 };
 
 // static_cast adapter: converting integrals of different sizes.
