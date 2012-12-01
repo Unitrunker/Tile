@@ -12,16 +12,15 @@ using namespace Tiles;
 
 Arrow::Arrow(identity_t id, Theme& theme, orient_t flow) :
 	Tile(id, theme),
-	_flow(flow)
+	_flow(flow),
+	_fore(Theme::eCaptionFore, 0),
+	_back(Theme::eCaptionBack, 0)
 {
 	_font.index = Theme::eArrow;
 	_text = _T("?");
 	Flow desc = {1, 1, 0, true};
 	setFlow(eRight, desc);
 	setFlow(eDown, desc);
-	_fore.color = _back.color = 0;
-	_fore.index = Theme::eCaptionFore;
-	_back.index = Theme::eCaptionBack;
 }
 
 // instance type
