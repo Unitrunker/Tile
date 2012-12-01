@@ -53,10 +53,15 @@ struct IControl : public ITile
 	virtual bool hasControls() const = 0;
 
 	virtual void setDesktop(IWindow*) = 0;
-	// readonly
+	// read only - for display only controls.
 	virtual bool getReadOnly() const = 0;
 	virtual void setReadOnly(bool) = 0;
-	// TODO: focus callback
+	// safeguard to prevent accidental edits (interacts with readOnly).
+	virtual bool getEnable() const = 0;
+	virtual void setEnable(bool) = 0;
+
+	// force an update of any edits in-progress.
+	virtual void apply() = 0;
 };
 
 };
