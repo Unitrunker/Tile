@@ -46,6 +46,8 @@ public:
 	void setFocus(bool bFocus);
 	// focus
 	virtual void setFocus(IControl *pFocus);
+	// commit focus control edits.
+	virtual void apply();
 	// hover
 	virtual void setHover(IControl *pHover);
 	// popup window
