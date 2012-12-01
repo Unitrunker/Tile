@@ -37,7 +37,7 @@ Property::~Property()
 	delete Control;
 }
 
-Set::Set(bool readOnly) : _readOnly(readOnly)
+Set::Set(bool enable) : _enable(enable)
 {
 }
 
@@ -58,21 +58,42 @@ void Set::Add(Section *s)
 	for (size_t i = 0; i < s->Items.size(); i++)
 	{
 		Property *prop = s->Items[i];
-		prop->Control->setReadOnly(_readOnly);
+		prop->Control->setEnable(_enable);
 		Columns.push_back(prop);
 	}
 }
 
-void Set::setReadOnly(bool bSet)
+void Set::setEnable(bool bSet)
 {
 	for (size_t i = 0; i < Columns.size(); i++)
 	{
-		Columns[i]->Control->setReadOnly(bSet);
+		Columns[i]->Control->setEnable(bSet);
 	}
-	_readOnly = bSet;
+	_enable = bSet;
 }
 
-bool Set::getReadOnly() const
+bool Set::getEnable() const
 {
-	return _readOnly;
+	return _enable;
+}
+
+void Set::onChange()
+{
+	for (size_t i = 0; i < Columns.size(); i++)
+	{
+		Columns[i]->Control->setChanged(true);
+	}
+}
+
+void Set::apply()
+{
+	for (size_t i = 0; i < Columns.size(); i++)
+	{
+		IControl* control = Columns[i]->Control;
+		if ( control->getFocus() )
+		{
+			control->apply();
+			break;
+		}
+	}
 }
