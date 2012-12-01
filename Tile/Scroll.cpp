@@ -45,8 +45,8 @@ Scroll::Scroll(identity_t id, Theme& theme, orient_t flow, long &value) :
 	_indexFar = Add(&_farSpacer, 0, 2048, 0);
 	Add(&_farArrow, theme.Text._height, theme.Text._height, 0);
 
-	Theme::Color fill = {Theme::eCaptionBack, 0};
-	Theme::Color thumb = {Theme::eDefault, RGB(192, 192, 192)};
+	Theme::Color fill(Theme::eCaptionBack, 0);
+	Theme::Color thumb(Theme::eDefault, RGB(192, 192, 192));
 
 	_nearSpacer._fill = fill;
 	_farSpacer._fill = fill;
@@ -83,8 +83,8 @@ Scroll::Scroll(identity_t id, Theme& theme, orient_t flow, IAccessor<long> *pAcc
 	_indexFar = Add(&_farSpacer, 0, 2048, 0);
 	Add(&_farArrow, 1, 1, 0, true);
 
-	Theme::Color fill = {Theme::eCaptionBack, 0};
-	Theme::Color thumb = {Theme::eDefault, RGB(192, 192, 192)};
+	Theme::Color fill(Theme::eCaptionBack, 0);
+	Theme::Color thumb(Theme::eDefault, RGB(192, 192, 192));
 
 	_nearSpacer._fill = fill;
 	_farSpacer._fill = fill;
@@ -116,7 +116,7 @@ const char* Scroll::type()
 bool Scroll::dispatch(KeyEvent &action)
 {
 	if (action._what == KeyEvent::DOWN &&
-		action._mask == 0)
+		action._mask == 0 && _enable && !_readOnly)
 	{
 		orient_t flow = getFlow();
 		if (flow == eDown || flow == eUp)
@@ -186,8 +186,9 @@ bool Scroll::onMove(MouseEvent &action)
 				_pDesktop->setCapture(this, cursor);
 			}
 		}
+		return true;
 	}
-	return true;
+	return false;
 }
 
 bool Scroll::onClick(MouseEvent &action)
@@ -268,38 +269,44 @@ bool Scroll::onClick(MouseEvent &action)
 // mouse event sink
 bool Scroll::dispatch(MouseEvent &action)
 {
-	if (action._button == MouseEvent::eLeft &&
-		action._what == MouseEvent::eDownClick)
+	if (_enable && !_readOnly)
 	{
-		if ( _nearArrow.contains(action._place) )
+		if (action._button == MouseEvent::eLeft &&
+			action._what == MouseEvent::eDownClick)
 		{
-			_value = _access->getValue();
-			setValue(_value - 1);
-		}
-		else if ( _farArrow.contains(action._place) )
-		{
-			_value = _access->getValue();
-			setValue(_value + 1);
-		}
-		else
-			onClick(action);
+			if ( _nearArrow.contains(action._place) )
+			{
+				_value = _access->getValue();
+				setValue(_value - 1);
+			}
+			else if ( _farArrow.contains(action._place) )
+			{
+				_value = _access->getValue();
+				setValue(_value + 1);
+			}
+			else
+				onClick(action);
 
-		if (!_focus)
-			getContainer()->setFocus(this);
+			if (!_focus)
+				getContainer()->setFocus(this);
+
+			return true;
+		}
+		if (action._what == MouseEvent::eMove &&
+			action._button == MouseEvent::eLeft)
+		{
+			return onMove(action);
+		}
+		if (action._what == MouseEvent::eUpClick &&
+			action._button == MouseEvent::eLeft)
+		{
+			_drag = false;
+			if (_pDesktop)
+				_pDesktop->setCapture(NULL);
+			return true;
+		}
 	}
-	if (action._what == MouseEvent::eMove &&
-		action._button == MouseEvent::eLeft)
-	{
-		return onMove(action);
-	}
-	if (action._what == MouseEvent::eUpClick &&
-		action._button == MouseEvent::eLeft)
-	{
-		_drag = false;
-		if (_pDesktop)
-			_pDesktop->setCapture(NULL);
-	}
-	return true;
+	return false;
 }
 
 void Scroll::setHover(bool hover)
@@ -321,22 +328,11 @@ void Scroll::setFocus(bool focus)
 	if (change)
 	{
 		_focus = focus;
-		_thumb._fill.color = focus ? RGB(255,255,255) : RGB(192,192,192);
+		_thumb._fill._color = focus ? RGB(255,255,255) : RGB(192,192,192);
 		if (focus)
 			getContainer()->Shown(this);
 		setChanged(change);
 	}
-}
-
-// readonly
-bool Scroll::getReadOnly() const
-{
-	return _readOnly;
-}
-
-void Scroll::setReadOnly(bool readOnly)
-{
-	_readOnly = readOnly;
 }
 
 // get/set accessors for scroll range

@@ -34,8 +34,11 @@ struct Scroll : public Pane
 	virtual bool getFocus() const;
 	virtual void setFocus(bool);
 	// readonly
-	virtual bool getReadOnly() const;
-	virtual void setReadOnly(bool);
+	using Pane::getReadOnly;
+	using Pane::setReadOnly;
+	// enable
+	using Pane::getEnable;
+	using Pane::setEnable;
 	// hover
 	virtual void setHover(bool hover);
 	// navigation
@@ -86,6 +89,7 @@ private:
 	Fill _thumb;
 	bool _focus;
 	bool _readOnly;
+	bool _enable;
 	long _min, _max, _value;
 	size_t _indexNear, _indexThumb, _indexFar;
 	bool _drag;
