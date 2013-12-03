@@ -47,16 +47,16 @@ struct Control : public IControl
 	// ITile implementation
 	virtual identity_t identity() const;
 	// get/set accessors for layout mimimums
-	virtual void getMin(orient_t flow, meter_t &min);
+	virtual void getMin(orient_t flow, meter_t &min) const;
 	virtual void setMin(orient_t flow, meter_t min);
 	// get/set accessors for layout maximums
-	virtual void getMax(orient_t flow, meter_t &max);
+	virtual void getMax(orient_t flow, meter_t &max) const;
 	virtual void setMax(orient_t flow, meter_t max);
 	// get/set accessors for layout weights
-	virtual void getWeight(orient_t flow, meter_t &weight);
+	virtual void getWeight(orient_t flow, meter_t &weight) const;
 	virtual void setWeight(orient_t flow, meter_t weight);
 	// get/set accessors for layout descriptors
-	virtual void getFlow(orient_t flow, Flow &desc);
+	virtual void getFlow(orient_t flow, Flow &desc) const;
 	virtual void setFlow(orient_t flow, const Flow &desc);
 	// get/set accessor for bounding rectangle.
 	virtual void getRect(rect_t &rect) const;

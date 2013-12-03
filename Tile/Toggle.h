@@ -88,10 +88,6 @@ struct Toggle : public Control, public Colorful
 
 	// instance type
 	virtual const char* getType() const;
-	// serialize
-	virtual bool save(JSON::Writer &writer);
-	// de-serialize
-	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl);
 	static const char* type();
 	void setAccessor(IAccessor<long> *);
 private:

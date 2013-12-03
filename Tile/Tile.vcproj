@@ -198,10 +198,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Factory.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Fill.cpp"
 				>
 			</File>
@@ -231,10 +227,6 @@
 			</File>
 			<File
 				RelativePath=".\Item.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\JSON.cpp"
 				>
 			</File>
 			<File
@@ -377,10 +369,6 @@
 			</File>
 			<File
 				RelativePath=".\Edit.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Factory.h"
 				>
 			</File>
 			<File

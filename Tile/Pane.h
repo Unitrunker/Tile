@@ -38,16 +38,16 @@ struct Pane : public IControl, public IRedraw
 	// instance type
 	virtual const char* getType() const;
 	// get/set accessors for layout mimimums
-	virtual void getMin(orient_t flow, meter_t &min);
+	virtual void getMin(orient_t flow, meter_t &min) const;
 	virtual void setMin(orient_t flow, meter_t min);
 	// get/set accessors for layout maximums
-	virtual void getMax(orient_t flow, meter_t &max);
+	virtual void getMax(orient_t flow, meter_t &max) const;
 	virtual void setMax(orient_t flow, meter_t max);
 	// get/set accessors for layout weights
-	virtual void getWeight(orient_t flow, meter_t &weight);
+	virtual void getWeight(orient_t flow, meter_t &weight) const;
 	virtual void setWeight(orient_t flow, meter_t weight);
 	// get/set accessors for layout descriptors
-	virtual void getFlow(orient_t flow, Flow &desc);
+	virtual void getFlow(orient_t flow, Flow &desc) const;
 	virtual void setFlow(orient_t flow, const Flow &desc);
 	// get/set accessor for bounding rectangle.
 	virtual void getRect(rect_t &rect) const;
@@ -62,10 +62,6 @@ struct Pane : public IControl, public IRedraw
 	virtual void setScrollPoint(const point_t &pt);
 	// returns true if point lies within layout.
 	virtual bool contains(point_t pt) const;
-	// serialize
-	virtual bool save(JSON::Writer &writer);
-	// de-serialize
-	static bool load(JSON::Reader &reader, Theme &theme, const char *type, Pane *&pPane);
 
 	// draw this pane (and the drawable artifacts contained therein).
 	virtual bool Draw(ICanvas *canvas, bool bFocus);
@@ -107,9 +103,6 @@ struct Pane : public IControl, public IRedraw
 	void setSpace(meter_t space);
 	// pixel padding along border.
 	void setBorder(meter_t border);
-
-	// save as JSON
-	bool save(const TCHAR *path);
 
 	// add layout item to the collection.
  	size_t Add(ITile* pTile, meter_t min, meter_t max, meter_t weight, bool fontScale = false);
@@ -164,12 +157,9 @@ struct Pane : public IControl, public IRedraw
 	void setLineColor(const Theme::Color &color);
 	void setLineThick(const Theme::Thick &thick);
 
-protected:
-	bool onTab(bool bReverse);
-	void getInsideMin(orient_t flow, meter_t &min);
-	virtual void onIndexChanged(size_t index);
+	void getBorder(Theme::Color &color, Theme::Thick &thick) const;
+	void getLines(Theme::Color &color, Theme::Thick &thick) const;
 
-	Tile _tile;
 	// inter-cell spacing.
 	Theme::Thick _space;
 	// inter-cell color
@@ -186,16 +176,22 @@ protected:
 	std::map<identity_t, IControl*> _map;
 	// direction of layout flow.
 	orient_t _flow;
+	// read only
+	bool _readOnly;
+	// enable
+	bool _enable;
+protected:
+	bool onTab(bool bReverse);
+	void getInsideMin(orient_t flow, meter_t &min) const;
+	virtual void onIndexChanged(size_t index);
+
+	Tile _tile;
 	// index to currently (or most recently) active control.
 	size_t _index;
 	// index to be shared by child flow controls.
 	size_t _shared;
 	// index to child control with hover.
 	size_t _hover;
-	// read only
-	bool _readOnly;
-	// enable
-	bool _enable;
 	// true if this flow uses own _index instead of parent's _shared index.
 	// sibling flows may use a shared index to allow cursor navigation
 	// across rows and columns. Moving across columns stay in same row. 

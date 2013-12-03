@@ -22,16 +22,16 @@ struct Tile : public ITile
 	// instance type
 	virtual const char* getType() const;
 
-	virtual void getMin(orient_t flow, meter_t &min);
+	virtual void getMin(orient_t flow, meter_t &min) const;
 	virtual void setMin(orient_t flow, meter_t min);
 
-	virtual void getMax(orient_t flow, meter_t &max);
+	virtual void getMax(orient_t flow, meter_t &max) const;
 	virtual void setMax(orient_t flow, meter_t max);
 
-	virtual void getWeight(orient_t flow, meter_t &weight);
+	virtual void getWeight(orient_t flow, meter_t &weight) const;
 	virtual void setWeight(orient_t flow, meter_t weight);
 
-	virtual void getFlow(orient_t flow, Flow &desc);
+	virtual void getFlow(orient_t flow, Flow &desc) const;
 	virtual void setFlow(orient_t flow, const Flow &desc);
 
 	// get/set accessor for bounding rectangle.
@@ -60,6 +60,7 @@ struct Tile : public ITile
 	const Font& getFont(const Theme::Font &font) const;
 	// get theme object
 	Theme& getTheme();
+	const Theme& Tile::getTheme() const;
 	// get font selector
 	const Theme::Font &getFont() const;
 	void setFont(const Theme::Font &font);

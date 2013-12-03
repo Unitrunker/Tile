@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "Pane.h"
-#include "JSON.h"
 #include "ICanvas.h"
 #include "IWindow.h"
-#include "Factory.h"
 
 /*
 Copyright © 2011, 2012 Rick Parrish
@@ -474,7 +472,7 @@ const char* Pane::type()
 	return "Pane";
 }
 
-void Pane::getInsideMin(orient_t flow, meter_t &min)
+void Pane::getInsideMin(orient_t flow, meter_t &min) const
 {
 	meter_t space = _tile.getTheme().getThick(_space);
 	meter_t alt = 0;
@@ -501,7 +499,7 @@ void Pane::getInsideMin(orient_t flow, meter_t &min)
 		min = alt;
 }
 
-void Pane::getMin(orient_t flow, meter_t &min)
+void Pane::getMin(orient_t flow, meter_t &min) const
 {
 	meter_t border = _tile.getTheme().getThick(_thick);
 	getInsideMin(flow, min);
@@ -513,7 +511,7 @@ void Pane::setMin(orient_t flow, meter_t min)
 	_tile.setMin(flow, min);
 }
 
-void Pane::getMax(orient_t flow, meter_t &max)
+void Pane::getMax(orient_t flow, meter_t &max) const
 {
 	meter_t space = _tile.getTheme().getThick(_space);
 	meter_t border = _tile.getTheme().getThick(_thick);
@@ -553,7 +551,7 @@ void Pane::setMax(orient_t flow, meter_t max)
 }
 
 // get/set accessors for layout weights
-void Pane::getWeight(orient_t flow, meter_t &weight)
+void Pane::getWeight(orient_t flow, meter_t &weight) const
 {
 	_tile.getWeight(flow, weight);
 }
@@ -564,7 +562,7 @@ void Pane::setWeight(orient_t flow, meter_t weight)
 }
 
 // get/set accessors for layout descriptors
-void Pane::getFlow(orient_t flow, Flow &desc)
+void Pane::getFlow(orient_t flow, Flow &desc) const
 {
 	_tile.getFlow(flow, desc);
 }
@@ -1529,77 +1527,6 @@ void Pane::setFont(const Theme::Font &font)
 	_tile.setFont(font);
 }
 
-// serialize
-bool Pane::save(JSON::Writer &writer)
-{
-	std::string name;
-	orient(name, _flow);
-	writer.writeStartObject();
-	writer.writeNamedValue("type", type());
-	writer.writeNamedValue("orient", name.c_str());
-	_tile.save(writer);
-	writer.writeStartNamedArray("Items");
-	// Note: the tiles list includes both tiles and controls so no need to skim the controls list.
-	for (std::vector<ITile *>::iterator it = _listTiles.begin(); it != _listTiles.end(); it++)
-	{
-		ITile *p = *it;
-		p->save(writer);
-	}
-	writer.writeEndArray();
-	writer.writeEndObject(true);
-	return true;
-}
-
-bool Pane::save(const TCHAR *path)
-{
-	JSON::Writer writer;
-	return writer.Open(path) && 
-		writer.writeName(Pane::type()) &&
-		save(writer) && 
-		writer.Close();
-}
-
-// de-serialize
-bool Pane::load(JSON::Reader &reader, Theme &theme, const char *type, Pane *&pPane)
-{
-	bool bOK = false;
-	if ( !strcmp(type, Pane::type()) )
-	{
-		std::string text;
-		identity_t id = 0;
-		Flow horz, vert;
-		bool bOnce = false;
-
-		do
-		{
-			bOK = reader.namedValue("orient", text) ||
-				reader.namedValue("id", id) ||
-				loadFlow(reader, "Horz", horz) ||
-				loadFlow(reader, "Vert", vert);
-			bOnce = bOK || bOnce;
-		}
-		while (bOK && reader.comma());
-
-		if (bOnce)
-		{
-			pPane = new Pane(id, theme, orient(text));
-			pPane->setFlow(eRight, horz);
-			pPane->setFlow(eDown, vert);
-			if ( reader.beginNamedArray("Items") )
-			{
-				do
-				{
-					bOK = loadUnknown(reader, theme, pPane);
-				}
-				while ( bOK && reader.comma() );
-				if (bOK)
-					bOK = reader.endArray();
-			}
-		}
-	}
-	return bOK;
-}
-
 void Pane::onIndexChanged(size_t index)
 {
 	index; // nothing to do here.
@@ -1621,4 +1548,16 @@ void Pane::setLineColor(const Theme::Color &color)
 void Pane::setLineThick(const Theme::Thick &thick)
 {
 	_thick = thick;
+}
+
+void Pane::getBorder(Theme::Color &color, Theme::Thick &thick) const
+{
+	color = _border;
+	thick = _thick;
+}
+
+void Pane::getLines(Theme::Color &color, Theme::Thick &thick) const
+{
+	color = _lines;
+	thick = _space;
 }

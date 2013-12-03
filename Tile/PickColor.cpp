@@ -35,7 +35,7 @@ static size_t distance(color_t a, color_t b)
 	return span;
 }
 
-PickColor::PickColor(identity_t id, Theme &theme, IAccessor<color_t> &access) :
+PickColor::PickColor(identity_t id, Theme &theme, IAccessor<color_t> *access) :
 	Pane(id, theme, eRight),
 	_access(access),
 	_local(*this)
@@ -72,10 +72,10 @@ bool PickColor::dispatch(MouseEvent &action)
 		!_readOnly && _enable)
 	{
 		// clicked arrow?
-		if ( _arrow->contains(action._place) )
+		if ( _arrow->contains(action._place) && _access != NULL )
 		{
 			HWND hwnd = static_cast<HWND>( _pDesktop->getHandle() );
-			color_t rgb = _access.getValue();
+			color_t rgb = _access->getValue();
 			// WTL wrapper to color picker dialog.
 			CColorDialog dlg(rgb);
 			if (dlg.DoModal(hwnd) == IDOK)
@@ -102,7 +102,7 @@ bool PickColor::dispatch(MouseEvent &action)
 
 const color_t& PickColor::getValue() const
 {
-	const color_t &value = _access.getValue();
+	const color_t &value = _access->getValue();
 	if (value != _arrow->_back._color)
 		adjust(value);
 	return value;
@@ -111,7 +111,7 @@ const color_t& PickColor::getValue() const
 bool PickColor::setValue(const color_t &value)
 {
 	adjust(value);
-	return _access.setValue(value);
+	return _access->setValue(value);
 }
 
 // adjust arrow colors for contrast.

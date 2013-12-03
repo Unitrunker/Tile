@@ -27,10 +27,6 @@ struct Tab : public Control
 	virtual const char* getType() const;
     /// <param name="canvas">canvas where this object will be drawn</param>
 	virtual bool Draw(ICanvas *canvas, bool bFocus);
-	// serialize
-	virtual bool save(JSON::Writer &writer);
-	// de-serialize
-	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pButton);
 
 	// IControl implementation
 	// key event sink
@@ -88,21 +84,29 @@ struct Tab : public Control
 	bool getTip(string_t &tip) const;
 	void setTip(const TCHAR *tip);
 
+	const string_t &getText() const;
+	void setText(const TCHAR *tip);
+
 	void setColorIdle(const Theme::Color &fore, const Theme::Color &back);
 	void setColorOver(const Theme::Color &fore, const Theme::Color &back);
 	void setColorSelect(const Theme::Color &fore, const Theme::Color &back);
 
+	void getColorIdle(Theme::Color &fore, Theme::Color &back) const;
+	void getColorOver(Theme::Color &fore, Theme::Color &back) const;
+	void getColorSelect(Theme::Color &fore, Theme::Color &back) const;
+
 	static const char* type();
 
-private:
 	string_t _tip;
-	IWindow *_popup;
-
 	Theme::Color _colorIdle[2];
 	Theme::Color _colorOver[2];
 	Theme::Color _colorSelect[2];
 	// text label
 	string_t _text;
+
+private:
+	IWindow *_popup;
+
 };
 
 };

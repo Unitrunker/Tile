@@ -36,16 +36,16 @@ struct ITile
 	virtual identity_t identity() const = 0;
 	virtual const char* getType() const = 0;
 	// get/set accessors for layout mimimums
-	virtual void getMin(orient_t flow, meter_t &min) = 0;
+	virtual void getMin(orient_t flow, meter_t &min) const = 0;
 	virtual void setMin(orient_t flow, meter_t min) = 0;
 	// get/set accessors for layout maximums
-	virtual void getMax(orient_t flow, meter_t &max) = 0;
+	virtual void getMax(orient_t flow, meter_t &max) const = 0;
 	virtual void setMax(orient_t flow, meter_t max) = 0;
 	// get/set accessors for layout weights
-	virtual void getWeight(orient_t flow, meter_t &weight) = 0;
+	virtual void getWeight(orient_t flow, meter_t &weight) const = 0;
 	virtual void setWeight(orient_t flow, meter_t weight) = 0;
 	// get/set accessors for layout descriptors
-	virtual void getFlow(orient_t flow, Flow &desc) = 0;
+	virtual void getFlow(orient_t flow, Flow &desc) const = 0;
 	virtual void setFlow(orient_t flow, const Flow &desc) = 0;
 	// get/set accessor for bounding rectangle.
 	virtual void getRect(rect_t &rect) const = 0;
@@ -60,8 +60,6 @@ struct ITile
 	virtual void setScrollPoint(const point_t &pt) = 0;
 	// returns true if point lies within layout.
 	virtual bool contains(point_t pt) const = 0;
-	// serialize
-	virtual bool save(JSON::Writer&) = 0;
 	// the tile's containing flow object
 	virtual Pane *getContainer() const = 0;
 	virtual void setContainer(Pane *) = 0;

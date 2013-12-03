@@ -15,7 +15,7 @@ typedef enum {eLeft = 1, eRight = 2, eUp = 4, eDown = 8} orient_t;
 // alignment can be OR'd of zero or more orientations.
 typedef unsigned char align_t;
 // BGR color
-typedef long color_t;
+typedef unsigned long color_t;
 // screen units
 typedef long meter_t;
 // font style

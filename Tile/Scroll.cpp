@@ -384,19 +384,6 @@ TODO
 2. mouse capture while dragging scroll thumb.
 */
 
-// serialize
-bool Scroll::save(JSON::Writer &writer)
-{
-	writer.writeStartObject();
-	writer.writeNamedValue("type", type());
-	writer.writeNamedValue("orient", Pane::getName(_flow));
-	_tile.save(writer);
-	// don't save underlying Flow's tiles.
-	// those are managed programmatically.
-	writer.writeEndObject(true);
-	return true;
-}
-
 bool Scroll::onNear(orient_t)
 {
 	if (!_focus)
@@ -415,31 +402,4 @@ bool Scroll::onFar(orient_t)
 		return true;
 	}
 	return false;
-}
-
-bool Scroll::load(JSON::Reader &json, Theme &theme, const char *type, IControl* &pControl)
-{
-	bool bOK = false;
-	if ( !strcmp(type, Scroll::type()) )
-	{
-		identity_t id = 0;
-		std::string text;
-		Flow horz, vert;
-		do
-		{
-			bOK = json.namedValue("orient", text) ||
-				json.namedValue("id", id) ||
-				loadFlow(json, "Horz", horz) ||
-				loadFlow(json, "Vert", vert);
-		}
-		while (bOK && json.comma());
-		if (bOK)
-		{
-			Scroll *p = new Scroll(id, theme, orient(text), NULL);
-			p->setFlow(eRight, horz);
-			p->setFlow(eDown, vert);
-			pControl = p;
-		}
-	}
-	return bOK;
 }

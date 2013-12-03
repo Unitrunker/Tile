@@ -136,9 +136,6 @@ struct Theme
 	Theme();
 	Theme(const Theme &copy);
 
-	bool save(const TCHAR *path);
-	bool load(const TCHAR *path);
-
 	void broadcast(const char *log) const;
 
 	// retrieve theme color.

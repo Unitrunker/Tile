@@ -2,7 +2,6 @@
 #include "Tree.h"
 #include "IWindow.h"
 #include "JSON.h"
-#include "Factory.h"
 
 /*
 Copyright © 2011-2012 Rick Parrish
@@ -117,93 +116,4 @@ size_t Tree::Add(IControl *pControl)
 		_listHidden.push_back(pControl);
 	}
 	return 0;
-}
-
-// serialize
-bool Tree::save(JSON::Writer &writer)
-{
-	std::string name;
-	orient(name, _flow);
-	writer.writeStartObject();
-	writer.writeNamedValue("type", type());
-	//writer.writeNamedValue("orient", name.c_str()); // always same.
-	_tile.save(writer);
-	writer.writeStartNamedArray("Items");
-	// Note: the tiles list includes both tiles and controls so no need to skim the controls list.
-	std::vector<IControl *>::iterator it;
-	std::vector<IControl *>::iterator end;
-
-	// enumerate controls
-
-	if (_checked)
-	{
-		// controls are visible.
-		// skip the internal Checkbox.
-		it = _listControls.begin() + 1;
-		end = _listControls.end();
-	}
-	else
-	{
-		// controls are hidden.
-		it = _listHidden.begin();	
-		end = _listHidden.end();
-	}
-
-	while (it != end)
-	{
-		ITile *p = *it;
-		p->save(writer);
-		it++;
-	}
-	writer.writeEndArray();
-	writer.writeEndObject(true);
-	return true;
-}
-
-// de-serialize
-bool Tree::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl)
-{
-	bool bOK = false;
-	if ( !strcmp(type, Tree::type()) )
-	{
-		string_t text;
-		identity_t id = 0;
-		Flow horz, vert;
-		Theme::Font font = { Theme::eDefault, theme.Text };
-		bool bOnce = false;
-
-		do
-		{
-			bOK = reader.namedValue("orient", text) || // orientation - if given - is ignored.
-				reader.namedValue("id", id) ||
-				loadFlow(reader, "Horz", horz) ||
-				loadFlow(reader, "Vert", vert) ||
-				reader.namedValue("text", text) ||
-				loadFont(reader, "Font", font);
-
-			bOnce = bOK || bOnce;
-		}
-		while (bOK && reader.comma());
-
-		if (bOnce)
-		{
-			Tree *pTree = new Tree(id, theme, font, text.c_str());
-			pTree->setFlow(eRight, horz);
-			pTree->setFlow(eDown, vert);
-			if ( reader.beginNamedArray("Items") )
-			{
-				do
-				{
-					Pane *pPane = pTree;
-					bOK = loadUnknown(reader, theme, pPane);
-				}
-				while ( bOK && reader.comma() );
-				if (bOK)
-					bOK = reader.endArray();
-			}
-			if (bOK)
-				pControl = pTree;
-		}
-	}
-	return bOK;
 }

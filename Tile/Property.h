@@ -23,6 +23,7 @@ struct Property
 	bool list;				// true to include in List control.
 	bool grid;				// true to include in Grid control.
 
+
 	Property(const TCHAR *name, const TCHAR *notes, IControl *, bool grid = true, bool list = true);
 	~Property();
 };

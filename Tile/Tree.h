@@ -24,18 +24,15 @@ struct Tree : public Pane, public IAccessor<bool>
 	size_t Add(IControl* pControl);
 	// instance type
 	virtual const char* getType() const;
-	// serialize
-	virtual bool save(JSON::Writer &writer);
-	// de-serialize
-	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pDraw);
 	static const char* type();
+
+	Text _label;
 
 protected:
 	void hideControls();
 	std::vector<IControl*> _listHidden;
 	Pane _header;
 	Check _control;
-	Text _label;
 	bool _checked;
 };
 

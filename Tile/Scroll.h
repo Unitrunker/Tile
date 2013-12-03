@@ -75,10 +75,11 @@ struct Scroll : public Pane
 	using Pane::Draw;
 	using Pane::getContainer;
 	using Pane::setContainer;
-	// serialize
-	virtual bool save(JSON::Writer &writer);
-	static bool load(JSON::Reader &json, Theme &theme, const char *type, IControl* &pControl);
 	static const char* type();
+
+	bool _readOnly;
+	bool _enable;
+	long _min, _max, _value;
 private:
 	bool onMove(MouseEvent &action);
 	bool onClick(MouseEvent &action);
@@ -88,9 +89,6 @@ private:
 	Fill _farSpacer;
 	Fill _thumb;
 	bool _focus;
-	bool _readOnly;
-	bool _enable;
-	long _min, _max, _value;
 	size_t _indexNear, _indexThumb, _indexFar;
 	bool _drag;
 	point_t _pt;

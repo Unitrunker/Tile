@@ -27,10 +27,6 @@ struct Button : public Control
 	virtual const char* getType() const;
     /// <param name="canvas">canvas where this object will be drawn</param>
 	virtual bool Draw(ICanvas *canvas, bool bFocus);
-	// serialize
-	virtual bool save(JSON::Writer &writer);
-	// de-serialize
-	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pButton);
 
 	// IControl implementation
 	// key event sink
@@ -92,6 +88,15 @@ struct Button : public Control
 	void setColorDn(const Theme::Color &fore, const Theme::Color &back);
 	void setColorOver(const Theme::Color &fore, const Theme::Color &back);
 	void setColorFocus(const Theme::Color &fore, const Theme::Color &back);
+
+	const string_t &getTextUp() const;
+	const string_t &getTextOver() const;
+	const string_t &getTextDn() const;
+
+	void getColorUp(Theme::Color &fore, Theme::Color &back) const;
+	void getColorDn(Theme::Color &fore, Theme::Color &back) const;
+	void getColorOver(Theme::Color &fore, Theme::Color &back) const;
+	void getColorFocus(Theme::Color &fore, Theme::Color &back) const;
 
 	static const char* type();
 

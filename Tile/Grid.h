@@ -29,11 +29,6 @@ struct Grid : public Pane, public INotify
 	// Clear selection.
 	void clearSelect();
 
-	// serialize
-	virtual bool save(JSON::Writer &writer);
-	// de-serialize
-	static bool load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl);
-
 protected:
 	virtual void onIndexChanged(size_t index);
 private:

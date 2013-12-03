@@ -353,8 +353,17 @@ bool Grid::dispatch(KeyEvent &action)
 					_pDesktop->setFocus(true);
 					setChanged(true);
 					// copy heading flow to rows.
+					return true;
 				}
-				return true;
+				if ( getEnable() )
+					return true;
+			}
+			// don't allow scrolling beyond grid when editing is enabled.
+			if ( getEnable() && ( (index + 1) < _listControls.size() ) )
+			{
+				// If next visible row slot does not have a property set, don't advance.
+				Row *row = reinterpret_cast<Row *>(_listControls[index + 1]);
+				return row->_set == NULL;
 			}
 		}
 		// up arrow key?
@@ -371,8 +380,11 @@ bool Grid::dispatch(KeyEvent &action)
 					onRowIndexChanged();
 					_pDesktop->setFocus(true);
 					setChanged(true);
+					return true;
 				}
-				return true;
+				// don't allow scrolling beyond grid when editing is enabled.
+				if ( getEnable() )
+					return true;
 			}
 		}
 
@@ -522,45 +534,6 @@ void Grid::clickHeader(Button *control)
 	setChanged(true);
 }
 
-// serialize
-bool Grid::save(JSON::Writer &writer)
-{
-	writer.writeStartObject();
-	writer.writeNamedValue("type", type());
-	_tile.save(writer);
-	writer.writeEndObject(true);
-	return true;
-}
-
-// de-serialize
-bool Grid::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pControl)
-{
-	bool bOK = false;
-	if ( !strcmp(type, Grid::type()) )
-	{
-		identity_t id = 0;
-		Flow horz, vert;
-		do
-		{
-			bOK = reader.namedValue("id", id) ||
-				loadFlow(reader, "Horz", horz) ||
-				loadFlow(reader, "Vert", vert);
-		}
-		while (bOK && reader.comma());
-
-		if (bOK)
-		{
-			Grid *pGrid = new Grid(id, theme);
-			pGrid->setFlow(eDown, vert);
-			pGrid->setFlow(eRight, horz);
-			// nested content cannot be loaded via JSON. Must come from a Table.
-			// Don't have a JSON spec for Tables.
-			pControl = pGrid;
-		}
-	}
-	return bOK;
-}
-
 size_t Grid::getRowIndex() const
 {
 	size_t index = 0;
@@ -600,4 +573,5 @@ void Grid::onRowIndexChanged()
 void Grid::clearSelect()
 {
 	_table->clearSelect();
+	setChanged(true);
 }

@@ -48,21 +48,19 @@ struct Arrow : public Tile
 	using Tile::setScrollPoint;
 
 	using Tile::contains;
-	// serialize
-	virtual bool save(JSON::Writer &writer);
 	static const char* type();
 
-	static bool load(JSON::Reader &reader, Theme &theme, const char *type, ITile *&pArrow);
+	const string_t &getText() const;
 
 	// PickColor needs access to these.
 	Theme::Color _fore;
 	Theme::Color _back;
+	// orientation of arrow
+	orient_t _flow;
 
 private:
 	// glyph index
 	string_t _text;
-	// orientation of arrow
-	orient_t _flow;
 };
 
 };

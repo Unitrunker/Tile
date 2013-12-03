@@ -158,7 +158,7 @@ void Control::setScrollPoint(const point_t &pt)
 	_tile.setScrollPoint(pt);
 }
 
-void Control::getMin(orient_t flow, meter_t &min)
+void Control::getMin(orient_t flow, meter_t &min) const
 {
 	_tile.getMin(flow, min);
 }
@@ -168,7 +168,7 @@ void Control::setMin(orient_t flow, meter_t min)
 	_tile.setMin(flow, min);
 }
 
-void Control::getMax(orient_t flow, meter_t &max)
+void Control::getMax(orient_t flow, meter_t &max) const
 {
 	_tile.getMax(flow, max);
 }
@@ -178,7 +178,7 @@ void Control::setMax(orient_t flow, meter_t max)
 	_tile.setMax(flow, max);
 }
 
-void Control::getWeight(orient_t flow, meter_t &weight)
+void Control::getWeight(orient_t flow, meter_t &weight) const
 {
 	_tile.getWeight(flow, weight);
 }
@@ -188,7 +188,7 @@ void Control::setWeight(orient_t flow, meter_t weight)
 	_tile.setWeight(flow, weight);
 }
 
-void Control::getFlow(orient_t flow, Flow &desc)
+void Control::getFlow(orient_t flow, Flow &desc) const
 {
 	_tile.getFlow(flow, desc);
 }

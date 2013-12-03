@@ -30,45 +30,6 @@ Font::Font(const TCHAR *face, meter_t height, style_t style) :
 {
 }
 
-bool Font::save(JSON::Writer &writer, const char *name, const Font &desc)
-{
-	std::string face;
-	size_t used = 0;
-
-	face.resize(desc._face.size() + 2, ' ');
-	wcstombs_s(&used, &face[0], face.size(), desc._face.c_str(), desc._face.size());
-	face.resize(used);
-
-	writer.writeStartNamedObject(name);
-	writer.writeNamedValue("face", face.c_str());
-	writer.writeNamedValue("height", desc._height);
-	writer.writeEndObject();
-	return true;
-}
-
-bool Font::load(JSON::Reader &json, const char *name, Font &desc)
-{
-	bool bOK = false;
-	if ( json.beginNamedObject(name) )
-	{
-		std::string face;
-		bOK = json.namedValue("face", face) &&
-			json.comma() &&
-			json.namedValue("height", desc._height) &&
-			json.endObject();
-		if (bOK)
-		{
-			string_t wide;
-			wide.resize(face.size() + 1, ' ');
-			size_t used = 0;
-			mbstowcs_s(&used, &wide[0], wide.size(), face.c_str(), face.size());
-			wide.resize(used); 
-			desc._face = wide;
-		}
-	}
-	return bOK;
-}
-
 void Font::toString(string_t &s)
 {
 	TCHAR work[16] = {0};

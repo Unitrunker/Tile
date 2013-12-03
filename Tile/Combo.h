@@ -51,10 +51,10 @@ struct Combo : public Pane, public Colorful
 	virtual bool onFar(orient_t);
 	virtual bool hasControls() const { return true; }
 
-	void getLabel(string_t &value);
+	void getLabel(string_t &value) const;
 	bool setLabel(const string_t &value);
 
-	void getValue(long &value);
+	void getValue(long &value) const;
 	bool setValue(long value);
 	// ITile implementation
 	using Pane::identity;
@@ -62,13 +62,13 @@ struct Combo : public Pane, public Colorful
 	virtual const char* getType() const;
 
 	// get/set accessors for layout mimimums
-	virtual void getMin(orient_t flow, meter_t &min);
+	virtual void getMin(orient_t flow, meter_t &min) const;
 	using Pane::setMin;
 	// get/set accessors for layout maximums
-	virtual void getMax(orient_t flow, meter_t &max);
+	virtual void getMax(orient_t flow, meter_t &max) const;
 	using Pane::setMax;
 	// get/set accessors for layout weights
-	virtual void getWeight(orient_t flow, meter_t &weight);
+	virtual void getWeight(orient_t flow, meter_t &weight) const;
 	using Pane::setWeight;
 	// get/set accessors for layout descriptors
 	using Pane::getFlow;

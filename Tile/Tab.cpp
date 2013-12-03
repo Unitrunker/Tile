@@ -68,11 +68,11 @@ bool Tab::Draw(ICanvas *canvas, bool bFocus)
 		fore = _tile.getColor(_colorSelect[0]);
 		back = _tile.getColor(_colorSelect[1]);
 	}
-	else if (_hover)
-	{
-		fore = _tile.getColor(_colorOver[0]);
-		back = _tile.getColor(_colorOver[1]);
-	}
+	//else if (_hover)
+	//{
+	//	fore = _tile.getColor(_colorOver[0]);
+	//	back = _tile.getColor(_colorOver[1]);
+	//}
 	else
 	{
 		fore = _tile.getColor(_colorIdle[0]);
@@ -135,6 +135,15 @@ bool Tab::dispatch(MouseEvent &action)
 				{
 					setFocus(true);
 					setChanged(true);
+					Pane *owner = _tile.getContainer();
+					IControl *control = this;
+					// set that tab's containing control index.
+					for (size_t i = 0; i < owner->getControlCount(); i++)
+						if (owner->getControl(i) == control)
+						{
+							owner->setIndex(i);
+							break;
+						}
 					if (!Click.empty())
 						Click(this);
 				}
@@ -145,114 +154,6 @@ bool Tab::dispatch(MouseEvent &action)
 		}
 	}
 	return Control::dispatch(action);
-}
-
-// serialize
-bool Tab::save(JSON::Writer &writer)
-{
-	writer.writeStartObject();
-	writer.writeNamedValue("type", type());
-	_tile.save(writer);
-
-	writer.writeStartNamedObject("Idle");
-	 saveColor(writer, "fore", _colorIdle[true], false);
-	 saveColor(writer, "back", _colorIdle[false], false);
-	writer.writeEndObject(false);
-
-	writer.writeStartNamedObject("Over");
-	 saveColor(writer, "fore", _colorOver[true], false);
-	 saveColor(writer, "back", _colorOver[false], false);
-	writer.writeEndObject(false);
-
-	writer.writeStartNamedObject("Select");
-	 saveColor(writer, "fore", _colorSelect[true], false);
-	 saveColor(writer, "back", _colorSelect[false], false);
-	writer.writeEndObject(false);
-
-	writer.writeNamedValue("text", _text.c_str());
-	saveFont(writer, "Font", _tile.getFont(), false);
-	writer.writeEndObject(true);
-	return true;
-}
-
-// de-serialize
-bool Tab::load(JSON::Reader &reader, Theme &theme, const char *type, IControl *&pTab)
-{
-	bool bOK = false;
-	if ( !strcmp(type, Tab::type()) )
-	{
-		identity_t id = 0;
-		std::string text;
-		Flow horz, vert;
-		Theme::Color idle[2];
-		Theme::Color over[2];
-		Theme::Color focus[2];
-		Theme::Font desc = {Theme::eDefault, Font(_T("MS Shell Dlg"), 18, 0)};
-
-		do
-		{
-			bOK = reader.namedValue("id", id) ||
-				loadFlow(reader, "Horz", horz) ||
-				loadFlow(reader, "Vert", vert) ||
-				reader.namedValue("text", text) ||
-				loadFont(reader, "Font", desc);
-
-			if (!bOK)
-			{
-				if ( reader.beginNamedObject("Idle") )
-				{
-					do
-					{
-						bOK = loadColor(reader, "fore", idle[true]) ||
-							loadColor(reader, "back", idle[false]);
-					}
-					while (bOK && reader.comma());
-					bOK = reader.endObject();
-				}
-				else if ( reader.beginNamedObject("Over") )
-				{
-					do
-					{
-						bOK = loadColor(reader, "fore", over[true]) ||
-							loadColor(reader, "back", over[false]);
-					}
-					while (bOK && reader.comma());
-					bOK = reader.endObject();
-				}
-				else if ( reader.beginNamedObject("Select") )
-				{
-					do
-					{
-						bOK = loadColor(reader, "fore", focus[true]) ||
-							loadColor(reader, "back", focus[false]);
-					}
-					while (bOK && reader.comma());
-					bOK = reader.endObject();
-				}
-			}
-		}
-		while (bOK && reader.comma());
-		if (bOK)
-		{
-			string_t wide;
-			wide.resize(text.size() + 1, ' ');
-			size_t used = 0;
-			mbstowcs_s(&used, &wide[0], wide.size(), text.c_str(), text.size());
-			wide.resize(used);
-
-			Tab *p = new Tab(id, theme, desc, wide.c_str());
-			p->setFlow(eRight, horz);
-			p->setFlow(eDown, vert);
-			p->_colorIdle[false] = idle[false];
-			p->_colorIdle[true] = idle[true];
-			p->_colorOver[false] = over[false];
-			p->_colorOver[true] = over[true];
-			p->_colorSelect[false] = focus[false];
-			p->_colorSelect[true] = focus[true];
-			pTab = p;
-		}
-	}
-	return bOK;
 }
 
 bool Tab::getTip(string_t &tip) const
@@ -325,6 +226,34 @@ void Tab::setColorSelect(const Theme::Color &fore, const Theme::Color &back)
 {
 	_colorSelect[0] = fore;
 	_colorSelect[1] = back;
+}
+
+void Tab::getColorIdle(Theme::Color &fore, Theme::Color &back) const
+{
+	fore = _colorIdle[0];
+	back = _colorIdle[1];
+}
+
+void Tab::getColorOver(Theme::Color &fore, Theme::Color &back) const
+{
+	fore = _colorOver[0];
+	back = _colorOver[1];
+}
+
+void Tab::getColorSelect(Theme::Color &fore, Theme::Color &back) const
+{
+	fore = _colorSelect[0];
+	back = _colorSelect[1];
+}
+
+void Tab::setText(const TCHAR *text)
+{
+	_text = text;
+}
+
+const string_t &Tab::getText() const
+{
+	return _text;
 }
 
 #if 0

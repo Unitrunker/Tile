@@ -44,7 +44,6 @@ struct Glyph : public Tile
 	// serialize
 	virtual bool save(JSON::Writer &writer);
 	static const char* type();
-private:
 	// glyph index
 	string_t _text;
 };

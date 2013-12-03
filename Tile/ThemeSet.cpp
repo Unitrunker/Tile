@@ -222,32 +222,32 @@ ThemeSet::ThemeSet(Theme &theme) :
 	Sections.push_back(section);
 
 	section = new Section(_T("Caption"), _T("Captions and labels"));
-	prop = new Property(_T("Fore"), _T("Caption text foreground color"), new PickColor(0, theme, _captionFore) );
+	prop = new Property(_T("Fore"), _T("Caption text foreground color"), new PickColor(0, theme, &_captionFore) );
 	section->Items.push_back(prop);
-	prop = new Property(_T("Back"), _T("Caption text background color"), new PickColor(0, theme, _captionBack) );
+	prop = new Property(_T("Back"), _T("Caption text background color"), new PickColor(0, theme, &_captionBack) );
 	section->Items.push_back(prop);
 	Sections.push_back(section);
 	
 	section = new Section(_T("Data"), _T("Data display appearance") );
-	prop = new Property( _T("Fore"), _T("Data foreground color"), new PickColor(0, theme, _dataFore) );
+	prop = new Property( _T("Fore"), _T("Data foreground color"), new PickColor(0, theme, &_dataFore) );
 	section->Items.push_back(prop);
-	prop = new Property( _T("Back"), _T("Data background color"), new PickColor(0, theme, _dataBack) );
+	prop = new Property( _T("Back"), _T("Data background color"), new PickColor(0, theme, &_dataBack) );
 	section->Items.push_back(prop);
 	Sections.push_back(section);
 
 	section = new Section(_T("Cell"), _T("Active cell") );
-	prop = new Property( _T("Fore"), _T("Active cell's foreground color"), new PickColor(0, theme, _cellFore) );
+	prop = new Property( _T("Fore"), _T("Active cell's foreground color"), new PickColor(0, theme, &_cellFore) );
 	section->Items.push_back(prop);
-	prop = new Property( _T("Back"), _T("Active cell's background color"), new PickColor(0, theme, _cellBack) );
+	prop = new Property( _T("Back"), _T("Active cell's background color"), new PickColor(0, theme, &_cellBack) );
 	section->Items.push_back(prop);
 	Sections.push_back(section);
 
 	section = new Section(_T("Tool"), _T("Tool button display") );
-	prop = new Property( _T("Fore"), _T("Tool's foreground color"), new PickColor(0, theme, _toolFore) );
+	prop = new Property( _T("Fore"), _T("Tool's foreground color"), new PickColor(0, theme, &_toolFore) );
 	section->Items.push_back(prop);
-	prop = new Property( _T("Back"), _T("Tool's background color"), new PickColor(0, theme, _toolBack) );
+	prop = new Property( _T("Back"), _T("Tool's background color"), new PickColor(0, theme, &_toolBack) );
 	section->Items.push_back(prop);
-	prop = new Property( _T("Over"), _T("Color when mouse passes over"), new PickColor(0, theme, _toolOver) );
+	prop = new Property( _T("Over"), _T("Color when mouse passes over"), new PickColor(0, theme, &_toolOver) );
 	section->Items.push_back(prop);
 	Check *check = new Check(0, theme, &_tip);
 	prop = new Property( _T("Tips"), _T("Display informative tip text balloons"), check);
@@ -255,7 +255,7 @@ ThemeSet::ThemeSet(Theme &theme) :
 	Sections.push_back(section);
 
 	section = new Section(_T("Grid"), _T("Grid appearance") );
-	prop = new Property( _T("Color"), _T("Grid line color"), new PickColor(0, theme, _gridLines) );
+	prop = new Property( _T("Color"), _T("Grid line color"), new PickColor(0, theme, &_gridLines) );
 	section->Items.push_back(prop);
 	prop = new Property( _T("Thick"), _T("Grid line thickness"), new Edit(0, theme, textFont, &_gridThickText) );
 	section->Items.push_back(prop);

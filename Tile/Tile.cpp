@@ -172,7 +172,7 @@ void Tile::setScrollPoint(const point_t &pt)
 }
 
 // get minimim required measure in the requested orientation.
-void Tile::getMin(orient_t flow, meter_t &min)
+void Tile::getMin(orient_t flow, meter_t &min) const
 {
 	const Font &font = getFont(_font);
 	switch (flow)
@@ -214,7 +214,7 @@ void Tile::setMin(orient_t flow, meter_t min)
 }
 
 // get maximim allowed measure in the requested orientation.
-void Tile::getMax(orient_t flow, meter_t &max)
+void Tile::getMax(orient_t flow, meter_t &max) const
 {
 	const Font &font = getFont(_font);
 	switch (flow)
@@ -256,7 +256,7 @@ void Tile::setMax(orient_t flow, meter_t max)
 }
 
 // get weight value for computing allocation pixels in excess minimums.
-void Tile::getWeight(orient_t flow, meter_t &weight)
+void Tile::getWeight(orient_t flow, meter_t &weight) const
 {
 	switch (flow)
 	{
@@ -292,7 +292,7 @@ void Tile::setWeight(orient_t flow, meter_t weight)
 	}
 }
 
-void Tile::getFlow(orient_t flow, Flow &desc)
+void Tile::getFlow(orient_t flow, Flow &desc) const
 {
 	switch (flow)
 	{
@@ -414,6 +414,11 @@ color_t Tile::getColor(const Theme::Color &pick) const
 }
 
 Theme& Tile::getTheme()
+{
+	return _theme;
+}
+
+const Theme& Tile::getTheme() const
 {
 	return _theme;
 }

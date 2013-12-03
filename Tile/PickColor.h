@@ -15,7 +15,7 @@ struct Edit;
 
 struct PickColor : public Pane, private IAccessor<color_t>
 {
-	PickColor(identity_t id, Theme &theme, IAccessor<color_t>& access);
+	PickColor(identity_t id, Theme &theme, IAccessor<color_t>* access = NULL);
 	virtual void setRect(const rect_t &rect);
 	// get/set accessors for layout mimimums
 	virtual void getMin(orient_t flow, meter_t &min);
@@ -40,7 +40,7 @@ private:
 	virtual bool setValue(const color_t &value);
 
 	ColorReference _local;
-	IAccessor<color_t> &_access;
+	IAccessor<color_t> *_access;
 	mutable Arrow *_arrow;
 	Edit *_edit;
 };

@@ -52,10 +52,6 @@ struct Fill : public Tile
 	using Tile::setScrollPoint;
 
 	using Tile::contains;
-	// serialize
-	virtual bool save(JSON::Writer &writer);
-	// de-serialize
-	static bool load(JSON::Reader &reader, Theme &theme, const char *type, ITile *&pDraw);
 	static const char* type();
 };
 

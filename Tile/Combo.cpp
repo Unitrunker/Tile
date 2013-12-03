@@ -243,7 +243,7 @@ bool Combo::onFar(orient_t)
 	return _focus;
 }
 
-void Combo::getLabel(string_t &value)
+void Combo::getLabel(string_t &value) const
 {
 	if (_index < _list.size())
 		value = _list[_index]._label;
@@ -265,7 +265,7 @@ bool Combo::setLabel(const string_t &value)
 	return bOK;
 }
 
-void Combo::getValue(long &value)
+void Combo::getValue(long &value) const
 {
 	if (_index < _list.size())
 		value = _list[_index]._value;
@@ -373,7 +373,7 @@ void Combo::synchronize()
 // pre-empt normal Pane logic for calculating horizontal flow
 
 // get/set accessors for layout mimimums
-void Combo::getMin(orient_t flow, meter_t &min)
+void Combo::getMin(orient_t flow, meter_t &min) const
 {
 	if ( horizontal(flow) )
 		_tile.getMin(flow, min);
@@ -382,7 +382,7 @@ void Combo::getMin(orient_t flow, meter_t &min)
 }
 
 // get/set accessors for layout mimimums
-void Combo::getMax(orient_t flow, meter_t &max)
+void Combo::getMax(orient_t flow, meter_t &max) const
 {
 	if ( horizontal(flow) )
 		_tile.getMax(flow, max);
@@ -391,7 +391,7 @@ void Combo::getMax(orient_t flow, meter_t &max)
 }
 
 // get/set accessors for layout mimimums
-void Combo::getWeight(orient_t flow, meter_t &weight)
+void Combo::getWeight(orient_t flow, meter_t &weight) const
 {
 	Pane::getWeight(flow, weight);
 }
