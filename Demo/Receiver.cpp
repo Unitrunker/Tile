@@ -44,8 +44,9 @@ Tiles::Set *SignalVCO::getUI(Theme &theme)
 ReceiverSet::ReceiverSet(Theme& theme) : 
 #pragma warning(disable:4355)
 	Label(*this, &Receiver::_label),
-	Active(*this, &Receiver::_active)
+	Active(*this, &Receiver::_active),
 #pragma warning(default:4355)
+	_add(false)
 {
 	Section *section = NULL;
 	Property *prop = NULL;
@@ -74,6 +75,34 @@ bool ReceiverSet::getCaption(string_t &label) const
 		label = caption;
 	}
 	return true;
+}
+
+// allow or disallow editing of the primary key.
+void ReceiverSet::setAdd(bool add)
+{
+	_add = add;
+}
+
+// allow or disallow editing of the primary key.
+bool ReceiverSet::getAdd() const
+{
+	return _add;
+}
+
+ReceiverFrame::ReceiverFrame(Factory &factory) : 
+	Window(factory._theme), _factory(factory), _set(factory._theme)
+{
+	Model::network_t network;
+	network._type = Model::Unknown;
+	network._network = 0;
+	identity_t id = _factory.ident();
+	Receiver* receiver = new Receiver(id, true);
+	_set.setObject(receiver);
+	_set.setAdd(true);
+	inside();
+
+	_set.setObject(receiver);
+	inside();
 }
 
 ReceiverFrame::ReceiverFrame(Factory &factory, Receiver *receiver) : 

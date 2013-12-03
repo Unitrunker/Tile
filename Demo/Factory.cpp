@@ -22,7 +22,7 @@ static void Center(RECT &rect)
 	rect.right += rect.left;
 }
 
-Factory::Factory() : _frame(NULL)
+Factory::Factory() : _frame(NULL), _last(0)
 {
 	time_t now = 0;
 	time(&now);
@@ -449,6 +449,22 @@ bool Factory::activate(std::vector<Receiver *> &list)
 	return bOK;
 }
 
+// Activate a new, blank receiver.
+bool Factory::activateReceiver()
+{
+	RECT rect = {200, 200, 840, 680};
+	Center(rect);
+	ReceiverFrame *frame = new ReceiverFrame(*this);
+	if ( frame->Create(rect) )
+	{
+		Receiver *receiver = frame->_set.at(0);
+		_mapReceivers[receiver] = frame;
+		return true;
+	}
+	delete frame;
+	return false;
+}
+
 bool Factory::deactivate(Receiver *receiver)
 {
 	std::map<Receiver *, ReceiverFrame *>::iterator it = _mapReceivers.find(receiver);
@@ -481,4 +497,9 @@ bool Factory::activate(int nCmdShow)
 	_frame->ShowWindow(nCmdShow);
 	_frame->SetActiveWindow();
 	return true;
+}
+
+unsigned long Factory::ident()
+{
+	return ++_last;
 }

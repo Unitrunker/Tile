@@ -68,7 +68,7 @@ GroupSet::GroupSet(Theme& theme) :
 	section->Items.push_back(prop);
 
 	// create a control
-	PickColor *pick = new PickColor(0, theme, _color);
+	PickColor *pick = new PickColor(0, theme, &_color);
 	// create property and assign control to it.
 	prop = new Property(_T("Color"), _T("Text foreground color"), pick);
 	section->Items.push_back(prop);

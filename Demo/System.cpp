@@ -266,6 +266,19 @@ void SystemFrame::inside()
 	button->setTip(_T("Inspect"));
 	_toolUser->Add(button);
 
+	button = new Button(0, theme, font_webdings, _T("\x78"));
+	button->Click.bind(this, &SystemFrame::clickClear);
+	button->setTip(_T("Clear"));
+	_toolSite->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x78"));
+	button->Click.bind(this, &SystemFrame::clickClear);
+	button->setTip(_T("Clear"));
+	_toolGroup->Add(button);
+	button = new Button(0, theme, font_webdings, _T("\x78"));
+	button->Click.bind(this, &SystemFrame::clickClear);
+	button->setTip(_T("Clear"));
+	_toolUser->Add(button);
+
 	button = new Button(0, theme, font_webdings, _T("\x71"));
 	button->Click.bind(this, &SystemFrame::clickRefresh);
 	button->setTip(_T("Refresh"));
@@ -379,6 +392,11 @@ void SystemFrame::clickRefresh(Button *)
 void SystemFrame::clickHome(Button *)
 {
 	_factory.activate(SW_SHOW);
+}
+
+void SystemFrame::clickClear(Button *)
+{
+	_grid->clearSelect();
 }
 
 void SystemFrame::activateInfo(Tab*)

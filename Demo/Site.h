@@ -58,7 +58,8 @@ struct SiteFrame : public Window
 	SiteSet _set;
 private:
 	Pane *_top;
-	Pane *_tools;
+	Pane *_toolInfo;
+	Pane *_toolChannels;
 	Pane *_tabset;
 	Grid *_grid;
 	List *_list;

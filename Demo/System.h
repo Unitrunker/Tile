@@ -85,6 +85,8 @@ private:
 	void clickUserMinus(Button *);
 	void clickUserInspect(Button *);
 
+	void clickClear(Button *);
+
 	void clickRefresh(Button *);
 	void clickHome(Button *);
 	void activateInfo(Tab *);

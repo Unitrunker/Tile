@@ -68,13 +68,17 @@ struct Factory
 	// exists, show it. Do not create another.
 	bool activate(Receiver *);
 	bool activate(std::vector<Receiver *> &list);
+	bool activateReceiver();
 	bool deactivate(Receiver *);
+
+	unsigned long ident();
 
 	// Singleton for the main program window.
 	FolderFrame* _frame;
 	Model::Folder _folder;
 	Tiles::Theme _theme;
 private:
+	unsigned long _last;
 	// Collections of per-instance singleton windows.
 	// Each item of data should have *at most* one frame window associated with it.
 	std::map<Model::System *, SystemFrame *> _mapSystems;

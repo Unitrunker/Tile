@@ -4,6 +4,7 @@
 #include "../Tile/Fill.h"
 #include "../Tile/Text.h"
 #include "../Tile/Edit.h"
+#include "../Tile/Toggle.h"
 #include "../WTL/Snapshot.h"
 #include <stdlib.h>
 
@@ -94,7 +95,6 @@ FolderFrame::FolderFrame(Factory &factory) :
 	tab = new Tab(0, theme, text, _T("Systems"));
 	tab->Click.bind(this, &FolderFrame::clickSystems);
 	_tabset->Add(tab);
-	_tabset->setIndex(1);
 
 	tab = new Tab(0, theme, text, _T("Receivers"));
 	tab->Click.bind(this, &FolderFrame::clickReceivers);
@@ -209,11 +209,25 @@ FolderFrame::FolderFrame(Factory &factory) :
 
 	_grid->DoubleClick.bind(this, &FolderFrame::clickSystem);
 
-	_top->Add(_toolSystem, 1, 1, 0, true);
+	Flow desc = {1, 1, 0, true};
+	_toolInfo->setFlow(_top->getFlow(), desc);
+	_toolSystem->setFlow(_top->getFlow(), desc);
+	_toolReceiver->setFlow(_top->getFlow(), desc);
+
+	_top->Add(_toolSystem, true);
+
 	_top->Add(_grid, 0, 4096, 1, false);
-	_top->Add(_tabset, 1, 1, 0, true);
+
+	// hack to give tabset it's own internal index for tab navigation.
+	_tabset->setFlow(_top->getFlow(), desc);
+	_top->Add(_tabset, true);
+	//_top->Add(_tabset, 1, 1, 0, true);
+
 	// connect the form to the frame window.
 	setPane(_top);
+
+	// Set this AFTER the tabset is added to the top pane.
+	_tabset->setIndex(1);
 }
 
 void FolderFrame::clickSystem(Grid *, size_t row, size_t)
@@ -235,10 +249,11 @@ void FolderFrame::clickReceiver(Grid *, size_t row, size_t)
 void FolderFrame::clickTheme(Tab*)
 {
 	_top->clear();
-	_top->Add(_toolInfo, 1, 1, 0, true);
+	_top->Add(_toolInfo, true);
 	_top->Add(_list, 0, 4096, 1, false);
-	_top->Add(_tabset, 1, 1, 0, true);
+	_top->Add(_tabset, true);
 	_top->reflow();
+	_tabset->setIndex(0);
 }
 
 void FolderFrame::clickSystems(Tab*)
@@ -246,10 +261,11 @@ void FolderFrame::clickSystems(Tab*)
 	_top->clear();
 	_grid->DoubleClick.bind(this, &FolderFrame::clickSystem);
 	_grid->setTable(&_tableSystems);
-	_top->Add(_toolSystem, 1, 1, 0, true);
+	_top->Add(_toolSystem, true);
 	_top->Add(_grid, 0, 4096, 1, false);
-	_top->Add(_tabset, 1, 1, 0, true);
+	_top->Add(_tabset, true);
 	_top->reflow();
+	_tabset->setIndex(1);
 }
 
 void FolderFrame::clickReceivers(Tab*)
@@ -257,10 +273,11 @@ void FolderFrame::clickReceivers(Tab*)
 	_top->clear();
 	_grid->DoubleClick.bind(this, &FolderFrame::clickReceiver);
 	_grid->setTable(&_tableReceivers);
-	_top->Add(_toolReceiver, 1, 1, 0, true);
+	_top->Add(_toolReceiver, true);
 	_top->Add(_grid, 0, 4096, 1, false);
-	_top->Add(_tabset, 1, 1, 0, true);
+	_top->Add(_tabset, true);
 	_top->reflow();
+	_tabset->setIndex(2);
 }
 
 void FolderFrame::clickHome(Button*)
@@ -304,13 +321,17 @@ void FolderFrame::clickReceiverMinus(Button*)
 
 void FolderFrame::clickReceiverPlus(Button*)
 {
+	_factory.activateReceiver();
 }
 
 void FolderFrame::clickReceiverInspect(Button*)
 {
 	std::vector<Receiver*> list;
-	//_set.at(0)->Receivers.getSelected(list);
-	//_factory.activate(list);
+	_receivers.getSelected(list);
+	if (list.size() == 1)
+		_factory.activate(list);
+	else
+		MessageBox(_T("Sorry, can't edit receivers in aggregate."), _T("Multiselect"), MB_ICONERROR|MB_OK);
 }
 
 void FolderFrame::clickAbout(Button*)

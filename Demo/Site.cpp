@@ -148,12 +148,14 @@ void SiteFrame::inside()
 
 	_top = new Pane(0, theme, eDown);
 	_tabset = new Pane(0, theme, eRight);
-	_tools = new Pane(0, theme, eRight);
+	_toolInfo = new Pane(0, theme, eRight);
+	_toolChannels = new Pane(0, theme, eRight);
 	_set.Remove.bind(this, &SiteFrame::remove);
 
 	Theme::Color color(Theme::eToolOver, theme.ToolOver);
 	_tabset->setLineColor(color);
-	_tools->setLineColor(color);
+	_toolInfo->setLineColor(color);
+	_toolChannels->setLineColor(color);
 
 	Tab* tab = NULL;
 	Button* button = NULL;
@@ -167,35 +169,58 @@ void SiteFrame::inside()
 	button = new Button(0, theme, font_webdings, _T("\x48"));
 	button->Click.bind(this, &SiteFrame::clickHome);
 	button->setTip(_T("Home"));
-	_tools->Add(button);	// home
+	_toolInfo->Add(button);	// home
+
+	button = new Button(0, theme, font_webdings, _T("\x48"));
+	button->Click.bind(this, &SiteFrame::clickHome);
+	button->setTip(_T("Home"));
+	_toolChannels->Add(button);	// home
 
 	button = new Button(0, theme, font_segoe, _T("\x270D"));
 	button->Click.bind(this, &SiteFrame::clickHome);
 	button->setTip(_T("Edit"));
-	_tools->Add(button);
+	_toolInfo->Add(button);
+
+	button = new Button(0, theme, font_segoe, _T("\x270D"));
+	button->Click.bind(this, &SiteFrame::clickHome);
+	button->setTip(_T("Edit"));
+	_toolChannels->Add(button);
 
 	button = new Button(0, theme, font_segoe, _T("+"));
 	button->Click.bind(this, &SiteFrame::clickPlus);
 	button->setTip(_T("Add"));
-	_tools->Add(button);
+	_toolChannels->Add(button);
+
 	button = new Button(0, theme, font_segoe, _T("-"));
 	button->Click.bind(this, &SiteFrame::clickMinus);
 	button->setTip(_T("Remove"));
-	_tools->Add(button);
+	_toolChannels->Add(button);
+
 	button = new Button(0, theme, font_webdings, _T("\x4C"));
-	button->Click.bind(this, &SiteFrame::clickHome);
+	button->Click.bind(this, &SiteFrame::clickInspect);
 	button->setTip(_T("Inspect"));
-	_tools->Add(button);
+	_toolChannels->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x78"));
+	button->Click.bind(this, &SiteFrame::clickClear);
+	button->setTip(_T("Clear"));
+	_toolChannels->Add(button);
+
 	button = new Button(0, theme, font_webdings, _T("\x71"));
-	button->Click.bind(this, &SiteFrame::clickHome);
+	button->Click.bind(this, &SiteFrame::clickRefresh);
 	button->setTip(_T("Refresh"));
-	_tools->Add(button);
+	_toolInfo->Add(button);
+
+	button = new Button(0, theme, font_webdings, _T("\x71"));
+	button->Click.bind(this, &SiteFrame::clickRefresh);
+	button->setTip(_T("Refresh"));
+	_toolChannels->Add(button);
 
 	if (_set.getAdd() )
 	{
 		button = new Button(0, theme, font_segoe, _T("Commit"));
 		button->Click.bind(this, &SiteFrame::clickMinus);
-		_tools->Add(button);
+		_toolChannels->Add(button);
 	}
 
 	tab = new Tab(0, theme, text, _T("Info"));
@@ -217,7 +242,7 @@ void SiteFrame::inside()
 	_list = new List(0, theme);
 	_list->setItems(&_set);
 
-	_top->Add(_tools, 1, 1, 0, true);
+	_top->Add(_toolInfo, 1, 1, 0, true);
 	_top->Add(_list, 0, 4096, 1, false);
 	_top->Add(_tabset, 1, 1, 0, true);
 	setPane(_top);
@@ -276,7 +301,7 @@ void SiteFrame::clickRefresh(Button *)
 
 void SiteFrame::clickClear(Button *)
 {
-	//
+	_grid->clearSelect();
 }
 
 void SiteFrame::activateInfo(Tab*)
@@ -285,7 +310,7 @@ void SiteFrame::activateInfo(Tab*)
 	_tabset->watch(NULL);
 	_grid->watch(NULL);
 	_list->watch(NULL);
-	_top->Add(_tools);
+	_top->Add(_toolInfo);
 	_top->Add(_list);
 	_top->Add(_tabset);
 	_top->reflow();
@@ -296,7 +321,7 @@ void SiteFrame::activateChannels(Tab*)
 	_top->clear();
 	_grid->setTable(&_channels);
 	_grid->DoubleClick.bind(this, &SiteFrame::activateChannelPopup);
-	_top->Add(_tools);
+	_top->Add(_toolChannels);
 	_top->Add(_grid);
 	_top->Add(_tabset);
 	_top->reflow();
@@ -307,7 +332,7 @@ void SiteFrame::activateHistory(Tab*)
 	_top->clear();
 	_grid->setTable(NULL);
 	_grid->DoubleClick.clear();
-	_top->Add(_tools);
+	_top->Add(_toolInfo);
 	_top->Add(_grid);
 	_top->Add(_tabset);
 	_top->reflow();

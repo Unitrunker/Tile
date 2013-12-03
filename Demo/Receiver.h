@@ -92,18 +92,24 @@ struct ReceiverSet : public SetFollowT<Receiver>
 	ReceiverSet(Theme&);
 	bool getCaption(string_t &label) const;
 	Reflect<Receiver, bool> Active;
+	void setAdd(bool);
+	bool getAdd() const;
 private:
 	Reflect<Receiver, string_t> Label;
+	bool _add;
 };
 
 typedef AVL<unsigned long, Receiver *, Receiver *, Receiver::less, Receiver::byID> Receivers;
 
 struct ReceiverFrame : public Window
 {
+	ReceiverFrame(Factory &factory);
 	ReceiverFrame(Factory &factory, Receiver *receiver);
 	ReceiverFrame(Factory &factory, std::vector<Receiver *> &list);
 	virtual ~ReceiverFrame();
 	bool Create(RECT &rect);
+
+	ReceiverSet _set;
 private:
 	void clickety(Grid *, size_t row, size_t col);
 	void clickControl(Tab*);
@@ -122,6 +128,5 @@ private:
 	Pane *_tools;
 	List *_list;
 	Factory& _factory;
-	ReceiverSet _set;
 	std::map<IControl*, VCO*> _map;
 };
