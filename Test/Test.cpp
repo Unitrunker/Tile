@@ -18,7 +18,7 @@
 #include "../Tile/Glyph.h"
 #include "../Tile/Toggle.h"
 #include "../Stream/FileOutputStream.h"
-#include "../JSON/Reader.h"
+#include "../JSONTile/Factory.h"
 #include "../JSON/Writer.h"
 #include <io.h>
 
@@ -337,8 +337,9 @@ static void testFlow()
 
 static bool testJSONControl(IControl *pControl, const TCHAR *reference)
 {
-	JSON::Writer reader;
+	//JSON::Writer reader;
 	JSON::Writer writer;
+
 	const TCHAR test[] = _T("test.json");
 	bool bOK = false;
 
@@ -346,7 +347,8 @@ static bool testJSONControl(IControl *pControl, const TCHAR *reference)
 	{
 		TCHAR shell[32] = {0};
 
-		pControl->save(writer);
+		Factory::save(writer, pControl);
+
 		writer.Close();
 
 		// read access?
