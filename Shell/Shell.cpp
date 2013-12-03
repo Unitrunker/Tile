@@ -7,6 +7,7 @@
 
 #include "AboutDlg.h"
 #include "MainFrame.h"
+#include "../JSONTile/Factory.h"
 
 CAppModule _Module;
 
@@ -19,7 +20,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	MainFrame dlgMain(theme);
 	RECT rect = {0, 0, 240, 380};
 
-	theme.load(_T("./Theme.json"));
+	Factory factory(theme);
+
+	factory.load(_T("./Theme.json"));
 
 	if(dlgMain.Create(NULL, rect, _T("Calculator"), WS_OVERLAPPEDWINDOW, WS_EX_OVERLAPPEDWINDOW) == NULL)
 	{
